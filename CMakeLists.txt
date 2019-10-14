@@ -8,6 +8,18 @@ find_package(
   message_generation
   actionlib
   actionlib_msgs
+  control_msgs
+  rospy
+)
+
+add_service_files(FILES
+  eStop.srv
+)
+
+add_action_files(
+  DIRECTORY action
+  FILES 
+  al5dPosition.action
 )
 
 find_package(
@@ -18,8 +30,9 @@ include_directories(include)
 
 generate_messages(
   DEPENDENCIES
-  std_msgs
   actionlib_msgs
+  std_msgs 
+  control_msgs
 )
 
 catkin_package(
@@ -29,6 +42,8 @@ catkin_package(
   message_runtime
   actionlib
   actionlib_msgs
+  LIBRARIES 
+  al5d_driver
 )
 
 include_directories(
@@ -48,3 +63,25 @@ add_dependencies(vision robotsVisionController_generate_messages_cpp)
 target_link_libraries(vision ${OpenCV_LIBRARIES} ${catkin_LIBRARIES} )
 
 include_directories(${catkin_INCLUDE_DIRS})
+
+
+
+add_library(al5d_driver 
+    src/al5d_controller/Lowlevel/Servo.cpp 
+    src/al5d_controller/Lowlevel/SerialCommunication.cpp 
+    src/al5d_controller/Lowlevel/LowLevelDriver.cpp)
+target_link_libraries(al5d_driver ${catkin_LIBRARIES})
+
+add_executable(al5d_interface 
+          src/al5d_controller/Highlevel/HighLevelInterface.cpp 
+          src/al5d_controller/Highlevel/Position.cpp)
+target_link_libraries(al5d_interface al5d_driver ${catkin_LIBRARIES})
+
+add_executable(al5d_motionplanner 
+          src/al5d_controller/Motionplanner/MotionPlanner.cpp)
+target_link_libraries(al5d_motionplanner ${catkin_LIBRARIES})
+
+
+add_dependencies(al5d_motionplanner al5d_controller_generate_messages_cpp)
+add_dependencies(al5d_interface al5d_driver al5d_controller_generate_messages_cpp)
+

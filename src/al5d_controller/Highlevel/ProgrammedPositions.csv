@@ -1,0 +1,4 @@
+name,base,shoulder,elbow,wrist,wristrotate,gripper,velocity,
+STRAIGHT,0,0,10,0,0,0,2000,
+PARK,0,47,98,-45,0,0,2000,
+READY,0,40,80,5,0,0,2000

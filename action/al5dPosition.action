@@ -1,0 +1,10 @@
+#goal definition
+int16[] degrees
+uint16 time 
+string name
+---
+#Define the result
+int16[] degrees
+---
+#Define the feedback message
+int16[] degrees
