@@ -1,25 +1,52 @@
-#include "vision/Calibration.hpp"
+#include "vision/Calibration.h"
 #include <array>
 
 namespace
 {
 const int WINDOW_SIZE = 600;
-const int CAMERA_ID = 1;
+const int CAMERA_ID = 0;
 const int SPACEBAR_KEY_ASCII = 32;
 const int ENTER_KEY_ASCII = 10;
 }  // namespace
 
-Calibration::Calibration() : m_iLowH(0), m_iLowS(0), m_iLowV(0), m_iHighH(0), m_iHighS(0), m_iHighV(0)
+Calibration::Calibration() : m_iLowH(0), m_iHighH(0), m_iLowS(0), m_iHighS(0), m_iLowV(0), m_iHighV(0), m_iterator(0)
 {
+  setDefaultColorScales();
+  cv::namedWindow("trackBarWindow", WINDOW_SIZE);
+  cv::createTrackbar("iLowH", "trackBarWindow", &m_iLowH, 180, calibrate, this);
+  cv::createTrackbar("iHighH", "trackBarWindow", &m_iHighH, 180, calibrate, this);
+  cv::createTrackbar("iLowS", "trackBarWindow", &m_iLowS, 255, calibrate, this);
+  cv::createTrackbar("iHighS", "trackBarWindow", &m_iHighS, 255, calibrate, this);
+  cv::createTrackbar("iLowV", "trackBarWindow", &m_iLowV, 255, calibrate, this);
+  cv::createTrackbar("iHighV", "trackBarWindow", &m_iHighV, 255, calibrate, this);
 }
 
 Calibration::~Calibration()
 {
 }
 
-cv::Mat Calibration::BrightnessAndContrastAuto(const cv::Mat& frame, double clipHistPercent = 0)
+void Calibration::setColorValues()
 {
-  CV_Assert(clipHistPercent >= 0);
+  ColorScale color_scale = m_color_scales.at(m_iterator);
+
+  m_iLowH = color_scale.iLowH;
+  m_iHighH = color_scale.iHighH;
+  m_iLowS = color_scale.iLowS;
+  m_iHighS = color_scale.iHighS;
+  m_iLowV = color_scale.iLowV;
+  m_iHighV = color_scale.iHighV;
+
+  cv::setTrackbarPos("iLowH", "trackBarWindow", m_iLowH);
+  cv::setTrackbarPos("iHighH", "trackBarWindow", m_iHighH);
+  cv::setTrackbarPos("iLowS", "trackBarWindow", m_iLowS);
+  cv::setTrackbarPos("iHighS", "trackBarWindow", m_iHighS);
+  cv::setTrackbarPos("iLowV", "trackBarWindow", m_iLowV);
+  cv::setTrackbarPos("iHighV", "trackBarWindow", m_iHighV);
+}
+
+cv::Mat Calibration::BrightnessAndContrastAuto(const cv::Mat& frame, double clip_hist_percent = 0)
+{
+  CV_Assert(clip_hist_percent >= 0);
   CV_Assert((frame.type() == CV_8UC1) || (frame.type() == CV_8UC3) || (frame.type() == CV_8UC4));
 
   cv::Mat dst;
@@ -36,7 +63,7 @@ cv::Mat Calibration::BrightnessAndContrastAuto(const cv::Mat& frame, double clip
     cv::cvtColor(frame, gray, CV_BGR2GRAY);
   else if (frame.type() == CV_8UC4)
     cv::cvtColor(frame, gray, CV_BGRA2GRAY);
-  if (clipHistPercent == 0)
+  if (clip_hist_percent == 0)
   {
     // keep full available range
     cv::minMaxLoc(gray, &minGray, &maxGray);
@@ -61,16 +88,16 @@ cv::Mat Calibration::BrightnessAndContrastAuto(const cv::Mat& frame, double clip
 
     // locate points that cuts at required value
     float max = accumulator.back();
-    clipHistPercent *= (max / 100.0);  // make percent as absolute
-    clipHistPercent /= 2.0;            // left and right wings
+    clip_hist_percent *= (max / 100.0);  // make percent as absolute
+    clip_hist_percent /= 2.0;            // left and right wings
     // locate left cut
     minGray = 0;
-    while (accumulator[(int)minGray] < clipHistPercent)
+    while (accumulator[(int)minGray] < clip_hist_percent)
       minGray++;
 
     // locate right cut
     maxGray = histSize - 1;
-    while (accumulator[(int)maxGray] >= (max - clipHistPercent))
+    while (accumulator[(int)maxGray] >= (max - clip_hist_percent))
       maxGray--;
   }
 
@@ -98,29 +125,29 @@ ColorScale Calibration::getColorScale(std::string color) const
   ColorScale colorScale;
   if (color.compare("groen") == 0)
   {
-    colorScale = m_colorScales.at(0);
+    colorScale = m_color_scales.at(0);
   }
   else if (color.compare("rood") == 0)
   {
-    colorScale = m_colorScales.at(1);
+    colorScale = m_color_scales.at(1);
   }
   else if (color.compare("blauw") == 0)
   {
-    colorScale = m_colorScales.at(2);
+    colorScale = m_color_scales.at(2);
   }
   else if (color.compare("geel") == 0)
 
   {
-    colorScale = m_colorScales.at(3);
+    colorScale = m_color_scales.at(3);
   }
   else if (color.compare("zwart") == 0)
   {
-    colorScale = m_colorScales.at(4);
+    colorScale = m_color_scales.at(4);
   }
 
   else if (color.compare("wit") == 0)
   {
-    colorScale = m_colorScales.at(5);
+    colorScale = m_color_scales.at(5);
   }
   return colorScale;
 }
@@ -136,46 +163,44 @@ void Calibration::updateSetRange()
   cv::imshow("filterWindow3", mask1);
 }
 
+void Calibration::setDefaultColorScales()
+{
+  m_color_scales.push_back(ColorScale{ 53, 95, 41, 193, 40, 255, "groen" });
+  m_color_scales.push_back(ColorScale{ 139, 179, 62, 255, 156, 255, "rood" });
+  m_color_scales.push_back(ColorScale{ 80, 154, 33, 255, 44, 255, "blauw" });
+  m_color_scales.push_back(ColorScale{ 14, 40, 41, 255, 229, 255, "geel" });
+  m_color_scales.push_back(ColorScale{ 0, 179, 9, 100, 0, 51, "zwart" });
+  m_color_scales.push_back(ColorScale{ 0, 167, 0, 44, 199, 255, "wit" });
+}
+
 void Calibration::startCalibration()
 {
-  bool capturedImage = false;
-  std::array<std::string, 6> colors{ "groen", "rood", "blauw", "geel", "zwart", "wit" };
-  int iterator = 0;
   m_cap.open(CAMERA_ID);
+  ColorScale colorScale = m_color_scales.at(m_iterator);
 
-  std::cout << "press space bar to capture and calibrate on color: " << colors[iterator] << std::endl;
+  std::cout << "press space bar to capture and calibrate on color: " << colorScale.color << std::endl;
 
-  while (m_colorScales.size() != 5)
+  while (m_iterator < m_color_scales.size())
   {
-    m_cap >> m_captureWindow;
-    imshow("captureWindow", m_captureWindow);
+    m_cap >> m_capture_window;
+    imshow("captureWindow", m_capture_window);
+    cv::imshow("trackBarWindow", 0);
     cv::waitKey(30);
 
-    if (cv::waitKey() == SPACEBAR_KEY_ASCII)
-    {
-      m_cap >> m_treshold;
-      capturedImage = true;
-    }
-    else if (cv::waitKey() == ENTER_KEY_ASCII)
-    {
-      ++iterator;
-      ColorScale colorScale{ m_iLowH, m_iHighH, m_iLowS, m_iHighS, m_iLowV, m_iHighV };
-      m_colorScales.push_back(colorScale);
-      std::cout << "The values: " << m_iLowH << ", " << m_iHighH << ", " << m_iLowS << ", " << m_iHighS << ", "
-                << m_iLowV << ", " << m_iHighV << " for color " << colors[iterator] << std::endl;
-      std::cout << "Calibrate on color: " << colors[iterator] << std::endl;
-    }
+    m_cap >> m_treshold;
+    setColorValues();
+    std::cout << "The values: " << colorScale.iLowH << ", " << colorScale.iHighH << ", " << colorScale.iLowS << ", "
+              << colorScale.iHighS << ", " << colorScale.iLowV << ", " << colorScale.iHighV << " for color "
+              << colorScale.color << std::endl;
+    std::cout << "Calibrate on color: " << colorScale.color << std::endl;
 
-    if (capturedImage)
+    if (cv::waitKey() == ENTER_KEY_ASCII)
     {
-      cv::namedWindow("trackBarWindow", WINDOW_SIZE);
-      cv::createTrackbar("iLowH", "trackBarWindow", &m_iLowH, 180, calibrate, this);
-      cv::createTrackbar("iHighH", "trackBarWindow", &m_iHighH, 180, calibrate, this);
-      cv::createTrackbar("iLowS", "trackBarWindow", &m_iLowS, 255, calibrate, this);
-      cv::createTrackbar("iHighS", "trackBarWindow", &m_iHighS, 255, calibrate, this);
-      cv::createTrackbar("iLowV", "trackBarWindow", &m_iLowV, 255, calibrate, this);
-      cv::createTrackbar("iHighV", "trackBarWindow", &m_iHighV, 255, calibrate, this);
-      cv::imshow("trackBarWindow", 0);
+      ++m_iterator;
+      if (m_iterator < m_color_scales.size())
+      {
+        colorScale = m_color_scales.at(m_iterator);
+      }
     }
   }
   cv::destroyAllWindows();

@@ -1,84 +1,87 @@
-#include "vision/ColorObject.hpp"
+#include "vision/ColorObject.h"
 
 ColorObject::~ColorObject()
 {
 }
 
-ColorObject::ColorObject(const std::string& aInputFigure, const std::string& aColor)
-  : m_colorScale(), inputFigure(aInputFigure), color(aColor), center_x_pos(0), center_y_pos(0), area(0)
+ColorObject::ColorObject(const std::string& input_figure, const std::string& color)
+  : m_color_scale(), m_input_figure(input_figure), m_color(color), m_center_x_pos(0), m_center_y_pos(0), m_area(0)
 {
 }
 
 const std::string ColorObject::getColor() const
 {
-  return color;
+  return m_color;
+}
+
+const ColorScale& ColorObject::getColorScale() const
+{
+  return m_color_scale;
 }
 
 const std::string ColorObject::getInputFigure() const
 {
-  return inputFigure;
+  return m_input_figure;
 }
 
-void ColorObject::setColorMask(const cv::Mat& aColorMask)
+void ColorObject::setColorMask(const cv::Mat& color_mask)
 {
-  colorMask = aColorMask;
+  m_color_mask = color_mask;
 }
 
 const cv::Mat ColorObject::getColorMask() const
 {
-  return colorMask;
+  return m_color_mask;
 }
 
 std::string ColorObject::getFigure() const
 {
-  return figure;
+  return m_figure;
 }
 
 void ColorObject::printColorObject()
 {
-  std::cout << figure << " " << color << " "
-            << "oppervlakte: " << area << " middelpunt x: " << center_x_pos << " middelpunt y: " << center_y_pos
+  std::cout << m_figure << " " << m_color << " "
+            << "oppervlakte: " << m_area << " middelpunt x: " << m_center_x_pos << " middelpunt y: " << m_center_y_pos
             << " is gevonden." << std::endl;
 }
 
-void ColorObject::setFigure(const std::string& aFigure)
+void ColorObject::setFigure(const std::string& figure)
 {
-  figure = aFigure;
+  m_figure = figure;
 }
 
-void ColorObject::setColorScale(ColorScale colorScale)
+void ColorObject::setColorScale(ColorScale color_scale)
 {
-    m_colorScale = colorScale; 
-    std::cout << m_colorScale.iHighH << std::endl;
-
+  m_color_scale = color_scale;
 }
 
-double ColorObject::getCenter_x_pos() const
+double ColorObject::getCenterXPos() const
 {
-  return center_x_pos;
+  return m_center_x_pos;
 }
 
-double ColorObject::getCenter_y_pos() const
+double ColorObject::getCenterYPos() const
 {
-  return center_y_pos;
+  return m_center_y_pos;
 }
 
 double ColorObject::getArea() const
 {
-  return area;
+  return m_area;
 }
 
-void ColorObject::setArea(const double aArea)
+void ColorObject::setArea(const double area)
 {
-  area = aArea;
+  m_area = area;
 }
 
-void ColorObject::setCenter_x_pos(const double aCenter_x_pos)
+void ColorObject::setCenterXPos(const double center_x_pos)
 {
-  center_x_pos = aCenter_x_pos;
+  m_center_x_pos = center_x_pos;
 }
 
-void ColorObject::setCenter_y_Pos(const double aCenter_y_pos)
+void ColorObject::setCenterYPos(const double center_y_pos)
 {
-  center_y_pos = aCenter_y_pos;
+  m_center_y_pos = center_y_pos;
 }

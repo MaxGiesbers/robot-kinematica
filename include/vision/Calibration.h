@@ -1,7 +1,8 @@
 #include <ros/ros.h>
+#include "vision/ColorScale.h"
 #include "opencv2/core.hpp"
 #include <opencv2/opencv.hpp>
-#include "vision/ColorScale.hpp"
+
 
 class Calibration
 {
@@ -12,8 +13,10 @@ class Calibration
     ColorScale getColorScale(std::string color) const;
 
     private:
-    cv::Mat BrightnessAndContrastAuto(const cv::Mat& frame, double clipHistPercent);
+    cv::Mat BrightnessAndContrastAuto(const cv::Mat& frame, double clip_hist_percent);
     void updateSetRange();
+    void setDefaultColorScales();
+    void setColorValues();
 
     static void calibrate(int v, void *ptr)
     {
@@ -23,15 +26,13 @@ class Calibration
         calibration->updateSetRange();
     }
 
-    int m_iLowH;
-    int m_iLowS;
-    int m_iLowV;
-    int m_iHighH;
-    int m_iHighS;
-    int m_iHighV;
+    int m_iLowH, m_iHighH, m_iLowS, m_iHighS, m_iLowV, m_iHighV;
+    std::string sliderWindow = "CALIBRATE";
+
+    std::size_t m_iterator;
     cv::Mat m_treshold;
     cv::Mat m_src;
-    std::vector<ColorScale> m_colorScales;
+    std::vector<ColorScale> m_color_scales;
     cv::VideoCapture m_cap;
-    cv::Mat m_captureWindow;
+    cv::Mat m_capture_window;
 };

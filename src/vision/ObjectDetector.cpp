@@ -1,6 +1,7 @@
-#include "vision/ObjectDetector.hpp"
+#include "vision/ObjectDetector.h"
+#include <cmath>
 
-ObjectDetector::ObjectDetector(cv::Mat aFrame, cv::Mat aFilteredFrame) : frame(aFrame), filteredFrame(aFilteredFrame)
+ObjectDetector::ObjectDetector(cv::Mat frame, cv::Mat filteredFrame) : m_frame(frame), m_filtered_frame(filteredFrame)
 {
 }
 
@@ -8,31 +9,31 @@ ObjectDetector::~ObjectDetector()
 {
 }
 
-void ObjectDetector::setText(std::shared_ptr<ColorObject>& colorObject)
+void ObjectDetector::setText(std::shared_ptr<ColorObject>& color_object)
 {
-  putText(frame, "x-pos: " + std::to_string((int)colorObject->getCenter_x_pos()),
-          cv::Point((int)colorObject->getCenter_x_pos(), ((int)colorObject->getCenter_y_pos() - 70)), 1, 1,
+  putText(m_frame, "x-pos: " + std::to_string((int)color_object->getCenterXPos()),
+          cv::Point((int)color_object->getCenterXPos(), ((int)color_object->getCenterYPos() - 70)), 1, 1,
           cv::Scalar(255, 255, 255), 1, 1);
-  putText(frame, "y-pos: " + std::to_string((int)colorObject->getCenter_y_pos()),
-          cv::Point((int)colorObject->getCenter_x_pos(), ((int)colorObject->getCenter_y_pos() - 90)), 1, 1,
+  putText(m_frame, "y-pos: " + std::to_string((int)color_object->getCenterYPos()),
+          cv::Point((int)color_object->getCenterXPos(), ((int)color_object->getCenterYPos() - 90)), 1, 1,
           cv::Scalar(255, 255, 255), 1, 1);
 
-  putText(frame, "Oppervlakte: " + std::to_string((int)colorObject->getArea()),
-          cv::Point((int)colorObject->getCenter_x_pos(), ((int)colorObject->getCenter_y_pos() - 120)), 1, 1,
+  putText(m_frame, "Oppervlakte: " + std::to_string((int)color_object->getArea()),
+          cv::Point((int)color_object->getCenterXPos(), ((int)color_object->getCenterYPos() - 120)), 1, 1,
           cv::Scalar(255, 255, 255), 1, 1);
-  putText(frame, colorObject->getFigure() + " " + colorObject->getColor(),
-          cv::Point((int)colorObject->getCenter_x_pos(), ((int)colorObject->getCenter_y_pos() - 140)), 1, 1,
+  putText(m_frame, color_object->getFigure() + " " + color_object->getColor(),
+          cv::Point((int)color_object->getCenterXPos(), ((int)color_object->getCenterYPos() - 140)), 1, 1,
           cv::Scalar(255, 255, 255), 1, 1);
 }
 
-void ObjectDetector::setCenterPoint(const std::shared_ptr<ColorObject>& colorObject, std::vector<cv::Point>& contour)
+void ObjectDetector::setCenterPoint(const std::shared_ptr<ColorObject>& color_object, std::vector<cv::Point>& contour)
 {
   auto moments = cv::moments(contour);
-  colorObject->setCenter_x_pos(int(moments.m10 / moments.m00));
-  colorObject->setCenter_y_Pos(int(moments.m01 / moments.m00));
+  color_object->setCenterXPos(int(moments.m10 / moments.m00));
+  color_object->setCenterYPos(int(moments.m01 / moments.m00));
 }
 
-bool ObjectDetector::checkSquareAndRectangle(std::shared_ptr<ColorObject>& colorObject, std::vector<cv::Point>& approx)
+bool ObjectDetector::checkSquareAndRectangle(std::shared_ptr<ColorObject>& color_object, std::vector<cv::Point>& approx)
 {
   const double sideUpper = std::fabs(approx[3].x - approx[0].x);
   const double sideDown = std::fabs(approx[2].x - approx[1].x);
@@ -48,15 +49,15 @@ bool ObjectDetector::checkSquareAndRectangle(std::shared_ptr<ColorObject>& color
   {
     if (std::fabs(sideUpper - sideDown) <= deviationSquare && std::fabs(sideLeft - sideRight) <= deviationSquare)
     {
-      if (std::fabs(sideUpper - sideLeft) <= deviationSquare && colorObject->getInputFigure().compare("vierkant") == 0)
+      if (std::fabs(sideUpper - sideLeft) <= deviationSquare && color_object->getInputFigure().compare("vierkant") == 0)
       {
-        colorObject->setFigure("vierkant");
+        color_object->setFigure("vierkant");
         return true;
       }
-      else if (std::fabs(sideUpper - sideLeft) > deviationRectangle && colorObject->getInputFigure().compare("rechthoe"
-                                                                                                             "k") == 0)
+      else if (std::fabs(sideUpper - sideLeft) > deviationRectangle && color_object->getInputFigure().compare("rechthoe"
+                                                                                                              "k") == 0)
       {
-        colorObject->setFigure("rechthoek");
+        color_object->setFigure("rechthoek");
         return true;
       }
     }
@@ -64,7 +65,7 @@ bool ObjectDetector::checkSquareAndRectangle(std::shared_ptr<ColorObject>& color
   return false;
 }
 
-bool ObjectDetector::checkCircle(std::shared_ptr<ColorObject>& colorObject,
+bool ObjectDetector::checkCircle(std::shared_ptr<ColorObject>& color_object,
                                  std::vector<std::vector<cv::Point>>& contours, int element)
 {
   const double area = cv::contourArea(contours.at(element));
@@ -74,14 +75,14 @@ bool ObjectDetector::checkCircle(std::shared_ptr<ColorObject>& colorObject,
 
   if (std::abs(1 - ((double)r.width / r.height)) <= deviationCircle &&
       std::abs(1 - (area / (CV_PI * std::pow(radius, 2)))) <= deviationCircle &&
-      colorObject->getInputFigure().compare("cirkel") == 0)
+      color_object->getInputFigure().compare("cirkel") == 0)
   {
     return true;
   }
   return false;
 }
 
-bool ObjectDetector::semiCircle(std::shared_ptr<ColorObject>& colorObject,
+bool ObjectDetector::semiCircle(std::shared_ptr<ColorObject>& color_object,
                                 std::vector<std::vector<cv::Point>>& contours, int element)
 {
   double area = cv::contourArea(contours.at(element));
@@ -93,24 +94,24 @@ bool ObjectDetector::semiCircle(std::shared_ptr<ColorObject>& colorObject,
 
   if (std::abs(1 - ((double)r.width / (r.height * 2))) <= deviationSemiCircleUpAndDown &&
       std::abs(1 - 2 * (area / (CV_PI * std::pow(radius, 2)))) <= deviationSemiCircleUpAndDown &&
-      colorObject->getInputFigure().compare("halve cirkel") == 0)
+      color_object->getInputFigure().compare("halve cirkel") == 0)
   {
     return true;
   }
   else if (std::abs(1 - ((double)r.height / (r.width * 2))) <= deviationSemiCircleRightAndLeft &&
            std::abs(1 - 2 * (area / (CV_PI * std::pow(radius2, 2)))) <= deviationSemiCircleRightAndLeft &&
-           colorObject->getInputFigure().compare("halve cirkel") == 0)
+           color_object->getInputFigure().compare("halve cirkel") == 0)
   {
     return true;
   }
   return false;
 }
 
-void ObjectDetector::findShape(std::shared_ptr<ColorObject>& colorObject)
+void ObjectDetector::findShape(std::shared_ptr<ColorObject>& color_object)
 {
   // Canny
   cv::Mat bw;
-  cv::Canny(colorObject->getColorMask(), bw, 0, 50, 5);
+  cv::Canny(color_object->getColorMask(), bw, 0, 50, 5);
 
   // Find contours
   std::vector<std::vector<cv::Point>> contours;
@@ -121,7 +122,7 @@ void ObjectDetector::findShape(std::shared_ptr<ColorObject>& colorObject)
   cv::findContours(bw.clone(), contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
   std::vector<cv::Point> approx;
-  cv::Mat dst = colorObject->getColorMask().clone();
+  cv::Mat dst = color_object->getColorMask().clone();
 
   for (unsigned int i = 0; i < contours.size(); i++)
   {
@@ -131,27 +132,26 @@ void ObjectDetector::findShape(std::shared_ptr<ColorObject>& colorObject)
       continue;
     }
 
-    if (approx.size() == 3 && colorObject->getInputFigure().compare("driehoek") == 0)
+    if (approx.size() == 3 && color_object->getInputFigure().compare("driehoek") == 0)
     {
-      colorObject->setFigure("driehoek");
+      color_object->setFigure("driehoek");
       contourElements.push_back(i);
     }
-    else if (approx.size() == 4 && checkSquareAndRectangle(colorObject, approx))
+    else if (approx.size() == 4 && checkSquareAndRectangle(color_object, approx))
     {
       contourElements.push_back(i);
     }
     else if (approx.size() != 4 && approx.size() != 3)
     {
-      if (checkCircle(colorObject, contours, (int)i))
+      if (checkCircle(color_object, contours, (int)i))
       {
         contourElements.push_back(i);
-        colorObject->setFigure("cirkel");
+        color_object->setFigure("cirkel");
       }
-      else if (semiCircle(colorObject, contours, i))
+      else if (semiCircle(color_object, contours, i))
       {
         contourElements.push_back(i);
-        ;
-        colorObject->setFigure("halve cirkel");
+        color_object->setFigure("halve cirkel");
       }
     }
   }
@@ -160,37 +160,40 @@ void ObjectDetector::findShape(std::shared_ptr<ColorObject>& colorObject)
   for (int i : contourElements)
   {
     double area = cv::contourArea(contours.at(i));
-    colorObject->setArea(area);
-    DrawImageContours(contours, colorObject, i);
-    setCenterPoint(colorObject, contours.at(i));
-    setText(colorObject);
-    colorObject->printColorObject();
+    color_object->setArea(area);
+    DrawImageContours(contours, color_object, i);
+    setCenterPoint(color_object, contours.at(i));
+    setText(color_object);
+    color_object->printColorObject();
   }
 
-  if (colorObject->getInputFigure() != colorObject->getFigure())
+  if (color_object->getInputFigure() != color_object->getFigure())
   {
-    std::cout << colorObject->getInputFigure() << " " << colorObject->getColor() << " is niet gevonden. " << std::endl;
+    std::cout << color_object->getInputFigure() << " " << color_object->getColor() << " is niet gevonden. "
+              << std::endl;
   }
 }
 
-void ObjectDetector::filterColor(std::shared_ptr<ColorObject>& colorObject)
+void ObjectDetector::filterColor(std::shared_ptr<ColorObject>& color_object)
 {
   cv::Mat frameHSV;
   // Changes contrast of color;
-  cv::Mat colorMask = BrightnessAndContrastAuto(filteredFrame, 5);
+  cv::Mat colorMask = BrightnessAndContrastAuto(m_filtered_frame, 5);
   cvtColor(colorMask, frameHSV, cv::COLOR_BGR2HSV);
   inRange(frameHSV,
-          cv::Scalar(colorObject->m_colorScale.iLowH, colorObject->m_colorScale.iLowS, colorObject->m_colorScale.iLowV),
-          cv::Scalar(colorObject->m_colorScale.iHighH, colorObject->m_colorScale.iHighS, colorObject->m_colorScale.iHighV),
+          cv::Scalar(color_object->getColorScale().iLowH, color_object->getColorScale().iLowS,
+                     color_object->getColorScale().iLowV),
+          cv::Scalar(color_object->getColorScale().iHighH, color_object->getColorScale().iHighS,
+                     color_object->getColorScale().iHighV),
           colorMask);
 
-  colorObject->setColorMask(colorMask);
+  color_object->setColorMask(colorMask);
   imshow("colormask", colorMask);
 }
 
-cv::Mat ObjectDetector::BrightnessAndContrastAuto(const cv::Mat& frame, double clipHistPercent = 0)
+cv::Mat ObjectDetector::BrightnessAndContrastAuto(const cv::Mat& frame, double clip_hist_percent = 0)
 {
-  CV_Assert(clipHistPercent >= 0);
+  CV_Assert(clip_hist_percent >= 0);
   CV_Assert((frame.type() == CV_8UC1) || (frame.type() == CV_8UC3) || (frame.type() == CV_8UC4));
 
   cv::Mat dst;
@@ -207,7 +210,7 @@ cv::Mat ObjectDetector::BrightnessAndContrastAuto(const cv::Mat& frame, double c
     cv::cvtColor(frame, gray, CV_BGR2GRAY);
   else if (frame.type() == CV_8UC4)
     cv::cvtColor(frame, gray, CV_BGRA2GRAY);
-  if (clipHistPercent == 0)
+  if (clip_hist_percent == 0)
   {
     // keep full available range
     cv::minMaxLoc(gray, &minGray, &maxGray);
@@ -232,16 +235,16 @@ cv::Mat ObjectDetector::BrightnessAndContrastAuto(const cv::Mat& frame, double c
 
     // locate points that cuts at required value
     float max = accumulator.back();
-    clipHistPercent *= (max / 100.0);  // make percent as absolute
-    clipHistPercent /= 2.0;            // left and right wings
+    clip_hist_percent *= (max / 100.0);  // make percent as absolute
+    clip_hist_percent /= 2.0;            // left and right wings
     // locate left cut
     minGray = 0;
-    while (accumulator[(int)minGray] < clipHistPercent)
+    while (accumulator[(int)minGray] < clip_hist_percent)
       minGray++;
 
     // locate right cut
     maxGray = histSize - 1;
-    while (accumulator[(int)maxGray] >= (max - clipHistPercent))
+    while (accumulator[(int)maxGray] >= (max - clip_hist_percent))
       maxGray--;
   }
 
@@ -265,11 +268,11 @@ cv::Mat ObjectDetector::BrightnessAndContrastAuto(const cv::Mat& frame, double c
 }
 
 void ObjectDetector::DrawImageContours(const std::vector<std::vector<cv::Point>>& contour,
-                                       const std::shared_ptr<ColorObject>& colorObject, const int contourNumber)
+                                       const std::shared_ptr<ColorObject>& colorObject, const int contour_number)
 {
   cv::Mat mask = colorObject->getColorMask();
   cv::Mat mask_rgb;
   cv::cvtColor(mask, mask_rgb, CV_GRAY2BGR);
-  cv::drawContours(frame, contour, contourNumber, cv::Scalar(0, 165, 255), 10);
-  cv::drawContours(mask_rgb, contour, contourNumber, cv::Scalar(0, 165, 255), 10);
+  cv::drawContours(m_frame, contour, contour_number, cv::Scalar(0, 165, 255), 10);
+  cv::drawContours(mask_rgb, contour, contour_number, cv::Scalar(0, 165, 255), 10);
 }

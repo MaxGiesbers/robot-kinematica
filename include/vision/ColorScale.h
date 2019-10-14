@@ -1,6 +1,6 @@
-#ifndef COLORSCALE_HPP
-#define COLORSCALE_HPP
-
+#ifndef COLORSCALE_H
+#define COLORSCALE_H
+#include <string>
 struct ColorScale{
     int iLowH;
     int iHighH;
@@ -8,5 +8,6 @@ struct ColorScale{
     int iHighS;
     int iLowV ;
     int iHighV;
+    std::string color;
 };
 #endif
