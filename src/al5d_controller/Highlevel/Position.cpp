@@ -1,52 +1,43 @@
 #include "al5d_controller/Highlevel/Position.h"
-namespace Highlevel{
-Position::Position() : name("unknown position"), time(0)
-{
 
+Position::Position() : m_name("unknown position"), m_time(0)
+{
 }
 
-Position::Position(const std::string& name) : name(name), time(0)
+Position::Position(const std::string& name) : m_name(name), m_time(0)
 {
-
 }
 
 Position::~Position()
 {
-
 }
 
-// Position::Position(const Position& obj) : name(obj.name), time(obj.time)
-// {
-
-// }
-
-std::vector<short> Position::getDegrees() const
+std::vector<int16_t> Position::getDegrees() const
 {
-    return degreesList;
+    return m_degrees_list;
 }
 
-void Position::addDegrees(short degrees)
+void Position::addDegrees(int16_t degrees)
 {
-    degreesList.push_back(degrees);
+    m_degrees_list.push_back(degrees);
 }
 
 const std::string& Position::getName() const
 {
-    return name;
+    return m_name;
 }
 
 void Position::setName(const std::string& name)
 {
-    this->name = name;
+    m_name = name;
 }
 
-unsigned short Position::getTime() const
+uint16_t Position::getTime() const
 {
-    return time;
+    return m_time;
 }
 
-void Position::setTime(unsigned short time)
+void Position::setTime(uint16_t time)
 {
-    this->time = time;
-}
+    m_time = time;
 }

@@ -1,6 +1,5 @@
 name,base,shoulder,elbow,wrist,wristrotate,gripper,velocity,
 PARK,
 WRISTDOWN,90,0,10,0,0,0,2000,
-PARK
 WRISTDOWN,0,0,10,0,0,0,2000
 

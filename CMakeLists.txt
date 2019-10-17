@@ -68,7 +68,6 @@ include_directories(${catkin_INCLUDE_DIRS})
 
 add_library(al5d_driver 
     src/al5d_controller/Lowlevel/Servo.cpp 
-    src/al5d_controller/Lowlevel/SerialCommunication.cpp 
     src/al5d_controller/Lowlevel/LowLevelDriver.cpp)
 target_link_libraries(al5d_driver ${catkin_LIBRARIES})
 
