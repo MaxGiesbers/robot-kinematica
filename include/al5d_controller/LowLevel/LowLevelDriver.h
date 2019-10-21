@@ -1,10 +1,10 @@
 #ifndef LOWLEVELDRIVER_H_
 #define LOWLEVELDRIVER_H_
 
+#include <ros/ros.h>
 #include "Servo.h"
 #include <string>
 #include <vector>
-#include <ros/ros.h>
 #include <boost/asio.hpp>
 
 class LowLevelDriver{

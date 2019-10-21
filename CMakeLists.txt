@@ -12,6 +12,10 @@ find_package(
   rospy
 )
 
+find_package (OpenCV 3 REQUIRED)
+include_directories(include)
+
+
 add_service_files(FILES
   eStop.srv
 )
@@ -22,16 +26,10 @@ add_action_files(
   al5dPosition.action
 )
 
-find_package(
-OpenCV 3 REQUIRED)
-
-include_directories(include)
-
-
 generate_messages(
   DEPENDENCIES
-  actionlib_msgs
   std_msgs 
+  actionlib_msgs
   control_msgs
 )
 
@@ -40,31 +38,23 @@ catkin_package(
   roscpp 
   std_msgs 
   message_runtime
-  actionlib
-  actionlib_msgs
   LIBRARIES 
   al5d_driver
+  actionlib
+  actionlib_msgs
 )
 
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-)
+include_directories(${catkin_INCLUDE_DIRS})
 
 add_compile_options(-std=c++17 -Wall -Wextra)
-
 
 add_executable(vision 
          src/vision/VisionController.cpp
          src/vision/ColorObject.cpp
          src/vision/Calibration.cpp
 	       src/vision/ObjectDetector.cpp)
-add_dependencies(vision robotsVisionController_generate_messages_cpp)
-target_link_libraries(vision ${OpenCV_LIBRARIES} ${catkin_LIBRARIES} )
-
-include_directories(${catkin_INCLUDE_DIRS})
-
-
+target_link_libraries(vision ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
+add_dependencies(vision robot_kinematica_generate_messages_cpp)
 
 add_library(al5d_driver 
     src/al5d_controller/Lowlevel/Servo.cpp 
@@ -75,12 +65,16 @@ add_executable(al5d_interface
           src/al5d_controller/Highlevel/HighLevelInterface.cpp 
           src/al5d_controller/Highlevel/Position.cpp)
 target_link_libraries(al5d_interface al5d_driver ${catkin_LIBRARIES})
+add_dependencies(al5d_interface al5d_driver robot_kinematica_generate_messages_cpp)
+
 
 add_executable(al5d_motionplanner 
           src/al5d_controller/Motionplanner/MotionPlanner.cpp)
 target_link_libraries(al5d_motionplanner ${catkin_LIBRARIES})
+add_dependencies(al5d_motionplanner robot_kinematica_generate_messages_cpp)
 
 
-add_dependencies(al5d_motionplanner al5d_controller_generate_messages_cpp)
-add_dependencies(al5d_interface al5d_driver al5d_controller_generate_messages_cpp)
+
+
+
 

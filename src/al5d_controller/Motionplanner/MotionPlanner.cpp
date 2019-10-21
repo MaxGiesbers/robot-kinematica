@@ -1,26 +1,11 @@
-/**
- * @brief The Motion Planner that plans the sequence of motions that the high level interface has to receive and execute.
- * 
- * @file MotionPlanner.cpp
- * @author Joris van Zeeland, Max Giesbers
- * @date 2018-09-25
- */
-
 #include <ros/ros.h>
 #include "al5d_controller/al5dPositionAction.h"
 #include <actionlib/client/simple_action_client.h>
 #include "al5d_controller/eStop.h"
 
 #include <iostream>
-#include <boost/asio.hpp>
-#include <vector>
-#include <thread>
-#include <vector>
-#include <string>
 #include <queue>
-#include <algorithm>
 #include <fstream>
-#include <exception>
 
 typedef::actionlib::SimpleActionClient<al5d_controller::al5dPositionAction> MotionPlanner;
 std::queue<al5d_controller::al5dPositionGoal> goals;
