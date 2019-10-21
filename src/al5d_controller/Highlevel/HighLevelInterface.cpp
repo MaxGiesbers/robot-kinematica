@@ -1,5 +1,9 @@
 #include "al5d_controller/Highlevel/HighLevelInterface.h"
 
+namespace 
+{
+    const uint8_t MINIMAL_ARGUMENTS = 4;
+}
 #include <fstream>
 HighLevelInterface::HighLevelInterface(const std::string& name, const std::string& positions_file_name, const std::string port) : 
                 m_al5d_action_server(m_node_handle, name, boost::bind(&HighLevelInterface::executeCB, this, _1), 
@@ -7,7 +11,6 @@ HighLevelInterface::HighLevelInterface(const std::string& name, const std::strin
 {
     initServoList();
     m_al5d_action_server.start();
-    std::cout << positions_file_name << std::endl;
     parseProgrammedPositions(positions_file_name);
 }
 
@@ -32,25 +35,13 @@ void HighLevelInterface::executeCB(const al5d_controller::al5dPositionGoalConstP
 
 void HighLevelInterface::run(const al5d_controller::al5dPositionGoalConstPtr &goal)
 {
-    if(goal->name.compare(std::string{"PARK"}) == 0)
+    auto position = std::find_if(m_position_list.begin(), m_position_list.end(), [&](const Position pos) { return pos.getName().compare(goal->name) == 0; });
+
+    if (position != std::end(m_position_list))
     {
-        auto findFunction = [](const Position& p){return p.getName().compare("PARK") == 0;};
-        auto result = std::find_if(m_position_list.begin(), m_position_list.end(), findFunction);
-        concatMessage((*result));
-    } 
-    else if (goal->name.compare(std::string{"STRAIGHT"}) == 0)
-    {
-        auto findFunction = [](const Position& p){return p.getName().compare("STRAIGHT") == 0 ;};
-        auto result = std::find_if(m_position_list.begin(), m_position_list.end(), findFunction);
-        concatMessage((*result));
+        concatMessage((*position));
     }
-    else if (goal->name.compare("READY") == 0)
-    {
-        auto findFunction = [](const Position& p){return p.getName().compare("READY") == 0;};
-        auto result = std::find_if(m_position_list.begin(), m_position_list.end(), findFunction);
-        concatMessage((*result));
-    }
-    else 
+    else
     {
         concatMessage(goal);
     }
@@ -177,13 +168,12 @@ bool HighLevelInterface::parseProgrammedPositions(const std::string& fileName)
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "al5d_interface");
-    //std::cout << argv[2] << std::endl;
-    std::cout << argc << std::endl;
-    if(argc != 4)
+    if(argc != MINIMAL_ARGUMENTS)
     {
-        std::cout << "Missing arguments. Try something like: rosrun al5d_controller al5d_interface ProgrammedPositions.csv /dev/ttyUSB0" << std::endl;
+        ROS_WARN_STREAM("Missing arguments. Try something like: rosrun al5d_controller al5d_interface ProgrammedPositions.csv /dev/ttyUSB0");
         return 1;
     }
+    
     HighLevelInterface highLevelInterface("al5d_controller", argv[2], argv[3]);
     ros::NodeHandle nh;
     ros::ServiceServer service = nh.advertiseService("eStop", &HighLevelInterface::emergencyStop, &highLevelInterface);

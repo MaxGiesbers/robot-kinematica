@@ -7,7 +7,7 @@ namespace
 const std::vector<std::string> COLORS = { "groen", "blauw", "rood", "wit", "zwart", "geel" };
 const std::vector<std::string> FIGURES = { "vierkant", "rechthoek", "cirkel", "halve cirkel", "driehoek" };
 const uint8_t ROS_LOOP_RATE = 20;
-const int CAMERA_ID = 0;
+const int CAMERA_ID = 1;
 }  // namespace
 
 VisionController::VisionController()
@@ -53,10 +53,10 @@ void VisionController::findColorAndShape(const std::string& input_color, const s
 
   if (color != std::end(COLORS) && figure != std::end(FIGURES))
   {
-    m_color_object = std::make_shared<ColorObject>(*color, *figure);
-    const std::string t = *color;
+    m_color_object = std::make_shared<ColorObject>(*figure,*color) ;
 
     m_color_object->setColorScale(m_calibrator.getColorScale(*color));
+    std::cout << m_calibrator.getColorScale(*color).iHighH << std::endl;
     m_found_shape_object = true;
   }
   else
@@ -108,7 +108,11 @@ void VisionController::visionControllerLoop()
       cv::dilate(m_filtered_frame, m_filtered_frame, cv::Mat(), cv::Point(-1, -1), 2, 1, 1);
       std::cout << m_color_object->getColor() << std::endl;
       m_detector->filterColor(m_color_object);
-      m_detector->findShape(m_color_object);
+      if (!m_detector->findShape(m_color_object))
+      {
+        std::cout << "Voer een vorm en een kleur in met als format: [vorm][whitespace][kleur]" << std::endl;
+        m_found_shape_object = false;
+      }
 
       imshow("object detector", m_frame);
     }

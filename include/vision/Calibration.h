@@ -16,6 +16,7 @@ class Calibration
     void updateSetRange();
     void setDefaultColorScales();
     void setColorValues();
+    void setCalibratedColorValues();
 
     static void calibrate(int v, void *ptr)
     {

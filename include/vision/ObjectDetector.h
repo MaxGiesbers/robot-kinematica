@@ -10,10 +10,11 @@ class ObjectDetector
 
     void setText(std::shared_ptr<ColorObject>& color_object);
     void setCenterPoint(const std::shared_ptr<ColorObject> &color_object,std::vector<cv::Point> &contour);
-    void findShape(std::shared_ptr<ColorObject>& color_object);
+    bool findShape(std::shared_ptr<ColorObject>& color_object);
     void filterColor(std::shared_ptr<ColorObject>& shape);
     void DrawImageContours(const std::vector<std::vector<cv::Point>> &contour, 
     const std::shared_ptr<ColorObject>& color_object, const int contour_number);
+    double convertPixelToCmXPosition(const double pixel_value);
 
     cv::Mat BrightnessAndContrastAuto(const cv::Mat& frame, double clip_hist_percent);
     bool checkSquareAndRectangle(std::shared_ptr<ColorObject>& color_object, std::vector <cv::Point>& approx);

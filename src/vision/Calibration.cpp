@@ -4,7 +4,7 @@
 namespace
 {
 const int WINDOW_SIZE = 600;
-const int CAMERA_ID = 0;
+const int CAMERA_ID = 1;
 const int SPACEBAR_KEY_ASCII = 32;
 const int ENTER_KEY_ASCII = 10;
 }  // namespace
@@ -23,6 +23,16 @@ Calibration::Calibration() : m_iLowH(0), m_iHighH(0), m_iLowS(0), m_iHighS(0), m
 
 Calibration::~Calibration()
 {
+}
+
+void Calibration::setCalibratedColorValues()
+{
+  m_color_scales.at(m_iterator).iLowH = m_iLowH;
+  m_color_scales.at(m_iterator).iHighH = m_iHighH;
+  m_color_scales.at(m_iterator).iLowS = m_iLowS;
+  m_color_scales.at(m_iterator).iHighS = m_iHighS;
+  m_color_scales.at(m_iterator).iLowV = m_iLowV;
+  m_color_scales.at(m_iterator).iHighV = m_iHighV;
 }
 
 void Calibration::setColorValues()
@@ -196,9 +206,14 @@ void Calibration::startCalibration()
 
     if (cv::waitKey() == ENTER_KEY_ASCII)
     {
+      setCalibratedColorValues();
+      std::cout << colorScale.iHighH << std::endl;
+      std::cout << m_color_scales.at(m_iterator).iHighH << std::endl;
+
       ++m_iterator;
       if (m_iterator < m_color_scales.size())
       {
+        
         colorScale = m_color_scales.at(m_iterator);
       }
     }
