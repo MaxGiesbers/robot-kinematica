@@ -1,14 +1,14 @@
 #include <ros/ros.h>
-#include "al5d_controller/al5dPositionAction.h"
+#include "robot_kinematica/al5dPositionAction.h"
 #include <actionlib/client/simple_action_client.h>
-#include "al5d_controller/eStop.h"
+#include "robot_kinematica/eStop.h"
 
 #include <iostream>
 #include <queue>
 #include <fstream>
 
-typedef::actionlib::SimpleActionClient<al5d_controller::al5dPositionAction> MotionPlanner;
-std::queue<al5d_controller::al5dPositionGoal> goals;
+typedef::actionlib::SimpleActionClient<robot_kinematica::al5dPositionAction> MotionPlanner;
+std::queue<robot_kinematica::al5dPositionGoal> goals;
 
 
 bool parseCSVFile(std::string fileName)
@@ -30,7 +30,7 @@ bool parseCSVFile(std::string fileName)
 	//WHILE THE FILE HAS LINES LEFT TO READ
 	while(file.good())
 	{
-        al5d_controller::al5dPositionGoal goal;
+        robot_kinematica::al5dPositionGoal goal;
         //INITIALISE ALL THE VALUES FROM THE FILE
         std::string name;
         int degreesBase,
@@ -89,7 +89,7 @@ bool parseCSVFile(std::string fileName)
 
 void motionPlanner(MotionPlanner& ac)
 {
-    al5d_controller::al5dPositionGoal goal = goals.front();
+    robot_kinematica::al5dPositionGoal goal = goals.front();
     goals.pop();
     ROS_INFO("Send Goal: %s", goal.name.c_str());
     ac.sendGoalAndWait(goal, ros::Duration(2,300),ros::Duration(5,0));
@@ -105,22 +105,22 @@ void motionPlanner(MotionPlanner& ac)
 
 void emergencyCallback(const ros::TimerEvent& event){
     ros::NodeHandle nh;
-    ros::ServiceClient client = nh.serviceClient<al5d_controller::eStop>("eStop");
-    al5d_controller::eStop eStopSrv;
+    ros::ServiceClient client = nh.serviceClient<robot_kinematica::eStop>("eStop");
+    robot_kinematica::eStop eStopSrv;
     eStopSrv.request.stop = true;
     if(client.call(eStopSrv)){
         ROS_DEBUG_STREAM("EVENT:EMERGENCY STOP: Emergency stop service call succeeded");
     } else {
         ROS_DEBUG_STREAM("EVENT:EMERGENCY STOP: Emergency stop service call failed");
     }
-    std::queue<al5d_controller::al5dPositionGoal> empty;
+    std::queue<robot_kinematica::al5dPositionGoal> empty;
     std::swap(goals, empty);   
 }
 
 int main(int argc, char** argv){
 
     ros::init(argc, argv, "al5d_motionplanner");
-    MotionPlanner ac("al5d_controller", true);
+    MotionPlanner ac("robot_kinematica", true);
     ros::AsyncSpinner spinner(2);
     spinner.start();
     try {

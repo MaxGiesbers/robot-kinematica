@@ -53,8 +53,9 @@ add_executable(vision
          src/vision/ColorObject.cpp
          src/vision/Calibration.cpp
 	       src/vision/ObjectDetector.cpp)
-target_link_libraries(vision ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(vision robot_kinematica_generate_messages_cpp)
+target_link_libraries(vision ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
+
 
 add_library(al5d_driver 
     src/al5d_controller/Lowlevel/Servo.cpp 
@@ -64,14 +65,14 @@ target_link_libraries(al5d_driver ${catkin_LIBRARIES})
 add_executable(al5d_interface 
           src/al5d_controller/Highlevel/HighLevelInterface.cpp 
           src/al5d_controller/Highlevel/Position.cpp)
-target_link_libraries(al5d_interface al5d_driver ${catkin_LIBRARIES})
 add_dependencies(al5d_interface al5d_driver robot_kinematica_generate_messages_cpp)
+target_link_libraries(al5d_interface al5d_driver ${catkin_LIBRARIES})
 
 
 add_executable(al5d_motionplanner 
           src/al5d_controller/Motionplanner/MotionPlanner.cpp)
-target_link_libraries(al5d_motionplanner ${catkin_LIBRARIES})
 add_dependencies(al5d_motionplanner robot_kinematica_generate_messages_cpp)
+target_link_libraries(al5d_motionplanner ${catkin_LIBRARIES})
 
 
 

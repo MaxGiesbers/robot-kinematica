@@ -1,10 +1,10 @@
 #include "al5d_controller/Highlevel/HighLevelInterface.h"
+#include <fstream>
 
 namespace 
 {
     const uint8_t MINIMAL_ARGUMENTS = 4;
 }
-#include <fstream>
 HighLevelInterface::HighLevelInterface(const std::string& name, const std::string& positions_file_name, const std::string port) : 
                 m_al5d_action_server(m_node_handle, name, boost::bind(&HighLevelInterface::executeCB, this, _1), 
                     false),m_name(name),m_low_level_component(port)
@@ -18,7 +18,7 @@ HighLevelInterface::~HighLevelInterface()
 {
 }
 
-void HighLevelInterface::executeCB(const al5d_controller::al5dPositionGoalConstPtr &goal)
+void HighLevelInterface::executeCB(const robot_kinematica::al5dPositionGoalConstPtr &goal)
 {
     ROS_INFO("STATE: HANDLE GOAL: %s", (*goal).name.c_str());
     if(!ros::ok())
@@ -33,7 +33,7 @@ void HighLevelInterface::executeCB(const al5d_controller::al5dPositionGoalConstP
 }
 
 
-void HighLevelInterface::run(const al5d_controller::al5dPositionGoalConstPtr &goal)
+void HighLevelInterface::run(const robot_kinematica::al5dPositionGoalConstPtr &goal)
 {
     auto position = std::find_if(m_position_list.begin(), m_position_list.end(), [&](const Position pos) { return pos.getName().compare(goal->name) == 0; });
 
@@ -47,13 +47,13 @@ void HighLevelInterface::run(const al5d_controller::al5dPositionGoalConstPtr &go
     }
 } 
 
-bool HighLevelInterface::emergencyStop(al5d_controller::eStop::Request& req, al5d_controller::eStop::Response& res)
+bool HighLevelInterface::emergencyStop(robot_kinematica::eStop::Request& req, robot_kinematica::eStop::Response& res)
 {
     m_low_level_component.emergencyStop();
     return true;
 }  
 
-void HighLevelInterface::concatMessage(const al5d_controller::al5dPositionGoalConstPtr &goal)
+void HighLevelInterface::concatMessage(const robot_kinematica::al5dPositionGoalConstPtr &goal)
 {
     std::vector <int> positions;
     for(std::size_t i = 0; i < (*goal).degrees.size(); ++i){
@@ -170,11 +170,11 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "al5d_interface");
     if(argc != MINIMAL_ARGUMENTS)
     {
-        ROS_WARN_STREAM("Missing arguments. Try something like: rosrun al5d_controller al5d_interface ProgrammedPositions.csv /dev/ttyUSB0");
+        ROS_WARN_STREAM("Missing arguments. Try something like: rosrun robot_kinematica al5d_interface ProgrammedPositions.csv /dev/ttyUSB0");
         return 1;
     }
     
-    HighLevelInterface highLevelInterface("al5d_controller", argv[2], argv[3]);
+    HighLevelInterface highLevelInterface("robot_kinematica", argv[2], argv[3]);
     ros::NodeHandle nh;
     ros::ServiceServer service = nh.advertiseService("eStop", &HighLevelInterface::emergencyStop, &highLevelInterface);
     ros::spin();
