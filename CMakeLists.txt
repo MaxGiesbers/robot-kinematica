@@ -26,6 +26,12 @@ add_action_files(
   al5dPosition.action
 )
 
+add_message_files(
+  FILES
+  found_object.msg
+)
+
+
 generate_messages(
   DEPENDENCIES
   std_msgs 
@@ -45,6 +51,8 @@ catkin_package(
 )
 
 include_directories(${catkin_INCLUDE_DIRS})
+
+
 
 add_compile_options(-std=c++17 -Wall -Wextra)
 

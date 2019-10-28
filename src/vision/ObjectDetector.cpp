@@ -1,14 +1,6 @@
 #include "vision/ObjectDetector.h"
 #include <cmath>
 
-namespace
-{
-  const double SCREEN_HEIGHT = 480;
-  const double SCREEN_WIDTH = 640;
-  const double SCREEN_WIDTH_CM = 18;
-  const double SCREEN_HEIGHT_CM = 12.144;
-}
-
 ObjectDetector::ObjectDetector(cv::Mat frame, cv::Mat filteredFrame) : m_frame(frame), m_filtered_frame(filteredFrame)
 {
 }
@@ -16,13 +8,6 @@ ObjectDetector::ObjectDetector(cv::Mat frame, cv::Mat filteredFrame) : m_frame(f
 ObjectDetector::~ObjectDetector()
 {
 }
-
-double ObjectDetector:: convertPixelToCmXPosition(const double pixel_value)
-{
-  double scale = SCREEN_WIDTH_CM / SCREEN_WIDTH;
-  return scale * pixel_value;
-}
-
 
 void ObjectDetector::setText(std::shared_ptr<ColorObject>& color_object)
 {
@@ -46,20 +31,26 @@ void ObjectDetector::setCenterPoint(const std::shared_ptr<ColorObject>& color_ob
   auto moments = cv::moments(contour);
   color_object->setCenterXPos(int(moments.m10 / moments.m00));
   color_object->setCenterYPos(int(moments.m01 / moments.m00));
-  std::cout << color_object->getCenterXPos() << std::endl;
-  std::cout << convertPixelToCmXPosition(color_object->getCenterXPos()) << std::endl;
 }
 
 bool ObjectDetector::checkSquareAndRectangle(std::shared_ptr<ColorObject>& color_object, std::vector<cv::Point>& approx)
 {
+  
+  bool found_object = false;
+
   const double sideUpper = std::fabs(approx[3].x - approx[0].x);
   const double sideDown = std::fabs(approx[2].x - approx[1].x);
   const double sideLeft = std::fabs(approx[0].y - approx[1].y);
   const double sideRight = std::fabs(approx[3].y - approx[2].y);
 
+     std::cout << ".........." << std::endl;
+    std::cout << sideUpper << std::endl;
+    std::cout << sideLeft << std::endl;
+    std::cout << ".........." << std::endl;
+
   // camera father away is a smaller value.
   const short deviationSquare = 10;
-  const short deviationRectangle = 20;
+  const short deviationRectangle = 12;
 
   if (sideUpper > deviationSquare && sideDown > deviationSquare && sideLeft > deviationSquare &&
       sideRight > deviationSquare)
@@ -69,17 +60,33 @@ bool ObjectDetector::checkSquareAndRectangle(std::shared_ptr<ColorObject>& color
       if (std::fabs(sideUpper - sideLeft) <= deviationSquare && color_object->getInputFigure().compare("vierkant") == 0)
       {
         color_object->setFigure("vierkant");
-        return true;
+        found_object = true;
       }
       else if (std::fabs(sideUpper - sideLeft) > deviationRectangle && color_object->getInputFigure().compare("rechthoe"
                                                                                                               "k") == 0)
       {
         color_object->setFigure("rechthoek");
-        return true;
+        found_object = true;
       }
     }
   }
-  return false;
+
+  if (found_object)
+  {
+    color_object->setXDimension(sideUpper);
+    color_object->setYDimension(sideLeft);
+
+    color_object->setXOrigin(color_object->getCenterXPos() - (sideUpper /2)); //Origin on the camera screen..
+    color_object->setYOrigin(color_object->getCenterYPos() - (sideLeft /2)); //Origin on the camera screen...
+
+    
+
+    std::cout << ".........." << std::endl;
+    std::cout << sideUpper << std::endl;
+    std::cout << sideLeft << std::endl;
+    std::cout << ".........." << std::endl;
+  }
+  return found_object;
 }
 
 bool ObjectDetector::checkCircle(std::shared_ptr<ColorObject>& color_object,
@@ -124,9 +131,8 @@ bool ObjectDetector::semiCircle(std::shared_ptr<ColorObject>& color_object,
   return false;
 }
 
-bool ObjectDetector::findShape(std::shared_ptr<ColorObject>& color_object)
+std::shared_ptr<ColorObject> ObjectDetector::findShape(std::shared_ptr<ColorObject>& color_object)
 {
-  bool found_shape = true;
   // Canny
   cv::Mat bw;
   cv::Canny(color_object->getColorMask(), bw, 0, 50, 5);
@@ -189,9 +195,12 @@ bool ObjectDetector::findShape(std::shared_ptr<ColorObject>& color_object)
   {
     std::cout << color_object->getInputFigure() << " " << color_object->getColor() << " is niet gevonden. "
               << std::endl;
-    found_shape = false;
+    return nullptr;
   }
-  return found_shape;
+  else
+  {
+    return color_object;
+  }
 }
 
 void ObjectDetector::filterColor(std::shared_ptr<ColorObject>& color_object)

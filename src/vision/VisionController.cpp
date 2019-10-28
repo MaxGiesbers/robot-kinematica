@@ -7,7 +7,12 @@ namespace
 const std::vector<std::string> COLORS = { "groen", "blauw", "rood", "wit", "zwart", "geel" };
 const std::vector<std::string> FIGURES = { "vierkant", "rechthoek", "cirkel", "halve cirkel", "driehoek" };
 const uint8_t ROS_LOOP_RATE = 20;
-const int CAMERA_ID = 1;
+const int CAMERA_ID = 0;
+const double SCREEN_HEIGHT = 480;
+const double SCREEN_WIDTH = 640;
+const double SCREEN_WIDTH_CM = 19;
+const double SCREEN_HEIGHT_CM = 12.144;
+const double BASE_GROUND_OFFSET = -8.0;
 }  // namespace
 
 VisionController::VisionController()
@@ -90,6 +95,47 @@ void VisionController::readCommandLineInput()
   }
 }
 
+void VisionController::sendObjectCoordinates(std::shared_ptr<ColorObject>& found_object)
+{
+  robot_kinematica::found_object found_object_message;
+  
+
+  std::cout << convertPixelToCmXPosition(found_object->getXDimension()) << std::endl;
+  std::cout << convertPixelToCmXPosition(found_object->getYDimension()) << std::endl;
+  std::cout << convertPixelToCmXPosition(found_object->getXOrigin()) << std::endl;
+  std::cout << convertPixelToCmXPosition(found_object->getYOrigin()) << std::endl;
+
+  found_object_message.dimension_x = found_object->getXDimension();
+  found_object_message.dimension_y = found_object->getYDimension();
+  found_object_message.dimension_z = BASE_GROUND_OFFSET;
+
+
+
+  found_object_message.origin_x = 10;
+  found_object_message.origin_y = 10;
+  found_object_message.origin_z = 10;
+
+ 
+
+  found_object_message.destination_x = 10;
+  found_object_message.destination_y = 10;
+  found_object_message.destination_z = 10;
+  
+
+
+
+
+  //message_publisher.publish(found_object_message);
+
+
+}
+
+double VisionController::convertPixelToCmXPosition(const double pixel_value)
+{
+  double scale = SCREEN_WIDTH_CM / SCREEN_WIDTH;
+  return scale * pixel_value;
+}
+
 void VisionController::visionControllerLoop()
 {
   m_cap.open(CAMERA_ID);
@@ -106,9 +152,15 @@ void VisionController::visionControllerLoop()
       cv::GaussianBlur(m_filtered_frame, m_filtered_frame, cv::Size(9, 9), 0, 0);
       cv::erode(m_filtered_frame, m_filtered_frame, cv::Mat(), cv::Point(-1, -1), 2, 1, 1);
       cv::dilate(m_filtered_frame, m_filtered_frame, cv::Mat(), cv::Point(-1, -1), 2, 1, 1);
-      std::cout << m_color_object->getColor() << std::endl;
       m_detector->filterColor(m_color_object);
-      if (!m_detector->findShape(m_color_object))
+      
+      std::shared_ptr<ColorObject> found_object = m_detector->findShape(m_color_object);
+
+      if (found_object)
+      {
+        sendObjectCoordinates(found_object);
+      }
+      else
       {
         std::cout << "Voer een vorm en een kleur in met als format: [vorm][whitespace][kleur]" << std::endl;
         m_found_shape_object = false;

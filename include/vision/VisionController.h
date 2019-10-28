@@ -2,6 +2,8 @@
 #include "ObjectDetector.h"
 #include <thread>
 #include "vision/Calibration.h"
+#include "robot_kinematica/found_object.h"
+
 
 class VisionController
 {
@@ -18,13 +20,21 @@ class VisionController
     void readCommandLineInput();
     void findColorAndShape(const std::string& input_color, const std::string& input_figure);
     void startApplication();
+    void sendObjectCoordinates(std::shared_ptr<ColorObject>& found_object);
 
     std::thread readInputThread();
+    double convertPixelToCmXPosition(const double pixel_value);
+
 
   private:
     cv::VideoCapture m_cap;
     cv::Mat m_frame;
     cv::Mat m_filtered_frame;
+
+    ros::Publisher message_publisher;
+    //ros::NodeHandle node_handle; veroorzaakt crash..
+
+
 
     std::shared_ptr<ObjectDetector> m_detector;
     std::shared_ptr<ColorObject> m_color_object;
