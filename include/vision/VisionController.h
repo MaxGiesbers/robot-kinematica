@@ -33,9 +33,7 @@ class VisionController
 
     ros::Publisher message_publisher;
     //ros::NodeHandle node_handle; veroorzaakt crash..
-
-
-
+    
     std::shared_ptr<ObjectDetector> m_detector;
     std::shared_ptr<ColorObject> m_color_object;
     Calibration m_calibrator;

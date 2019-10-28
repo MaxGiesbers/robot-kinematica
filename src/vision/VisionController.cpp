@@ -111,9 +111,9 @@ void VisionController::sendObjectCoordinates(std::shared_ptr<ColorObject>& found
 
 
 
-  found_object_message.origin_x = 10;
-  found_object_message.origin_y = 10;
-  found_object_message.origin_z = 10;
+  found_object_message.origin_x = found_object->getXOrigin();
+  found_object_message.origin_y = found_object->getYOrigin();
+  found_object_message.origin_z = BASE_GROUND_OFFSET;
 
  
 
@@ -122,10 +122,7 @@ void VisionController::sendObjectCoordinates(std::shared_ptr<ColorObject>& found
   found_object_message.destination_z = 10;
   
 
-
-
-
-  //message_publisher.publish(found_object_message);
+  message_publisher.publish(found_object_message);
 
 
 }

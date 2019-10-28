@@ -43,14 +43,19 @@ bool ObjectDetector::checkSquareAndRectangle(std::shared_ptr<ColorObject>& color
   const double sideLeft = std::fabs(approx[0].y - approx[1].y);
   const double sideRight = std::fabs(approx[3].y - approx[2].y);
 
-     std::cout << ".........." << std::endl;
+
+
+
+    std::cout << ".........." << std::endl;
     std::cout << sideUpper << std::endl;
+    std::cout << sideDown << std::endl;
     std::cout << sideLeft << std::endl;
+    std::cout << sideRight << std::endl;
     std::cout << ".........." << std::endl;
 
   // camera father away is a smaller value.
-  const short deviationSquare = 10;
-  const short deviationRectangle = 12;
+  const short deviationSquare = 4;
+  const short deviationRectangle = 30;
 
   if (sideUpper > deviationSquare && sideDown > deviationSquare && sideLeft > deviationSquare &&
       sideRight > deviationSquare)
@@ -155,7 +160,6 @@ std::shared_ptr<ColorObject> ObjectDetector::findShape(std::shared_ptr<ColorObje
     {
       continue;
     }
-
     if (approx.size() == 3 && color_object->getInputFigure().compare("driehoek") == 0)
     {
       color_object->setFigure("driehoek");
@@ -163,6 +167,8 @@ std::shared_ptr<ColorObject> ObjectDetector::findShape(std::shared_ptr<ColorObje
     }
     else if (approx.size() == 4 && checkSquareAndRectangle(color_object, approx))
     {
+        std::cout << "komt in square" << std::endl;
+
       contourElements.push_back(i);
     }
     else if (approx.size() != 4 && approx.size() != 3)

@@ -119,13 +119,6 @@ void ColorObject::setYDimension(const double y_dimension)
   m_y_dimension = y_dimension;
 }
 
-
-
- void ColorObject::setZDimension(const double z_dimension)
- {
-   m_z_dimension = z_dimension;
- }
-
 void ColorObject::setXOrigin(const double x_origin)
 {
   m_x_origin = x_origin;
