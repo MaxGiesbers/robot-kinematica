@@ -16,7 +16,7 @@ const double BASE_GROUND_OFFSET = -8.0;
 const int NUMBER_OF_LOOPS = 100;
 }  // namespace
 
-VisionController::VisionController()
+VisionController::VisionController(): m_coordinates_sended(false)
 {
   m_destination_object = std::make_shared<ColorObject>("cirkel","wit");
   m_destination_object->setColorScale(m_calibrator.getColorScale("wit"));
@@ -98,7 +98,7 @@ void VisionController::readCommandLineInput()
   }
 }
 
-void VisionController::sendObjectCoordinates(std::shared_ptr<ColorObject>& found_object)
+void VisionController::sendObjectCoordinates()
 {
   robot_kinematica::found_object found_object_message;
   
@@ -108,21 +108,21 @@ void VisionController::sendObjectCoordinates(std::shared_ptr<ColorObject>& found
   // std::cout << convertPixelToCmXPosition(found_object->getXOrigin()) << std::endl;
   // std::cout << convertPixelToCmXPosition(found_object->getYOrigin()) << std::endl;
 
-  found_object_message.dimension_x = found_object->getXDimension();
-  found_object_message.dimension_y = found_object->getYDimension();
-  found_object_message.dimension_z = BASE_GROUND_OFFSET;
+  // found_object_message.dimension_x = found_object->getXDimension();
+  // found_object_message.dimension_y = found_object->getYDimension();
+  // found_object_message.dimension_z = BASE_GROUND_OFFSET;
 
 
 
-  found_object_message.origin_x = found_object->getXOrigin();
-  found_object_message.origin_y = found_object->getYOrigin();
-  found_object_message.origin_z = BASE_GROUND_OFFSET;
+  // found_object_message.origin_x = found_object->getXOrigin();
+  // found_object_message.origin_y = found_object->getYOrigin();
+  // found_object_message.origin_z = BASE_GROUND_OFFSET;
 
  
 
-  found_object_message.destination_x = 10;
-  found_object_message.destination_y = 10;
-  found_object_message.destination_z = 10;
+  // found_object_message.destination_x = 10;
+  // found_object_message.destination_y = 10;
+  // found_object_message.destination_z = 10;
   
 
   //message_publisher.publish(found_object_message);
@@ -179,7 +179,12 @@ void VisionController::visionControllerLoop()
 
       if (m_color_object->getObjectDetected() && m_destination_object->getObjectDetected())
       {
-        //sendObjectCoordinates(found_object);
+        if(!m_coordinates_sended)
+        {
+          sendObjectCoordinates();
+          m_coordinates_sended = true;
+        }
+        
       }
       else
       {

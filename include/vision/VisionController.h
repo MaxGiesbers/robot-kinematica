@@ -20,7 +20,7 @@ class VisionController
     void readCommandLineInput();
     void findColorAndShape(const std::string& input_color, const std::string& input_figure);
     void startApplication();
-    void sendObjectCoordinates(std::shared_ptr<ColorObject>& found_object);
+    void sendObjectCoordinates();
     void cloneFrames();
     void findObjectLoop(std::shared_ptr<ColorObject>& color_object);
 
@@ -46,4 +46,5 @@ class VisionController
     ColorScale getColorScale(std::string& color);
 
     ObjectDetector m_object_detector;
+    bool m_coordinates_sended;
 };

@@ -1,7 +1,7 @@
 #include "vision/ObjectDetector.h"
 #include <cmath>
 
-ObjectDetector::ObjectDetector() 
+ObjectDetector::ObjectDetector()
 {
 }
 
@@ -35,8 +35,22 @@ void ObjectDetector::setText(std::shared_ptr<ColorObject>& color_object, cv::Mat
 void ObjectDetector::setCenterPoint(const std::shared_ptr<ColorObject>& color_object, std::vector<cv::Point>& contour)
 {
   auto moments = cv::moments(contour);
-  color_object->setCenterXPos(int(moments.m10 / moments.m00));
-  color_object->setCenterYPos(int(moments.m01 / moments.m00));
+  int center_x_pos = moments.m10 / moments.m00;
+  int center_y_pos = moments.m01 / moments.m00;
+
+  // if(m_destination_detected)
+  // {
+    color_object->setCenterXPos(center_x_pos);
+    color_object->setCenterYPos(center_y_pos);
+  // }
+  // else
+  // {
+  //   color_object->setXDestination(center_x_pos);
+  //   color_object->setYDestination(center_y_pos);
+  //   color_object->setZDestination(0);
+  // }
+  
+  
 }
 
 bool ObjectDetector::checkSquareAndRectangle(std::shared_ptr<ColorObject>& color_object, std::vector<cv::Point>& approx)
@@ -116,6 +130,11 @@ bool ObjectDetector::checkCircle(std::shared_ptr<ColorObject>& color_object,
   return false;
 }
 
+void ObjectDetector::detectDestinationLocation()
+{
+
+}
+
 bool ObjectDetector::semiCircle(std::shared_ptr<ColorObject>& color_object,
                                 std::vector<std::vector<cv::Point>>& contours, int element)
 {
@@ -172,8 +191,6 @@ void ObjectDetector::findShape(std::shared_ptr<ColorObject>& color_object, cv::M
     }
     else if (approx.size() == 4 && checkSquareAndRectangle(color_object, approx))
     {
-        std::cout << "komt in square" << std::endl;
-
       contourElements.push_back(i);
     }
     else if (approx.size() != 4 && approx.size() != 3)
