@@ -13,10 +13,13 @@ const double SCREEN_WIDTH = 640;
 const double SCREEN_WIDTH_CM = 19;
 const double SCREEN_HEIGHT_CM = 12.144;
 const double BASE_GROUND_OFFSET = -8.0;
+const int NUMBER_OF_LOOPS = 100;
 }  // namespace
 
 VisionController::VisionController()
 {
+  m_destination_object = std::make_shared<ColorObject>("cirkel","wit");
+  m_destination_object->setColorScale(m_calibrator.getColorScale("wit"));
 }
 
 VisionController::~VisionController()
@@ -62,11 +65,11 @@ void VisionController::findColorAndShape(const std::string& input_color, const s
 
     m_color_object->setColorScale(m_calibrator.getColorScale(*color));
     std::cout << m_calibrator.getColorScale(*color).iHighH << std::endl;
-    m_found_shape_object = true;
+    m_user_input_correct = true;
   }
   else
   {
-    m_found_shape_object = false;
+    m_user_input_correct = false;
   }
 }
 
@@ -84,7 +87,7 @@ void VisionController::readCommandLineInput()
 
   while (ros::ok())
   {
-    if (!m_found_shape_object)
+    if (!m_user_input_correct)
     {
       input = "";
       // clean cin input
@@ -100,10 +103,10 @@ void VisionController::sendObjectCoordinates(std::shared_ptr<ColorObject>& found
   robot_kinematica::found_object found_object_message;
   
 
-  std::cout << convertPixelToCmXPosition(found_object->getXDimension()) << std::endl;
-  std::cout << convertPixelToCmXPosition(found_object->getYDimension()) << std::endl;
-  std::cout << convertPixelToCmXPosition(found_object->getXOrigin()) << std::endl;
-  std::cout << convertPixelToCmXPosition(found_object->getYOrigin()) << std::endl;
+  // std::cout << convertPixelToCmXPosition(found_object->getXDimension()) << std::endl;
+  // std::cout << convertPixelToCmXPosition(found_object->getYDimension()) << std::endl;
+  // std::cout << convertPixelToCmXPosition(found_object->getXOrigin()) << std::endl;
+  // std::cout << convertPixelToCmXPosition(found_object->getYOrigin()) << std::endl;
 
   found_object_message.dimension_x = found_object->getXDimension();
   found_object_message.dimension_y = found_object->getYDimension();
@@ -122,7 +125,7 @@ void VisionController::sendObjectCoordinates(std::shared_ptr<ColorObject>& found
   found_object_message.destination_z = 10;
   
 
-  message_publisher.publish(found_object_message);
+  //message_publisher.publish(found_object_message);
 
 
 }
@@ -131,6 +134,30 @@ double VisionController::convertPixelToCmXPosition(const double pixel_value)
 {
   double scale = SCREEN_WIDTH_CM / SCREEN_WIDTH;
   return scale * pixel_value;
+}
+
+void VisionController::cloneFrames()
+{
+  m_filtered_frame = m_frame.clone();
+  m_drawing_frame = m_frame.clone();
+}
+
+void VisionController::findObjectLoop(std::shared_ptr<ColorObject>& color_object)
+{
+  for (int i = 0; i < NUMBER_OF_LOOPS; i ++)
+  {
+    m_cap >> m_frame;
+    cv::waitKey(30);
+    cloneFrames();
+    m_object_detector.filterFrame(m_filtered_frame);
+    m_object_detector.filterColor(color_object, m_filtered_frame);
+    m_object_detector.findShape(color_object, m_drawing_frame);
+
+    if(color_object->getObjectDetected())
+    {
+      break;
+    }
+  }
 }
 
 void VisionController::visionControllerLoop()
@@ -142,28 +169,26 @@ void VisionController::visionControllerLoop()
     m_cap >> m_frame;
     imshow("live", m_frame);
     cv::waitKey(30);
-    if (m_found_shape_object)
+    if (m_user_input_correct)
     {
-      m_filtered_frame = m_frame.clone();
-      m_detector = std::make_shared<ObjectDetector>(m_frame, m_filtered_frame);
-      cv::GaussianBlur(m_filtered_frame, m_filtered_frame, cv::Size(9, 9), 0, 0);
-      cv::erode(m_filtered_frame, m_filtered_frame, cv::Mat(), cv::Point(-1, -1), 2, 1, 1);
-      cv::dilate(m_filtered_frame, m_filtered_frame, cv::Mat(), cv::Point(-1, -1), 2, 1, 1);
-      m_detector->filterColor(m_color_object);
-      
-      std::shared_ptr<ColorObject> found_object = m_detector->findShape(m_color_object);
-
-      if (found_object)
+      if(!m_color_object->getObjectDetected() && !m_destination_object->getObjectDetected())
       {
-        sendObjectCoordinates(found_object);
+        findObjectLoop(m_destination_object);
+        findObjectLoop(m_color_object);
+      }
+
+      if (m_color_object->getObjectDetected() && m_destination_object->getObjectDetected())
+      {
+        //sendObjectCoordinates(found_object);
       }
       else
       {
         std::cout << "Voer een vorm en een kleur in met als format: [vorm][whitespace][kleur]" << std::endl;
-        m_found_shape_object = false;
+        m_user_input_correct = false;
       }
 
-      imshow("object detector", m_frame);
+      imshow("object detector", m_drawing_frame);
+      
     }
   }
   cv::waitKey(0);

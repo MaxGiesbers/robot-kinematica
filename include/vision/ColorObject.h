@@ -24,6 +24,10 @@ class ColorObject{
     void setYOrigin(const double y_origin);
     void setZOrigin(const double z_origin);
 
+    void setXDestination(const double x_destination);
+    void setYDestination(const double y_destination);
+    void setZDestination(const double y_destination);
+    void setObjectDetected(bool object_detected);
 
     void setColorScale(ColorScale color_scale);
     void setFigure(const std::string& figure);
@@ -35,11 +39,17 @@ class ColorObject{
     double getXDimension() const;
     double getYDimension() const;
     double getZDimension() const;
+
     double getXOrigin() const;
     double getYOrigin() const;
     double getZOrigin() const;
 
+    double getXDestination() const;
+    double getYDestination() const;
+    double getZDestination() const;
+
     double getArea() const;
+    bool getObjectDetected() const;
 
     const std::string getShapeName() const;
     const std::string getInputFigure() const;
@@ -67,4 +77,8 @@ class ColorObject{
     double m_y_origin;
     double m_z_origin;
 
+    double m_x_destination;
+    double m_y_destination;
+    double m_z_destination;
+    bool m_object_detected;
 };

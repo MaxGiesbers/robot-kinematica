@@ -7,13 +7,18 @@ ColorObject::~ColorObject()
 ColorObject::ColorObject(const std::string& input_figure, const std::string& color)
   : m_color_scale(), m_input_figure(input_figure), m_color(color), m_center_x_pos(0), 
       m_center_y_pos(0), m_area(0), m_x_dimension(0), m_y_dimension(0), m_z_dimension(0),
-        m_x_origin(0), m_y_origin(0), m_z_origin(0)
+        m_x_origin(0), m_y_origin(0), m_z_origin(0), m_x_destination(0),
+         m_y_destination(0), m_z_destination(0), m_object_detected(false)
 {
 }
 
 const std::string ColorObject::getColor() const
 {
   return m_color;
+}
+bool ColorObject::getObjectDetected() const
+{
+  return m_object_detected;
 }
 
 const ColorScale& ColorObject::getColorScale() const
@@ -98,11 +103,30 @@ double ColorObject::getZOrigin() const
  return m_z_origin;
 }
 
+double ColorObject::getXDestination() const
+{
+    return m_x_destination;
+}
+double ColorObject::getYDestination() const
+{
+    return m_y_destination;
+}
+double ColorObject::getZDestination() const
+{
+    return m_z_destination;
+}
+
+
 double ColorObject::getArea() const
 {
   return m_area;
 }
 
+
+void ColorObject::setObjectDetected(bool object_detected)
+{
+  m_object_detected = object_detected;
+}
 void ColorObject::setArea(const double area)
 {
   m_area = area;
@@ -123,6 +147,20 @@ void ColorObject::setXOrigin(const double x_origin)
 {
   m_x_origin = x_origin;
 
+}
+
+void ColorObject::setXDestination(const double x_destination)
+{
+    m_x_destination = x_destination;
+}
+
+void ColorObject::setYDestination(const double y_destination)
+{   
+    m_y_destination = y_destination;
+}
+void ColorObject::setZDestination(const double z_destination)
+{
+    m_z_destination = z_destination;
 }
 
 void ColorObject::setYOrigin(const double y_origin)

@@ -21,6 +21,8 @@ class VisionController
     void findColorAndShape(const std::string& input_color, const std::string& input_figure);
     void startApplication();
     void sendObjectCoordinates(std::shared_ptr<ColorObject>& found_object);
+    void cloneFrames();
+    void findObjectLoop(std::shared_ptr<ColorObject>& color_object);
 
     std::thread readInputThread();
     double convertPixelToCmXPosition(const double pixel_value);
@@ -30,14 +32,18 @@ class VisionController
     cv::VideoCapture m_cap;
     cv::Mat m_frame;
     cv::Mat m_filtered_frame;
+    cv::Mat m_drawing_frame;
 
     ros::Publisher message_publisher;
     //ros::NodeHandle node_handle; veroorzaakt crash..
     
-    std::shared_ptr<ObjectDetector> m_detector;
     std::shared_ptr<ColorObject> m_color_object;
+    std::shared_ptr<ColorObject> m_destination_object;
+
     Calibration m_calibrator;
-    std::atomic<bool> m_found_shape_object;
+    std::atomic<bool> m_user_input_correct;
 
     ColorScale getColorScale(std::string& color);
+
+    ObjectDetector m_object_detector;
 };
