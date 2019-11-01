@@ -38,40 +38,18 @@ void ObjectDetector::setCenterPoint(const std::shared_ptr<ColorObject>& color_ob
   int center_x_pos = moments.m10 / moments.m00;
   int center_y_pos = moments.m01 / moments.m00;
 
-  // if(m_destination_detected)
-  // {
-    color_object->setCenterXPos(center_x_pos);
-    color_object->setCenterYPos(center_y_pos);
-  // }
-  // else
-  // {
-  //   color_object->setXDestination(center_x_pos);
-  //   color_object->setYDestination(center_y_pos);
-  //   color_object->setZDestination(0);
-  // }
-  
-  
+  color_object->setCenterXPos(center_x_pos);
+  color_object->setCenterYPos(center_y_pos);
 }
 
 bool ObjectDetector::checkSquareAndRectangle(std::shared_ptr<ColorObject>& color_object, std::vector<cv::Point>& approx)
 {
-  
   bool found_object = false;
 
   const double sideUpper = std::fabs(approx[3].x - approx[0].x);
   const double sideDown = std::fabs(approx[2].x - approx[1].x);
   const double sideLeft = std::fabs(approx[0].y - approx[1].y);
   const double sideRight = std::fabs(approx[3].y - approx[2].y);
-
-
-
-
-    std::cout << ".........." << std::endl;
-    std::cout << sideUpper << std::endl;
-    std::cout << sideDown << std::endl;
-    std::cout << sideLeft << std::endl;
-    std::cout << sideRight << std::endl;
-    std::cout << ".........." << std::endl;
 
   // camera father away is a smaller value.
   const short deviationSquare = 4;
@@ -100,16 +78,8 @@ bool ObjectDetector::checkSquareAndRectangle(std::shared_ptr<ColorObject>& color
   {
     color_object->setXDimension(sideUpper);
     color_object->setYDimension(sideLeft);
-
-    color_object->setXOrigin(color_object->getCenterXPos() - (sideUpper /2)); //Origin on the camera screen..
-    color_object->setYOrigin(color_object->getCenterYPos() - (sideLeft /2)); //Origin on the camera screen...
-    
-
-    std::cout << ".........." << std::endl;
-    std::cout << sideUpper << std::endl;
-    std::cout << sideLeft << std::endl;
-    std::cout << ".........." << std::endl;
   }
+
   return found_object;
 }
 
@@ -132,7 +102,6 @@ bool ObjectDetector::checkCircle(std::shared_ptr<ColorObject>& color_object,
 
 void ObjectDetector::detectDestinationLocation()
 {
-
 }
 
 bool ObjectDetector::semiCircle(std::shared_ptr<ColorObject>& color_object,
@@ -325,7 +294,8 @@ cv::Mat ObjectDetector::BrightnessAndContrastAuto(const cv::Mat& frame, double c
 }
 
 void ObjectDetector::DrawImageContours(const std::vector<std::vector<cv::Point>>& contour,
-                                       const std::shared_ptr<ColorObject>& colorObject, const int contour_number, cv::Mat& drawing_frame)
+                                       const std::shared_ptr<ColorObject>& colorObject, const int contour_number,
+                                       cv::Mat& drawing_frame)
 {
   cv::Mat mask = colorObject->getColorMask();
   cv::Mat mask_rgb;

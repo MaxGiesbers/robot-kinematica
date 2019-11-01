@@ -213,7 +213,6 @@ void Calibration::startCalibration()
       ++m_iterator;
       if (m_iterator < m_color_scales.size())
       {
-        
         colorScale = m_color_scales.at(m_iterator);
       }
     }

@@ -10,16 +10,16 @@ const uint8_t ROS_LOOP_RATE = 20;
 const int CAMERA_ID = 0;
 const double SCREEN_HEIGHT = 480;
 const double SCREEN_WIDTH = 640;
-const double SCREEN_WIDTH_CM = 19;
-const double SCREEN_HEIGHT_CM = 12.144;
+const double SCREEN_WIDTH_CM = 47.5;
+const double SCREEN_HEIGHT_CM = 31.65;
 const double BASE_GROUND_OFFSET = -8.0;
 const int NUMBER_OF_LOOPS = 100;
+const uint16_t QUEUE_SIZE = 1000;
 }  // namespace
 
-VisionController::VisionController(): m_coordinates_sended(false)
+VisionController::VisionController() : m_user_input_correct(false), m_coordinates_sended(false)
 {
-  m_destination_object = std::make_shared<ColorObject>("cirkel","wit");
-  m_destination_object->setColorScale(m_calibrator.getColorScale("wit"));
+  m_publisher = m_node_handle.advertise<robot_kinematica::found_object>("found_object", QUEUE_SIZE);
 }
 
 VisionController::~VisionController()
@@ -61,10 +61,10 @@ void VisionController::findColorAndShape(const std::string& input_color, const s
 
   if (color != std::end(COLORS) && figure != std::end(FIGURES))
   {
-    m_color_object = std::make_shared<ColorObject>(*figure,*color) ;
-
+    m_color_object = std::make_shared<ColorObject>(*figure, *color);
     m_color_object->setColorScale(m_calibrator.getColorScale(*color));
-    std::cout << m_calibrator.getColorScale(*color).iHighH << std::endl;
+    m_destination_object = std::make_shared<ColorObject>("cirkel", "wit");
+    m_destination_object->setColorScale(m_calibrator.getColorScale("wit"));
     m_user_input_correct = true;
   }
   else
@@ -101,33 +101,41 @@ void VisionController::readCommandLineInput()
 void VisionController::sendObjectCoordinates()
 {
   robot_kinematica::found_object found_object_message;
-  
 
-  // std::cout << convertPixelToCmXPosition(found_object->getXDimension()) << std::endl;
-  // std::cout << convertPixelToCmXPosition(found_object->getYDimension()) << std::endl;
-  // std::cout << convertPixelToCmXPosition(found_object->getXOrigin()) << std::endl;
-  // std::cout << convertPixelToCmXPosition(found_object->getYOrigin()) << std::endl;
+  double object_x_dimension = convertPixelToCmXPosition(m_color_object->getXDimension());
+  double object_y_dimension = convertPixelToCmYPosition(m_color_object->getYDimension());
+  double object_origin_x_location = convertPixelToCmXPosition(m_color_object->getCenterXPos());
+  double object_origin_y_location = convertPixelToCmXPosition(m_color_object->getCenterYPos());
+  double destination_x_location = convertPixelToCmXPosition(m_destination_object->getCenterXPos());
+  double destination_y_location = convertPixelToCmYPosition(m_destination_object->getCenterYPos());
 
-  // found_object_message.dimension_x = found_object->getXDimension();
-  // found_object_message.dimension_y = found_object->getYDimension();
-  // found_object_message.dimension_z = BASE_GROUND_OFFSET;
+  ROS_INFO_STREAM("\nFound object dimensions"
+                  << " x: " << object_x_dimension << " y: " << object_y_dimension << "\nFound object origin location"
+                  << " x: " << object_origin_x_location << " y: " << object_origin_y_location
+                  << " \nDestination origin location"
+                  << " x: " << destination_x_location << " y: " << destination_y_location);
 
+  found_object_message.dimension_x = object_x_dimension;
+  found_object_message.dimension_y = object_y_dimension;
+  found_object_message.dimension_z = BASE_GROUND_OFFSET;
 
+  found_object_message.origin_x = object_origin_x_location;
+  found_object_message.origin_y = object_origin_y_location;
+  found_object_message.origin_z = BASE_GROUND_OFFSET;
 
-  // found_object_message.origin_x = found_object->getXOrigin();
-  // found_object_message.origin_y = found_object->getYOrigin();
-  // found_object_message.origin_z = BASE_GROUND_OFFSET;
+  found_object_message.destination_x = destination_x_location;
+  found_object_message.destination_y = destination_y_location;
+  found_object_message.destination_z = BASE_GROUND_OFFSET;
 
- 
+  m_publisher.publish(found_object_message);
 
-  // found_object_message.destination_x = 10;
-  // found_object_message.destination_y = 10;
-  // found_object_message.destination_z = 10;
-  
+  m_coordinates_sended = true;
+}
 
-  //message_publisher.publish(found_object_message);
-
-
+double VisionController::convertPixelToCmYPosition(const double pixel_value)
+{
+  double scale = SCREEN_HEIGHT_CM / SCREEN_HEIGHT;
+  return scale * pixel_value;
 }
 
 double VisionController::convertPixelToCmXPosition(const double pixel_value)
@@ -144,7 +152,7 @@ void VisionController::cloneFrames()
 
 void VisionController::findObjectLoop(std::shared_ptr<ColorObject>& color_object)
 {
-  for (int i = 0; i < NUMBER_OF_LOOPS; i ++)
+  for (int i = 0; i < NUMBER_OF_LOOPS; i++)
   {
     m_cap >> m_frame;
     cv::waitKey(30);
@@ -153,7 +161,7 @@ void VisionController::findObjectLoop(std::shared_ptr<ColorObject>& color_object
     m_object_detector.filterColor(color_object, m_filtered_frame);
     m_object_detector.findShape(color_object, m_drawing_frame);
 
-    if(color_object->getObjectDetected())
+    if (color_object->getObjectDetected())
     {
       break;
     }
@@ -171,7 +179,7 @@ void VisionController::visionControllerLoop()
     cv::waitKey(30);
     if (m_user_input_correct)
     {
-      if(!m_color_object->getObjectDetected() && !m_destination_object->getObjectDetected())
+      if (!m_color_object->getObjectDetected() && !m_destination_object->getObjectDetected())
       {
         findObjectLoop(m_destination_object);
         findObjectLoop(m_color_object);
@@ -179,12 +187,10 @@ void VisionController::visionControllerLoop()
 
       if (m_color_object->getObjectDetected() && m_destination_object->getObjectDetected())
       {
-        if(!m_coordinates_sended)
+        if (!m_coordinates_sended)
         {
           sendObjectCoordinates();
-          m_coordinates_sended = true;
         }
-        
       }
       else
       {
@@ -193,7 +199,6 @@ void VisionController::visionControllerLoop()
       }
 
       imshow("object detector", m_drawing_frame);
-      
     }
   }
   cv::waitKey(0);
@@ -209,10 +214,11 @@ void VisionController::startApplication()
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "Vision");
+  ros::init(argc, argv, "VisionController");
   ros::Time::init();
   VisionController controller;
   controller.startApplication();
+  ros::spin();
 
   return 0;
 }

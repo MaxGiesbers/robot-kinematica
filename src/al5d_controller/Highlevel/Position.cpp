@@ -14,30 +14,30 @@ Position::~Position()
 
 std::vector<int16_t> Position::getDegrees() const
 {
-    return m_degrees_list;
+  return m_degrees_list;
 }
 
 void Position::addDegrees(int16_t degrees)
 {
-    m_degrees_list.push_back(degrees);
+  m_degrees_list.push_back(degrees);
 }
 
 const std::string& Position::getName() const
 {
-    return m_name;
+  return m_name;
 }
 
 void Position::setName(const std::string& name)
 {
-    m_name = name;
+  m_name = name;
 }
 
 uint16_t Position::getTime() const
 {
-    return m_time;
+  return m_time;
 }
 
 void Position::setTime(uint16_t time)
 {
-    m_time = time;
+  m_time = time;
 }

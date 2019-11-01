@@ -7,20 +7,20 @@
 #include <vector>
 #include <boost/asio.hpp>
 
-class LowLevelDriver{
+class LowLevelDriver
+{
 public:
+  LowLevelDriver(const std::string port);
+  virtual ~LowLevelDriver();
 
-    LowLevelDriver(const std::string port);
-    virtual ~LowLevelDriver();
+  void goToPosition(std::vector<int>& positions, short time);
+  void emergencyStop();
+  void writeString(std::string message);
 
-    void goToPosition(std::vector<int>& positions, short time);
-    void emergencyStop();
-    void writeString(std::string message);
-    
 private:
-    void initialPosition();
-    boost::asio::io_service io;
-    boost::asio::serial_port serial;
+  void initialPosition();
+  boost::asio::io_service io;
+  boost::asio::serial_port serial;
 };
 
-#endif //LOWLEVELDRIVER_H_
+#endif  // LOWLEVELDRIVER_H_
