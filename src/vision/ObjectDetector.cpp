@@ -200,7 +200,7 @@ void ObjectDetector::findShape(std::shared_ptr<ColorObject>& color_object, cv::M
   }
 }
 
-void ObjectDetector::filterColor(std::shared_ptr<ColorObject>& color_object, cv::Mat& filtered_frame)
+void ObjectDetector::filterColor(const std::shared_ptr<ColorObject>& color_object, cv::Mat& filtered_frame)
 {
   cv::Mat frameHSV;
   // Changes contrast of color;

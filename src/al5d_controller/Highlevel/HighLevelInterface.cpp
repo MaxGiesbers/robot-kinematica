@@ -4,6 +4,7 @@
 namespace
 {
 const uint8_t MINIMAL_ARGUMENTS = 4;
+const uint16_t QUEUE_SIZE = 1000;
 }
 HighLevelInterface::HighLevelInterface(const std::string& name, const std::string& positions_file_name,
                                        const std::string port)
@@ -14,6 +15,19 @@ HighLevelInterface::HighLevelInterface(const std::string& name, const std::strin
   initServoList();
   m_al5d_action_server.start();
   parseProgrammedPositions(positions_file_name);
+  
+  m_subscriber = m_node_handle.subscribe("found_object", QUEUE_SIZE, &HighLevelInterface::callBack, this);
+
+}
+
+void HighLevelInterface::callBack(const robot_kinematica::found_object& found_object)
+{
+  std::cout << found_object.origin_x << std::endl;
+  std::cout << found_object.origin_y << std::endl;
+  std::cout << found_object.origin_z << std::endl;
+  std::cout << found_object.dimension_x << std::endl;
+  std::cout << found_object.dimension_y << std::endl;
+  std::cout << found_object.dimension_z << std::endl;
 }
 
 HighLevelInterface::~HighLevelInterface()
@@ -162,7 +176,7 @@ bool HighLevelInterface::parseProgrammedPositions(const std::string& fileName)
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "al5d_interface");
+  ros::init(argc, argv, "HighLevelInterface");
   if (argc != MINIMAL_ARGUMENTS)
   {
     ROS_WARN_STREAM("Missing arguments. Try something like: rosrun robot_kinematica al5d_interface "
@@ -174,5 +188,6 @@ int main(int argc, char** argv)
   ros::NodeHandle nh;
   ros::ServiceServer service = nh.advertiseService("eStop", &HighLevelInterface::emergencyStop, &highLevelInterface);
   ros::spin();
+
   return 0;
 }
