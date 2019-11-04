@@ -4,7 +4,7 @@
 namespace
 {
 const int WINDOW_SIZE = 600;
-const int CAMERA_ID = 0;
+const int CAMERA_ID = 1;
 const int SPACEBAR_KEY_ASCII = 32;
 const int ENTER_KEY_ASCII = 10;
 }  // namespace
