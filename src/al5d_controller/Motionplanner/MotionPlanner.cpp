@@ -123,7 +123,7 @@ int main(int argc, char** argv)
   spinner.start();
   try
   {
-    if (!parseCSVFile(argv[1]))
+    if (!parseCSVFile(argv[2]))
       return 0;
   }
   catch (std::exception& e)

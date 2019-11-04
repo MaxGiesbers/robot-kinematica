@@ -107,7 +107,7 @@ void HighLevelInterface::initServoList()
   m_servo_list.push_back(Servo("Elbow", 0, 135, 650, 2500));
   m_servo_list.push_back(Servo("Wrist", -90, 90, 500, 2500));
   m_servo_list.push_back(Servo("WristRotate", -90, 90, 500, 2500));
-  m_servo_list.push_back(Servo("Gripper", -90, 90, 500, 2500));
+  m_servo_list.push_back(Servo("Gripper", 0, 29, 1000, 2100));
 }
 
 bool HighLevelInterface::parseProgrammedPositions(const std::string& fileName)
