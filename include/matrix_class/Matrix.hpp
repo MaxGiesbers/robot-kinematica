@@ -6,7 +6,7 @@
 #include <initializer_list>
 #include <optional>
 
-namespace Matrix_class
+namespace Kinematics
 {
 template<typename T, std::size_t m, std::size_t n>
 class Matrix

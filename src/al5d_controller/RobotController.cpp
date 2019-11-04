@@ -1,4 +1,6 @@
 #include "al5d_controller/RobotController.h"
+#include "matrix_class/Matrix.hpp"
+#include "ros/ros.h"
 
 
 namespace
@@ -12,6 +14,7 @@ RobotController::RobotController(const std::string& name, const std::string& pos
 {
     m_high_level_interface = std::make_shared<HighLevelInterface>(name, positions_file_name, port);
     m_subscriber = m_node_handle.subscribe("found_object", QUEUE_SIZE, &RobotController::callBack, this);
+    moveObjectToDestination();
 
 }
 
@@ -33,7 +36,6 @@ void RobotController::callBack(const robot_kinematica::found_object& found_objec
 
 
     m_objectCoordinatesReceived = true;
-    moveObjectToDestination();
 }
 
 RobotController::~RobotController()
@@ -48,11 +50,44 @@ void RobotController::openGripper()
 
 void RobotController::moveObjectToDestination()
 {
-    while(m_objectCoordinatesReceived)
-    {
+
+    //0.10, 0.10, 0.05
+
+	const Kinematics::Matrix<double, 3, 1> destination = {{0.1},
+	                                   {0.1},
+	                                   {0.05}};
+
+    
+    Kinematics::Matrix<double, 4, 1> start = {{0},
+	                                     {47},
+	                                     {98},
+	                                     {12.5}};
 
 
-    }
+    Kinematics::Kinematics kinematics;
+    std::optional<Kinematics::Matrix<double, 4, 1>> ik_solution = kinematics.inverse_kinematics(start, destination);
+  
+    auto testen = ik_solution.value();
+
+    
+
+    auto test = static_cast<int>(testen[0][0]);
+
+
+
+
+
+    std::cout << testen[0][0] << std::endl;
+    std::cout << testen[0][1] << std::endl;
+    std::cout << testen[0][2] << std::endl;
+    std::cout << testen[0][3] << std::endl;
+
+
+    // while(m_objectCoordinatesReceived)
+    // {
+
+
+    // }
 }
 
 int main(int argc, char** argv)

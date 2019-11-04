@@ -1,6 +1,6 @@
 #include "Matrix.hpp"
 
-namespace Matrix_class
+namespace Kinematics
 {
 template<typename T, std::size_t m, std::size_t n>
 Matrix<T, m, n>::Matrix(T value)

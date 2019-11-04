@@ -2,6 +2,7 @@
 #include <ros/ros.h>
 #include <memory>
 #include "al5d_controller/Highlevel/HighLevelInterface.h"
+#include "al5d_controller/Kinematics.h"
 
 class RobotController
 {
