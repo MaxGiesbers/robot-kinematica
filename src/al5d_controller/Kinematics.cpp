@@ -44,8 +44,8 @@ std::optional<Matrix<double, 4, 1>> Kinematics::inverse_kinematics(
 
 	double beta = 0.1;
 	const double precision = 0.0005;
-	const double deviation = 0.001;
-	const unsigned long max_iterations = 100000;
+	const double deviation = 0.0001;
+	const unsigned long max_iterations = 1000000;
 	unsigned long iteration = 0;
 
 	// xyz to move

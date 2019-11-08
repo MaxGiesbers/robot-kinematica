@@ -1,6 +1,5 @@
 <launch>
     <node name="vision" pkg="robot_kinematica" type="vision" output="screen"/>
     <node name="al5d_controller" pkg="robot_kinematica" type="al5d_interface" output="screen" args="cat $(find robot_kinematica)/src/al5d_controller/Highlevel/ProgrammedPositions.csv /dev/ttyUSB0"/>
-    <node name="motion_planner" pkg="robot_kinematica" type="al5d_motionplanner" output="screen" args="cat $(find robot_kinematica)/src/al5d_controller/Motionplanner/Configuration.csv"/>
 </launch>
 

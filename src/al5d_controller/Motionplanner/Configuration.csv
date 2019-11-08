@@ -1,6 +1,12 @@
 name,base,shoulder,elbow,wrist,wristrotate,gripper,velocity,
 PARK,
-TEST,0,47,98,-45,0,0,2000,
-TESTE,0,47,98,-45,0,29,2000
+TESTPOSI,80.261,-15.032,112.807,59.7246,0,29,2000
+
+
+
+
+
+
+
 
 

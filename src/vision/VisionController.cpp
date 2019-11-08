@@ -10,9 +10,11 @@ const uint8_t ROS_LOOP_RATE = 20;
 const int CAMERA_ID = 1;
 const double SCREEN_HEIGHT = 480;
 const double SCREEN_WIDTH = 640;
-const double SCREEN_WIDTH_CM = 47.5;
-const double SCREEN_HEIGHT_CM = 31.65;
-const double BASE_GROUND_OFFSET = -8.0;
+const double SCREEN_WIDTH_CM = 46;
+const double SCREEN_HEIGHT_CM = 35;
+const double BASE_CARTESIAN_X = 323;
+const double BASE_CARTESIAN_Y = 466;
+const double BASE_GROUND_OFFSET = -7.5;
 const int NUMBER_OF_LOOPS = 100;
 const uint16_t QUEUE_SIZE = 1000;
 }  // namespace
@@ -102,33 +104,61 @@ void VisionController::sendObjectCoordinates()
 {
   robot_kinematica::found_object found_object_message;
 
-  double object_x_dimension = convertPixelToCmXPosition(m_color_object->getXDimension());
-  double object_y_dimension = convertPixelToCmYPosition(m_color_object->getYDimension());
-  double object_origin_x_location = convertPixelToCmXPosition(m_color_object->getCenterXPos());
-  double object_origin_y_location = convertPixelToCmXPosition(m_color_object->getCenterYPos());
-  double destination_x_location = convertPixelToCmXPosition(m_destination_object->getCenterXPos());
-  double destination_y_location = convertPixelToCmYPosition(m_destination_object->getCenterYPos());
+  double objectPolarX = 0;
+  double objectPolarY = 0;
+  double destinationPolarX = 0;
+  double destinationPolarY = 0;
+
+  if (m_color_object->getCenterYPos() > BASE_CARTESIAN_Y) 
+  {
+    std::cout << "Error, object is unreachable." << std::endl;
+  }
+  else if (m_color_object->getCenterXPos() < BASE_CARTESIAN_X) 
+  {
+    objectPolarX = convertPixelToCmXPosition((BASE_CARTESIAN_X - m_color_object->getCenterXPos()) * -1) / 100;
+    objectPolarY = convertPixelToCmYPosition(BASE_CARTESIAN_Y - m_color_object->getCenterYPos()) / 100;
+  }
+  else if (m_color_object->getCenterXPos()>= BASE_CARTESIAN_X) 
+  {
+
+    objectPolarX = convertPixelToCmXPosition(m_color_object->getCenterXPos() - BASE_CARTESIAN_X) / 100;
+    objectPolarY = convertPixelToCmYPosition(BASE_CARTESIAN_Y - m_color_object->getCenterYPos()) / 100;
+  }
+
+  if (m_destination_object->getCenterYPos() > BASE_CARTESIAN_Y) 
+  {
+    std::cout << "Error, object is unreachable." << std::endl;
+  }
+  else if (m_destination_object->getCenterXPos() < BASE_CARTESIAN_X) 
+  { 
+    destinationPolarX = convertPixelToCmXPosition((BASE_CARTESIAN_X - m_destination_object->getCenterXPos()) * -1) / 100;
+    destinationPolarY = convertPixelToCmYPosition(BASE_CARTESIAN_Y - m_destination_object->getCenterYPos()) / 100; 
+  }
+  else if (m_destination_object->getCenterXPos() >= BASE_CARTESIAN_X) 
+  {    
+    destinationPolarX = convertPixelToCmXPosition(m_destination_object->getCenterXPos() - BASE_CARTESIAN_X) / 100;
+    destinationPolarY = convertPixelToCmYPosition(BASE_CARTESIAN_Y - m_destination_object->getCenterYPos()) / 100;
+  }
 
   ROS_INFO_STREAM("\nFound object dimensions"
-                  << " x: " << object_x_dimension << " y: " << object_y_dimension << "\nFound object origin location"
-                  << " x: " << object_origin_x_location << " y: " << object_origin_y_location
+                  << " x: " << "Object_x_dimension" << " y: " << "object_y_dimension" << "\nFound object origin location"
+                  << " x: " << objectPolarX << " y: " << objectPolarY
                   << " \nDestination origin location"
-                  << " x: " << destination_x_location << " y: " << destination_y_location);
+                  << " x: " << destinationPolarX << " y: " << destinationPolarY);
 
-  found_object_message.dimension_x = object_x_dimension;
-  found_object_message.dimension_y = object_y_dimension;
-  found_object_message.dimension_z = BASE_GROUND_OFFSET;
+  found_object_message.dimension_x = 0;
+  found_object_message.dimension_y = 0;
+  found_object_message.dimension_z = 0;
 
-  found_object_message.origin_x = object_origin_x_location;
-  found_object_message.origin_y = object_origin_y_location;
-  found_object_message.origin_z = BASE_GROUND_OFFSET;
+  found_object_message.origin_x = objectPolarX;
+  found_object_message.origin_y = objectPolarY;
+  found_object_message.origin_z = 0;
 
-  found_object_message.destination_x = destination_x_location;
-  found_object_message.destination_y = destination_y_location;
+  found_object_message.destination_x = destinationPolarX;
+  found_object_message.destination_y = destinationPolarY;
   found_object_message.destination_z = BASE_GROUND_OFFSET;
 
   m_publisher.publish(found_object_message);
-
   m_coordinates_sended = true;
 }
 

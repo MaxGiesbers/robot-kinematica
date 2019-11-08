@@ -12,6 +12,10 @@ find_package(
   rospy
 )
 
+find_package(VTK REQUIRED)
+include(${VTK_USE_FILE})
+
+
 find_package (OpenCV 3 REQUIRED)
 include_directories(include)
 
