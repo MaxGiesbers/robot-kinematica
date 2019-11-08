@@ -55,6 +55,11 @@ void RobotController::openGripper()
 
 void RobotController::moveObjectToDestination(const robot_kinematica::found_object& found_object)
 {
+    const int8_t BASE = 0;
+    const int8_t SHOULDER = 1;
+    const int8_t ELBOW = 2;
+    const int8_t WRIST = 3;
+
 
     //0.10, 0.10, 0.05
 
@@ -100,20 +105,15 @@ void RobotController::moveObjectToDestination(const robot_kinematica::found_obje
     goal.degrees.push_back(coordinates[0][1]);
     goal.degrees.push_back(coordinates[0][2]);
     goal.degrees.push_back(-30);
-    goal.degrees.push_back(0);
-    goal.degrees.push_back(0);
+
+    goal.servos.push_back(BASE);
+    goal.servos.push_back(SHOULDER);
+    goal.servos.push_back(ELBOW);
+    goal.servos.push_back(WRIST);
+    
     m_al5d_action_client.sendGoalAndWait(goal, ros::Duration(2, 300), ros::Duration(5, 0));
 
 
-
-
-
-
-    // while(m_objectCoordinatesReceived)
-    // {
-
-
-    // }
 }
 
 int main(int argc, char** argv)

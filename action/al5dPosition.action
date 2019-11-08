@@ -1,5 +1,6 @@
 #goal definition
 int16[] degrees
+uint8[] servos
 uint16 time 
 string name
 ---

@@ -7,7 +7,7 @@ namespace
 const std::vector<std::string> COLORS = { "groen", "blauw", "rood", "wit", "zwart", "geel" };
 const std::vector<std::string> FIGURES = { "vierkant", "rechthoek", "cirkel", "halve cirkel", "driehoek" };
 const uint8_t ROS_LOOP_RATE = 20;
-const int CAMERA_ID = 1;
+const int CAMERA_ID = 0;
 const double SCREEN_HEIGHT = 480;
 const double SCREEN_WIDTH = 640;
 const double SCREEN_WIDTH_CM = 46;
