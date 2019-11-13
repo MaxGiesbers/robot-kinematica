@@ -8,14 +8,13 @@
 class RobotController
 {
     public:
-    RobotController(const std::string& name, const std::string& positions_file_name, const std::string port);
+    RobotController(const std::string& name);
     ~RobotController();
 
     private:
     void callBack(const robot_kinematica::found_object& found_object);
     ros::Subscriber m_subscriber;
-   
-    std::shared_ptr<HighLevelInterface> m_high_level_interface;
+
     ros::NodeHandle m_node_handle;
     void moveObjectToDestination(const robot_kinematica::found_object& found_object);
     bool m_objectCoordinatesReceived;

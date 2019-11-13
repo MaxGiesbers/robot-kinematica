@@ -75,21 +75,12 @@ add_library(al5d_driver
 target_link_libraries(al5d_driver ${catkin_LIBRARIES})
 
 add_executable(al5d_interface 
-          src/al5d_controller/RobotController.cpp
-          src/al5d_controller/Highlevel/HighLevelInterface.cpp 
-          src/al5d_controller/Kinematics.cpp
-          src/al5d_controller/Highlevel/Position.cpp)
-add_dependencies(al5d_interface al5d_driver robot_kinematica_generate_messages_cpp)
+          src/al5d_controller/Highlevel/HighLevelInterface.cpp)
 target_link_libraries(al5d_interface al5d_driver ${catkin_LIBRARIES})
+add_dependencies(al5d_interface al5d_driver robot_kinematica_generate_messages_cpp)
 
-
-add_executable(al5d_motionplanner 
-          src/al5d_controller/Motionplanner/MotionPlanner.cpp)
-add_dependencies(al5d_motionplanner robot_kinematica_generate_messages_cpp)
-target_link_libraries(al5d_motionplanner ${catkin_LIBRARIES})
-
-
-
-
-
-
+add_executable(robot_controller 
+          src/al5d_controller/RobotController.cpp
+          src/al5d_controller/Kinematics.cpp)
+target_link_libraries(robot_controller ${catkin_LIBRARIES})
+add_dependencies(robot_controller robot_kinematica_generate_messages_cpp)

@@ -1,20 +1,14 @@
 #include "al5d_controller/Highlevel/HighLevelInterface.h"
 #include <fstream>
 
-HighLevelInterface::HighLevelInterface(const std::string& name, const std::string& positions_file_name,
-                                       const std::string port)
+HighLevelInterface::HighLevelInterface(const std::string& name, const std::string port)
   : m_al5d_action_server(m_node_handle, name, boost::bind(&HighLevelInterface::executeCB, this, _1), false)
   , m_name(name)
   , m_low_level_component(port)
 {
-  ros::ServiceServer service = m_node_handle.advertiseService("eStop", &HighLevelInterface::emergencyStop, this);
-  std::cout << "high level interface" << std::endl;
   initServoList();
   m_al5d_action_server.start();
   park();
-
-  // ros::Duration(2).sleep();
-  // openGripper();
 }
 HighLevelInterface::~HighLevelInterface()
 {
@@ -22,7 +16,6 @@ HighLevelInterface::~HighLevelInterface()
 
 void HighLevelInterface::executeCB(const robot_kinematica::al5dPositionGoalConstPtr& goal)
 {
-  std::cout << "goal ontvangen" << std::endl;
   ROS_INFO("STATE: HANDLE GOAL: %s", (*goal).name.c_str());
   if (!ros::ok())
   {
@@ -116,7 +109,7 @@ void HighLevelInterface::concatMessage(const robot_kinematica::al5dPositionGoalC
   ss << "T" << 2000 << "\r";
   m_low_level_component.writeMessage(ss.str());
 
-  ros::Duration(4).sleep();
+  // ros::Duration(4).sleep();
   m_al5d_action_server.setSucceeded();
   ROS_INFO_STREAM("STATE: SUCCEEDED: " << (*goal).name);
 }
@@ -133,4 +126,17 @@ void HighLevelInterface::initServoList()
 }
 
 
+int main(int argc, char **argv)
+{
+    ros::init(argc, argv, "al5d_interface");    
+    if(argc != 2)
+    {
+        ROS_WARN_STREAM ("Missing USB port argument trye something like: /dev/ttyUSB0");
+        return 1;
+    }
+    HighLevelInterface highLevelInterface("robot_kinematica", argv[1]);
+    ros::spin();
+
+    return 0;
+}
 

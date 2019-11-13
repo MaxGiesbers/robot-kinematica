@@ -13,7 +13,7 @@
 class HighLevelInterface
 {
 public:
-  HighLevelInterface(const std::string& name, const std::string& positions_file_name, const std::string port);
+  HighLevelInterface(const std::string& name, const std::string port);
   ~HighLevelInterface(void);
   void executeCB(const robot_kinematica::al5dPositionGoalConstPtr& goal);
   void concatMessage(const robot_kinematica::al5dPositionGoalConstPtr& goal);

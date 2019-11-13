@@ -4,7 +4,7 @@
 namespace
 {
 const int WINDOW_SIZE = 600;
-const int CAMERA_ID = 1;
+const int CAMERA_ID = 0;
 const int SPACEBAR_KEY_ASCII = 32;
 const int ENTER_KEY_ASCII = 10;
 }  // namespace
@@ -183,7 +183,7 @@ void Calibration::setDefaultColorScales()
 {
   m_color_scales.push_back(ColorScale{ 53, 95, 41, 193, 40, 255, "groen" });
   m_color_scales.push_back(ColorScale{ 139, 179, 62, 255, 156, 255, "rood" });
-  m_color_scales.push_back(ColorScale{ 65, 162, 223, 255, 104, 255, "blauw" });
+  m_color_scales.push_back(ColorScale{ 65, 162, 124, 255, 131, 255, "blauw" });
   m_color_scales.push_back(ColorScale{ 14, 40, 41, 255, 229, 255, "geel" });
   m_color_scales.push_back(ColorScale{ 0, 179, 9, 100, 0, 51, "zwart" });
   m_color_scales.push_back(ColorScale{ 0, 145, 0, 135, 199, 255 , "wit" });

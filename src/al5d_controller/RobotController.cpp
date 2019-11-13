@@ -8,12 +8,10 @@ const uint8_t MINIMAL_ARGUMENTS = 4;
 const uint16_t QUEUE_SIZE = 1000;
 }
 
-RobotController::RobotController(const std::string& name, const std::string& positions_file_name,
-                                       const std::string port): 
+RobotController::RobotController(const std::string& name): 
     m_objectCoordinatesReceived(false), 
     m_al5d_action_client(m_node_handle, name)
 {
-    m_high_level_interface = std::make_shared<HighLevelInterface>(name, positions_file_name, port);
     m_subscriber = m_node_handle.subscribe("found_object", QUEUE_SIZE, &RobotController::callBack, this);
 }
 
@@ -84,56 +82,58 @@ void RobotController::moveObjectToDestination(const robot_kinematica::found_obje
     goal.servos.push_back(SHOULDER);
     goal.servos.push_back(ELBOW);
     goal.servos.push_back(WRIST);
+    
     m_al5d_action_client.sendGoal(goal);
+    ros::Duration(5).sleep();
 
-    bool finished_before_timeout = m_al5d_action_client.waitForResult(ros::Duration(5.0));
 
-    if (finished_before_timeout)
-    {
-        std::cout << " finished" << std::endl;
-    }
+    // bool finished_before_timeout = m_al5d_action_client.waitForResult(ros::Duration(5.0));
 
-    std::cout << "komt hier" << std::endl;
+    // if (finished_before_timeout)
+    // {
+    //     std::cout << " finished" << std::endl;
+    // }
+
+    // std::cout << "komt hier" << std::endl;
 
     ///////
 
 
-    // ros::Duration(5).sleep();
 
-    // goal.degrees.clear();
+    goal.degrees.clear();
 
 
-    // std::cout << "komt hier nu in" << std::endl;
-    // destination = {{found_object.origin_y},
-	//                                    {-0.07},
-	//                                    {found_object.origin_x - 0.015}}; //Z and y are switched
+    std::cout << "komt hier nu in" << std::endl;
+    destination = {{found_object.origin_y},
+	                                   {-0.07},
+	                                   {found_object.origin_x - 0.015}}; //Z and y are switched
 
     
-    // start = {{coordinates[0][0]},
-	//                                      {coordinates[0][1]},
-	//                                      {coordinates[0][2]},
-	//                                     {coordinates[0][3]}};
+    start = {{coordinates[0][0]},
+	                                     {coordinates[0][1]},
+	                                     {coordinates[0][2]},
+	                                    {coordinates[0][3]}};
 
 
-    // ik_solution = kinematics.inverse_kinematics(start, destination);
-    // coordinates = ik_solution.value();
+    ik_solution = kinematics.inverse_kinematics(start, destination);
+    coordinates = ik_solution.value();
 
 
-    // goal.name = "moveToObject";
-    // goal.time = 2000;
-    // goal.degrees.push_back(coordinates[0][0]);
-    // goal.degrees.push_back(coordinates[0][1]);
-    // goal.degrees.push_back(coordinates[0][2]);
-    // goal.degrees.push_back(coordinates[0][3] * -1);
-    // //goal.degrees.push_back(-30);
+    goal.name = "moveToObject";
+    goal.time = 2000;
+    goal.degrees.push_back(coordinates[0][0]);
+    goal.degrees.push_back(coordinates[0][1]);
+    goal.degrees.push_back(coordinates[0][2]);
+    goal.degrees.push_back(coordinates[0][3] * -1);
+    //goal.degrees.push_back(-30);
   
 
-    // goal.servos.push_back(BASE);
-    // goal.servos.push_back(SHOULDER);
-    // goal.servos.push_back(ELBOW);
-    // goal.servos.push_back(WRIST);
+    goal.servos.push_back(BASE);
+    goal.servos.push_back(SHOULDER);
+    goal.servos.push_back(ELBOW);
+    goal.servos.push_back(WRIST);
 
-    // m_al5d_action_client.sendGoal(goal);
+    m_al5d_action_client.sendGoal(goal);
     // m_high_level_interface->closeGripper();
     // // ros::Duration(3).sleep();
     // m_high_level_interface->park();
@@ -145,15 +145,9 @@ void RobotController::moveObjectToDestination(const robot_kinematica::found_obje
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "RobotControler");
-  if (argc != MINIMAL_ARGUMENTS)
-  {
-    ROS_WARN_STREAM("Missing arguments. Try something like: rosrun robot_kinematica al5d_interface "
-                    "ProgrammedPositions.csv /dev/ttyUSB0");
-    return 1;
-  }
+  ros::init(argc, argv, "RobotController");
 
-  RobotController robot_controller("robot_kinematica", argv[2], argv[3]);
+  RobotController robot_controller("robot_kinematica");
 
   ros::spin();
   return 0;
