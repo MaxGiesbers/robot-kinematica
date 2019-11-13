@@ -10,3 +10,6 @@ float64 angle_difference
 float64 destination_x
 float64 destination_y
 float64 destination_z
+
+---
+bool finished

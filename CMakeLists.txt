@@ -22,6 +22,7 @@ include_directories(include)
 
 add_service_files(FILES
   eStop.srv
+  found_object1.srv
 )
 
 add_action_files(

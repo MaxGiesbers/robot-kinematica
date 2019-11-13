@@ -227,5 +227,5 @@ void Calibration::startCalibration()
   }
   cv::destroyAllWindows();
   m_cap.release();
-  cv::waitKey(0);
+  //cv::waitKey(0);
 }

@@ -63,23 +63,19 @@ bool ObjectDetector::checkSquareAndRectangle(std::shared_ptr<ColorObject>& color
       if (std::fabs(sideUpper - sideLeft) <= deviationSquare && color_object->getInputFigure().compare("vierkant") == 0)
       {
         color_object->setFigure("vierkant");
+        color_object->m_approx = approx;
         found_object = true;
       }
       else if (std::fabs(sideUpper - sideLeft) > deviationRectangle && color_object->getInputFigure().compare("rechthoe"
                                                                                                               "k") == 0)
       {
         color_object->setFigure("rechthoek");
+        color_object->m_approx = approx;
         found_object = true;
       }
     }
   }
-
-  if (found_object)
-  {
-    color_object->setXDimension(sideUpper);
-    color_object->setYDimension(sideLeft);
-  }
-
+  
   return found_object;
 }
 

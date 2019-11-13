@@ -24,6 +24,6 @@ class RobotController
     bool m_objectCoordinatesReceived;
     robot_kinematica::found_object m_found_object;
     actionlib::SimpleActionClient<robot_kinematica::al5dPositionAction> m_al5d_action_client;
-    void moveArm(const std::optional<Kinematics::Matrix<double, 4, 1>>  position);
+    void moveArm(const std::optional<Kinematics::Matrix<double, 4, 1>>  position, const double gripper_angle);
     void moveGripper(const double degrees);
 };

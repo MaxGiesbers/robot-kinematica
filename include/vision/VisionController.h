@@ -25,6 +25,7 @@ public:
   std::thread readInputThread();
   double convertPixelToCmXPosition(const double pixel_value);
   double convertPixelToCmYPosition(const double pixel_value);
+  double getAngleDifference();
 
 private:
   cv::VideoCapture m_cap;

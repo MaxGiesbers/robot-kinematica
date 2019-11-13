@@ -11,8 +11,6 @@ ColorObject::ColorObject(const std::string& input_figure, const std::string& col
   , m_center_x_pos(0)
   , m_center_y_pos(0)
   , m_area(0)
-  , m_x_dimension(0)
-  , m_y_dimension(0)
   , m_object_detected(false)
 {
 }
@@ -78,16 +76,6 @@ double ColorObject::getCenterYPos() const
   return m_center_y_pos;
 }
 
-double ColorObject::getXDimension() const
-{
-  return m_x_dimension;
-}
-
-double ColorObject::getYDimension() const
-{
-  return m_y_dimension;
-}
-
 double ColorObject::getArea() const
 {
   return m_area;
@@ -100,16 +88,6 @@ void ColorObject::setObjectDetected(bool object_detected)
 void ColorObject::setArea(const double area)
 {
   m_area = area;
-}
-
-void ColorObject::setXDimension(const double x_dimension)
-{
-  m_x_dimension = x_dimension;
-}
-
-void ColorObject::setYDimension(const double y_dimension)
-{
-  m_y_dimension = y_dimension;
 }
 
 void ColorObject::setCenterXPos(const double center_x_pos)

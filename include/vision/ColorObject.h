@@ -15,9 +15,7 @@ public:
 
   void setCenterXPos(const double center_x_pos);
   void setCenterYPos(const double center_y_pos);
-
-  void setXDimension(const double x_dimension);
-  void setYDimension(const double y_dimension);
+  
 
   void setObjectDetected(bool object_detected);
 
@@ -28,9 +26,6 @@ public:
   double getCenterXPos() const;
   double getCenterYPos() const;
 
-  double getXDimension() const;
-  double getYDimension() const;
-
   double getArea() const;
   bool getObjectDetected() const;
 
@@ -39,6 +34,7 @@ public:
   const std::string getColor() const;
   const cv::Mat getColorMask() const;
   const ColorScale& getColorScale() const;
+  std::vector<cv::Point> m_approx;
 
 private:
   ColorScale m_color_scale;
@@ -50,10 +46,6 @@ private:
   double m_center_x_pos;
   double m_center_y_pos;
   double m_area;
-
-  double m_x_dimension;
-  double m_y_dimension;
-  double m_z_dimension;
 
   bool m_object_detected;
 };

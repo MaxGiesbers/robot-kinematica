@@ -100,6 +100,46 @@ void VisionController::readCommandLineInput()
   }
 }
 
+
+double VisionController::getAngleDifference()
+{
+  double angleDifference = 0;
+  
+  if (m_color_object->m_approx[3].x < BASE_CARTESIAN_X)
+  {
+    double xDev1 = BASE_CARTESIAN_X - m_color_object->m_approx[3].x;
+    double yDev1 = BASE_CARTESIAN_Y - m_color_object->m_approx[3].y;
+
+    double hypotenuse1 = std::hypot(xDev1, yDev1);
+    double angle1 = std::asin(xDev1/hypotenuse1);
+
+    double xDev2 = BASE_CARTESIAN_X - m_color_object->m_approx[0].x;
+    double yDev2 = BASE_CARTESIAN_Y - m_color_object->m_approx[0].y;
+
+    double hypotenuse2 = std::hypot(xDev2, yDev2);
+    double angle2 = std::asin(xDev2/hypotenuse2);
+
+    angleDifference = ((angle2 - angle1) * 180 / M_PI) * -1;
+  }
+  else if (m_color_object->m_approx[0].x >= BASE_CARTESIAN_X)
+  {
+    double xDev1 = m_color_object->m_approx[0].x - BASE_CARTESIAN_X;
+    double yDev1 = BASE_CARTESIAN_Y - m_color_object->m_approx[0].y;
+
+    double hypotenuse1 = std::hypot(xDev1, yDev1);
+    double angle1 = std::asin(xDev1/hypotenuse1);
+
+    double xDev2 = m_color_object->m_approx[3].x - BASE_CARTESIAN_X;
+    double yDev2 = BASE_CARTESIAN_Y - m_color_object->m_approx[3].y;
+
+    double hypotenuse2 = std::hypot(xDev2, yDev2);
+    double angle2 = std::asin(xDev2/hypotenuse2);
+
+    angleDifference = (angle2 - angle1) * 180 / M_PI;
+  }
+  return angleDifference;
+}
+
 void VisionController::sendObjectCoordinates()
 {
   robot_kinematica::found_object found_object_message;
@@ -146,9 +186,6 @@ void VisionController::sendObjectCoordinates()
                   << " \nDestination origin location"
                   << " x: " << destinationPolarX << " y: " << destinationPolarY);
 
-  found_object_message.dimension_x = 0;
-  found_object_message.dimension_y = 0;
-  found_object_message.dimension_z = 0;
 
   found_object_message.origin_x = objectPolarX;
   found_object_message.origin_y = objectPolarY;
@@ -157,6 +194,8 @@ void VisionController::sendObjectCoordinates()
   found_object_message.destination_x = destinationPolarX;
   found_object_message.destination_y = destinationPolarY;
   found_object_message.destination_z = BASE_GROUND_OFFSET;
+
+  found_object_message.angle_difference = getAngleDifference();
 
   m_publisher.publish(found_object_message);
   m_coordinates_sended = true;
