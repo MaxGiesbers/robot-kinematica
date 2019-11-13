@@ -8,7 +8,6 @@ HighLevelInterface::HighLevelInterface(const std::string& name, const std::strin
 {
   initServoList();
   m_al5d_action_server.start();
-  park();
 }
 HighLevelInterface::~HighLevelInterface()
 {
@@ -30,7 +29,23 @@ void HighLevelInterface::executeCB(const robot_kinematica::al5dPositionGoalConst
 
 void HighLevelInterface::run(const robot_kinematica::al5dPositionGoalConstPtr& goal)
 {
-  concatMessage(goal);
+  if (goal->name.compare("PARK") == 0)
+  {
+    park();
+  }
+  else  if (goal->name.compare("OPEN_GRIPPER") == 0)
+  {
+    openGripper();
+
+  }
+  else if (goal->name.compare("CLOSE_GRIPPER") == 0)
+  {
+    closeGripper();
+  }
+  else
+  {
+    concatMessage(goal);
+  }
 }
 
 bool HighLevelInterface::emergencyStop(robot_kinematica::eStop::Request& req, robot_kinematica::eStop::Response& res)
@@ -41,11 +56,8 @@ bool HighLevelInterface::emergencyStop(robot_kinematica::eStop::Request& req, ro
 
 void HighLevelInterface::openGripper()
 {
-  // m_servo_list[SERVO_ID::GRIPPER].setIncomingDegrees(0);
-  // m_servo_list[SERVO_ID::GRIPPER].setMoveServo(true);
-
-  m_servo_list[SERVO_ID::BASE].setIncomingDegrees(90);
-  m_servo_list[SERVO_ID::BASE].setMoveServo(true);
+  m_servo_list[SERVO_ID::GRIPPER].setIncomingDegrees(0);
+  m_servo_list[SERVO_ID::GRIPPER].setMoveServo(true);
   moveServos();
 }
 
@@ -55,9 +67,6 @@ void HighLevelInterface::closeGripper()
   m_servo_list[SERVO_ID::GRIPPER].setMoveServo(true);
   moveServos();
 }
-
-
-
 
 void HighLevelInterface::park()
 {
@@ -92,24 +101,24 @@ void HighLevelInterface::moveServos()
   }
   ss << "T" << 2000 << "\r";
   m_low_level_component.writeMessage(ss.str());
+  m_al5d_action_server.setSucceeded();
 }
 
 
 void HighLevelInterface::concatMessage(const robot_kinematica::al5dPositionGoalConstPtr& goal)
 {
   std::stringstream ss;
-  for (int servo_number: (*goal).servos)
+  
+  for(std::size_t i = 0; i <  (*goal).servos.size(); i ++ )
   {
-    
-    Servo& servo = m_servo_list[servo_number];
-    servo.setIncomingDegrees((*goal).degrees[servo_number]);
+    Servo& servo = m_servo_list[(*goal).servos[i]];
+    servo.setIncomingDegrees((*goal).degrees[i]);
     ss << "#" << servo.getServoId() << "P" << servo.degreesToPwm(servo.getIncomingDegrees());
   }
 
   ss << "T" << 2000 << "\r";
   m_low_level_component.writeMessage(ss.str());
 
-  // ros::Duration(4).sleep();
   m_al5d_action_server.setSucceeded();
   ROS_INFO_STREAM("STATE: SUCCEEDED: " << (*goal).name);
 }

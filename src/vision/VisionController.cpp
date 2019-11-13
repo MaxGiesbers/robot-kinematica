@@ -14,7 +14,7 @@ const double SCREEN_WIDTH_CM = 47.7;
 const double SCREEN_HEIGHT_CM = 35.8;
 const double BASE_CARTESIAN_X = 343;
 const double BASE_CARTESIAN_Y = 449;
-const double BASE_GROUND_OFFSET = -7.5;
+const double BASE_GROUND_OFFSET = -0.02;
 const int NUMBER_OF_LOOPS = 100;
 const uint16_t QUEUE_SIZE = 1000;
 }  // namespace
