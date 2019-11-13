@@ -214,7 +214,7 @@ void ObjectDetector::filterColor(const std::shared_ptr<ColorObject>& color_objec
           colorMask);
 
   color_object->setColorMask(colorMask);
-  imshow("colormask", colorMask);
+  imshow("detection", colorMask);
 }
 
 cv::Mat ObjectDetector::BrightnessAndContrastAuto(const cv::Mat& frame, double clip_hist_percent = 0)

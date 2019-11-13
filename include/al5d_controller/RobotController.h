@@ -13,7 +13,6 @@ class RobotController
 
     private:
     void callBack(const robot_kinematica::found_object& found_object);
-    void openGripper();
     ros::Subscriber m_subscriber;
    
     std::shared_ptr<HighLevelInterface> m_high_level_interface;

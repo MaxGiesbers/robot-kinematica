@@ -17,14 +17,11 @@ public:
   ~HighLevelInterface(void);
   void executeCB(const robot_kinematica::al5dPositionGoalConstPtr& goal);
   void concatMessage(const robot_kinematica::al5dPositionGoalConstPtr& goal);
-  void concatMessage(const Position& position);
   bool emergencyStop(robot_kinematica::eStop::Request& req, robot_kinematica::eStop::Response& res);
-  bool parseProgrammedPositions(const std::string& fileName);
   void run(const robot_kinematica::al5dPositionGoalConstPtr& goal);
   void openGripper();
-  void ready();
+  void closeGripper();
   void park();
-  void straight();
   void moveAllServos();
   void initServoList();
   void moveServos();

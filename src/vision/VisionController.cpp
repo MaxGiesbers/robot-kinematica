@@ -7,13 +7,13 @@ namespace
 const std::vector<std::string> COLORS = { "groen", "blauw", "rood", "wit", "zwart", "geel" };
 const std::vector<std::string> FIGURES = { "vierkant", "rechthoek", "cirkel", "halve cirkel", "driehoek" };
 const uint8_t ROS_LOOP_RATE = 20;
-const int CAMERA_ID = 0;
+const int CAMERA_ID = 1;
 const double SCREEN_HEIGHT = 480;
 const double SCREEN_WIDTH = 640;
-const double SCREEN_WIDTH_CM = 46;
-const double SCREEN_HEIGHT_CM = 35;
-const double BASE_CARTESIAN_X = 323;
-const double BASE_CARTESIAN_Y = 466;
+const double SCREEN_WIDTH_CM = 47.7;
+const double SCREEN_HEIGHT_CM = 35.8;
+const double BASE_CARTESIAN_X = 343;
+const double BASE_CARTESIAN_Y = 449;
 const double BASE_GROUND_OFFSET = -7.5;
 const int NUMBER_OF_LOOPS = 100;
 const uint16_t QUEUE_SIZE = 1000;
@@ -152,7 +152,7 @@ void VisionController::sendObjectCoordinates()
 
   found_object_message.origin_x = objectPolarX;
   found_object_message.origin_y = objectPolarY;
-  found_object_message.origin_z = 0;
+  found_object_message.origin_z = BASE_GROUND_OFFSET;
 
   found_object_message.destination_x = destinationPolarX;
   found_object_message.destination_y = destinationPolarY;
