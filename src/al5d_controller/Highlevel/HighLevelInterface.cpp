@@ -33,15 +33,6 @@ void HighLevelInterface::run(const robot_kinematica::al5dPositionGoalConstPtr& g
   {
     park();
   }
-  else  if (goal->name.compare("OPEN_GRIPPER") == 0)
-  {
-    openGripper();
-
-  }
-  else if (goal->name.compare("CLOSE_GRIPPER") == 0)
-  {
-    closeGripper();
-  }
   else
   {
     concatMessage(goal);

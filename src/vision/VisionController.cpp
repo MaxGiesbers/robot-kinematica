@@ -21,7 +21,7 @@ const uint16_t QUEUE_SIZE = 1000;
 
 VisionController::VisionController() : m_user_input_correct(false), m_coordinates_sended(false)
 {
-  m_publisher = m_node_handle.advertise<robot_kinematica::found_object>("found_object", QUEUE_SIZE);
+  m_client = m_node_handle.serviceClient<robot_kinematica::found_object>("found_object");
 }
 
 VisionController::~VisionController()
@@ -142,7 +142,9 @@ double VisionController::getAngleDifference()
 
 void VisionController::sendObjectCoordinates()
 {
+  //robot_kinematica::found_object found_object_message;
   robot_kinematica::found_object found_object_message;
+
 
   double objectPolarX = 0;
   double objectPolarY = 0;
@@ -187,18 +189,24 @@ void VisionController::sendObjectCoordinates()
                   << " x: " << destinationPolarX << " y: " << destinationPolarY);
 
 
-  found_object_message.origin_x = objectPolarX;
-  found_object_message.origin_y = objectPolarY;
-  found_object_message.origin_z = BASE_GROUND_OFFSET;
+  found_object_message.request.origin_x = objectPolarX;
+  found_object_message.request.origin_y = objectPolarY;
+  found_object_message.request.origin_z = BASE_GROUND_OFFSET;
 
-  found_object_message.destination_x = destinationPolarX;
-  found_object_message.destination_y = destinationPolarY;
-  found_object_message.destination_z = BASE_GROUND_OFFSET;
+  found_object_message.request.destination_x = destinationPolarX;
+  found_object_message.request.destination_y = destinationPolarY;
+  found_object_message.request.destination_z = BASE_GROUND_OFFSET;
 
-  found_object_message.angle_difference = getAngleDifference();
-
-  m_publisher.publish(found_object_message);
+  found_object_message.request.angle_difference = getAngleDifference();
+ 
   m_coordinates_sended = true;
+  if(m_client.call(found_object_message))
+  {
+    m_user_input_correct = false;
+    m_color_object->setObjectDetected(false);
+    m_destination_object->setObjectDetected(false);
+    m_coordinates_sended = false;
+  }
 }
 
 double VisionController::convertPixelToCmYPosition(const double pixel_value)
@@ -231,7 +239,7 @@ void VisionController::findObjectLoop(std::shared_ptr<ColorObject>& color_object
     m_object_detector.findShape(color_object, m_drawing_frame);
 
     if (color_object->getObjectDetected())
-    {
+    { 
       break;
     }
   }

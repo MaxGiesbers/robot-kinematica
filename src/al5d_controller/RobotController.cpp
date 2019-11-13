@@ -12,60 +12,35 @@ RobotController::RobotController(const std::string& name):
     m_objectCoordinatesReceived(false), 
     m_al5d_action_client(m_node_handle, name)
 {
-    m_subscriber = m_node_handle.subscribe("found_object", QUEUE_SIZE, &RobotController::callBack, this);
-    ros::Duration(5).sleep();
-
-    moveGripper(10);
+    m_service = m_node_handle.advertiseService("found_object", &RobotController::moveObjectToDestination, this);
 }
 
-void RobotController::callBack(const robot_kinematica::found_object& found_object)
-{
-    m_found_object.origin_x = found_object.origin_x;
-    m_found_object.origin_y = found_object.origin_y;
-    m_found_object.origin_z = found_object.origin_z;
 
-    m_found_object.destination_x = found_object.destination_x;
-    m_found_object.destination_y = found_object.destination_y;
-    m_found_object.destination_z = found_object.destination_z;
-    m_found_object.angle_difference = found_object.angle_difference;
-    
-    ROS_INFO_STREAM("Received Found object");
-    moveObjectToDestination(m_found_object);
-    m_objectCoordinatesReceived = true;
-}
 
-RobotController::~RobotController()
-{
-}
-
-void sendCoordinates()
-{
-    robot_kinematica::al5dPositionGoal goal;
-}
-
-void RobotController::moveObjectToDestination(const robot_kinematica::found_object& found_object)
+bool RobotController::moveObjectToDestination(robot_kinematica::found_object::Request& req, robot_kinematica::found_object::Response& res)
 {
     m_current_angles[0][0] = 0.0;
     m_current_angles[0][1] = -30.0;
     m_current_angles[0][2] = 115.0;
     m_current_angles[0][3] = -55.0;
 
+
     const Kinematics::Matrix<double, 3, 1> object_position(
-    {{found_object.origin_y}, {found_object.origin_z}, {found_object.origin_x - 0.015}});
+    {{req.origin_y}, {req.origin_z}, {req.origin_x - 0.015}});
 
     const Kinematics::Matrix<double, 3, 1> object_position_below(
-    {{found_object.origin_y}, {found_object.origin_z - 0.05}, {found_object.origin_x - 0.015}});
-    
+    {{req.origin_y}, {req.origin_z - 0.05}, {req.origin_x - 0.015}});
+
     //  const Kinematics::Matrix<double, 3, 1> destination_position(
-    // {{found_object.destination_y}, {found_object.destination_z}, {found_object.destination_x - 0.015}});
+    // {{req.destination_y}, {req.destination_z}, {req.destination_x - 0.015}});
 
     const Kinematics::Matrix<double, 3, 1> destination_position(
-    {{found_object.destination_y}, {0}, {found_object.destination_x - 0.015}});
+    {{req.destination_y}, {0}, {req.destination_x - 0.015}});
 
     auto above_object_position = m_kinematics.inverse_kinematics(m_current_angles, object_position);
 
 
-    double gripper_angle = above_object_position.value()[0][0] + found_object.angle_difference;
+    double gripper_angle = above_object_position.value()[0][0] + req.angle_difference;
     std::cout << "gripper angle: " << gripper_angle << std::endl;
     std::cout << "current angle: " << m_current_angles[0][0] << std::endl;
 
@@ -78,8 +53,25 @@ void RobotController::moveObjectToDestination(const robot_kinematica::found_obje
     moveGripper(29);
     moveArm(above_destination_position, 0);
     moveGripper(0);
+
+    robot_kinematica::al5dPositionGoal goal;
+    goal.name = "PARK";
+    goal.time = 2000;
+    m_al5d_action_client.sendGoalAndWait(goal);
+    std::cout << "finished return true" << std::endl;
+    res.finished = true;
+
+  return true;
 }
 
+RobotController::~RobotController()
+{
+}
+
+void sendCoordinates()
+{
+    robot_kinematica::al5dPositionGoal goal;
+}
 
 void RobotController::moveGripper(const double degrees)
 {

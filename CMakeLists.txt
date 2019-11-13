@@ -22,7 +22,7 @@ include_directories(include)
 
 add_service_files(FILES
   eStop.srv
-  found_object1.srv
+  found_object.srv
 )
 
 add_action_files(
@@ -30,12 +30,6 @@ add_action_files(
   FILES 
   al5dPosition.action
 )
-
-add_message_files(
-  FILES
-  found_object.msg
-)
-
 
 generate_messages(
   DEPENDENCIES
