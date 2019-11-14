@@ -7,7 +7,6 @@
 #include "../LowLevel/LowLevelDriver.h"
 #include "robot_kinematica/found_object.h"
 
-#include "Position.h"
 #include <vector>
 
 class HighLevelInterface
@@ -30,7 +29,6 @@ private:
   actionlib::SimpleActionServer<robot_kinematica::al5dPositionAction> m_al5d_action_server;
   std::string m_name;
   LowLevelDriver m_low_level_component;
-  std::vector<Position> m_position_list;
   std::vector<Servo> m_servo_list;
 };
 
