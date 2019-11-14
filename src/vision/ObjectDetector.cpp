@@ -50,16 +50,24 @@ bool ObjectDetector::checkSquareAndRectangle(std::shared_ptr<ColorObject>& color
   const double sideDown = std::fabs(approx[2].x - approx[1].x);
   const double sideLeft = std::fabs(approx[0].y - approx[1].y);
   const double sideRight = std::fabs(approx[3].y - approx[2].y);
+  std::cout <<  sideUpper << std::endl;
+    std::cout <<  sideDown << std::endl;
+
+  std::cout <<  sideLeft << std::endl;
+
+  std::cout <<  sideRight << std::endl;
+
 
   // camera father away is a smaller value.
   const short deviationSquare = 4;
-  const short deviationRectangle = 30;
+  const short deviationRectangle = 10;
 
   if (sideUpper > deviationSquare && sideDown > deviationSquare && sideLeft > deviationSquare &&
       sideRight > deviationSquare)
   {
     if (std::fabs(sideUpper - sideDown) <= deviationSquare && std::fabs(sideLeft - sideRight) <= deviationSquare)
     {
+      std::cout << " vind wel hoeken" << std::endl;
       if (std::fabs(sideUpper - sideLeft) <= deviationSquare && color_object->getInputFigure().compare("vierkant") == 0)
       {
         color_object->setFigure("vierkant");
@@ -145,6 +153,8 @@ void ObjectDetector::findShape(std::shared_ptr<ColorObject>& color_object, cv::M
   for (unsigned int i = 0; i < contours.size(); i++)
   {
     cv::approxPolyDP(cv::Mat(contours[i]), approx, cv::arcLength(cv::Mat(contours[i]), true) * 0.02, true);
+    std::cout << approx.size() << std::endl;
+
     if (std::fabs(cv::contourArea(contours[i])) < 100 || !cv::isContourConvex(approx))
     {
       continue;
@@ -186,8 +196,7 @@ void ObjectDetector::findShape(std::shared_ptr<ColorObject>& color_object, cv::M
 
   if (color_object->getInputFigure() != color_object->getFigure())
   {
-    std::cout << color_object->getInputFigure() << " " << color_object->getColor() << " is niet gevonden. "
-              << std::endl;
+    ROS_INFO_STREAM(color_object->getInputFigure() << " " << color_object->getColor() << " is niet gevonden. ");
     color_object->setObjectDetected(false);
   }
   else

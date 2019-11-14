@@ -1,15 +1,19 @@
 # origin coordinates of the object
 float64 origin_x
 float64 origin_y
-float64 origin_z
+float64 origin_z  #eventueel weggooien
 
-# dimensions of the object
-float64 angle_difference
+float64 approx_0_x
+float64 approx_0_y
+float64 approx_1_x
+float64 approx_1_y
+float64 approx_3_x
+
 
 # destination coordinates of the object
 float64 destination_x
 float64 destination_y
-float64 destination_z
+float64 destination_z # kan weggooien
 
 ---
 bool finished

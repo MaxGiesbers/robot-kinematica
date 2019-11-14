@@ -43,6 +43,7 @@ std::thread VisionController::videoCamThread()
 
 void VisionController::readVideoCam()
 {
+  std::cout << "komt in cam" << std::endl;
   m_cap.open(CAMERA_ID);
   while (true)
   {
@@ -58,7 +59,7 @@ void VisionController::readVideoCam()
 void VisionController::splitString(std::string str)
 {
   size_t index = str.find_last_of(" ");
-  // checkString(str);
+
   if (index != std::string::npos)
   {
     // Last substring for the color.
@@ -104,7 +105,7 @@ ColorScale VisionController::getColorScale(std::string& color)
 
 void VisionController::readCommandLineInput()
 {
-  std::cout << "Voer een vorm en een kleur in met als format: [vorm][whitespace][kleur]" << std::endl;
+  ROS_INFO_STREAM("Voer een vorm en een kleur in met als format: [vorm][whitespace][kleur]");
 
   std::string input = "";
   ros::Rate rate(ROS_LOOP_RATE);
@@ -219,18 +220,26 @@ void VisionController::sendObjectCoordinates()
   found_object_message.request.destination_y = destinationPolarY;
   found_object_message.request.destination_z = BASE_GROUND_OFFSET;
 
-  found_object_message.request.angle_difference = getAngleDifference();
+  found_object_message.request.approx_0_x = m_color_object->m_approx[0].x;
+  found_object_message.request.approx_0_y = m_color_object->m_approx[0].y;
+  found_object_message.request.approx_1_x = m_color_object->m_approx[1].x;
+  found_object_message.request.approx_1_y = m_color_object->m_approx[1].y;
+  found_object_message.request.approx_3_x = m_color_object->m_approx[3].x;
+
+  // found_object_message.request.angle_difference = getAngleDifference();
 
   m_coordinates_sended = true;
   if (m_client.call(found_object_message))
   {
     if (found_object_message.response.finished)
     {
-      std::cout << "kan bewegen" << std::endl;
+      ROS_INFO_STREAM("Robot movement finished");
+      ROS_INFO_STREAM("Voer een vorm en een kleur in met als format: [vorm][whitespace][kleur]");
     }
     else
     {
-      std::cout << "failed" << std::endl;
+      ROS_INFO_STREAM("Robot movement failed");
+      ROS_INFO_STREAM("Voer een vorm en een kleur in met als format: [vorm][whitespace][kleur]");
     }
 
     m_user_input_correct = false;
@@ -297,7 +306,7 @@ void VisionController::visionControllerLoop()
       }
       else
       {
-        std::cout << "Voer een vorm en een kleur in met als format: [vorm][whitespace][kleur]" << std::endl;
+        ROS_INFO_STREAM("Voer een vorm en een kleur in met als format: [vorm][whitespace][kleur]");
         m_user_input_correct = false;
       }
     }

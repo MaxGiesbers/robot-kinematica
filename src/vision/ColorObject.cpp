@@ -51,9 +51,9 @@ std::string ColorObject::getFigure() const
 
 void ColorObject::printColorObject()
 {
-  std::cout << m_figure << " " << m_color << " "
-            << "oppervlakte: " << m_area << " middelpunt x: " << m_center_x_pos << " middelpunt y: " << m_center_y_pos
-            << " is gevonden." << std::endl;
+  ROS_INFO_STREAM(m_figure << " " << m_color << " "
+                           << "oppervlakte: " << m_area << " middelpunt x: " << m_center_x_pos
+                           << " middelpunt y: " << m_center_y_pos << " is gevonden.");
 }
 
 void ColorObject::setFigure(const std::string& figure)

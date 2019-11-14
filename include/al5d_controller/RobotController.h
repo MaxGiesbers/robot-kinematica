@@ -4,6 +4,7 @@
 #include <actionlib/client/simple_action_client.h>
 #include "al5d_controller/Kinematics.h"
 #include "robot_kinematica/found_object.h"
+#include <math.h>       
 
 class RobotController
 {
@@ -14,7 +15,9 @@ public:
 private:
   Kinematics::Kinematics m_kinematics;
   Kinematics::Matrix<double, 4, 1> m_current_angles;
-
+  double getGripperAngle(robot_kinematica::found_object::Request& req,
+                         const std::optional<Kinematics::Matrix<double, 4, 1>> position);
+  double correctForServoLimits(double angle);
   ros::NodeHandle m_node_handle;
   bool m_objectCoordinatesReceived;
   robot_kinematica::found_object m_found_object;

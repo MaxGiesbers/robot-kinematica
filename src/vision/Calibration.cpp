@@ -191,8 +191,7 @@ void Calibration::startCalibration()
 
   m_cap.open(CAMERA_ID);
   ColorScale colorScale = m_color_scales.at(m_iterator);
-
-  std::cout << "press space bar to capture and calibrate on color: " << colorScale.color << std::endl;
+  ROS_INFO_STREAM("press space bar to capture and calibrate on color: " << colorScale.color);
 
   while (m_iterator < m_color_scales.size())
   {
@@ -206,10 +205,9 @@ void Calibration::startCalibration()
 
     m_cap >> m_treshold;
     setColorValues();
-    std::cout << "The values: " << colorScale.iLowH << ", " << colorScale.iHighH << ", " << colorScale.iLowS << ", "
-              << colorScale.iHighS << ", " << colorScale.iLowV << ", " << colorScale.iHighV << " for color "
-              << colorScale.color << std::endl;
-    std::cout << "Calibrate on color: " << colorScale.color << std::endl;
+    // std::cout << "The values: " << colorScale.iLowH << ", " << colorScale.iHighH << ", " << colorScale.iLowS << ", "
+    //           << colorScale.iHighS << ", " << colorScale.iLowV << ", " << colorScale.iHighV << " for color "
+    //           << colorScale.color << std::endl;
 
     if (cv::waitKey() == ENTER_KEY_ASCII)
     {

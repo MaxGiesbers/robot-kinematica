@@ -55,7 +55,6 @@ int16_t Servo::degreesToPwm(int16_t target_degrees)
   }
   else
   {
-    std::cout << target_degrees << std::endl;
     ROS_WARN("Degrees out of range, degrees must be between %d and %d", m_min_degrees, m_max_degrees);
     return false;
   }
