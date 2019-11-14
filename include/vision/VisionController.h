@@ -23,6 +23,8 @@ public:
   void findObjectLoop(std::shared_ptr<ColorObject>& color_object);
 
   std::thread readInputThread();
+  std::thread videoCamThread();
+  void readVideoCam();
   double convertPixelToCmXPosition(const double pixel_value);
   double convertPixelToCmYPosition(const double pixel_value);
   double getAngleDifference();
@@ -32,6 +34,7 @@ private:
   cv::Mat m_frame;
   cv::Mat m_filtered_frame;
   cv::Mat m_drawing_frame;
+  cv::Mat m_color_mask;
 
   ros::Publisher m_publisher;
   ros::NodeHandle m_node_handle;
@@ -45,6 +48,8 @@ private:
 
   Calibration m_calibrator;
   std::atomic<bool> m_user_input_correct;
+
+
 
   ColorScale getColorScale(std::string& color);
 

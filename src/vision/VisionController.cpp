@@ -18,10 +18,14 @@ const double BASE_GROUND_OFFSET = -0.02;
 const int NUMBER_OF_LOOPS = 100;
 const uint16_t QUEUE_SIZE = 1000;
 }  // namespace
+  
 
 VisionController::VisionController() : m_user_input_correct(false), m_coordinates_sended(false)
 {
   m_client = m_node_handle.serviceClient<robot_kinematica::found_object>("found_object");
+  m_drawing_frame = cv::Mat::zeros(cv::Size(1,49), CV_64FC1);
+  m_filtered_frame = cv::Mat::zeros(cv::Size(1,49), CV_64FC1);  
+  m_color_mask = cv::Mat::zeros(cv::Size(1,49), CV_64FC1);  
 }
 
 VisionController::~VisionController()
@@ -32,6 +36,27 @@ std::thread VisionController::readInputThread()
 {
   return std::thread([=] { readCommandLineInput(); });
 }
+
+std::thread VisionController::videoCamThread()
+{
+  return std::thread([=] { readVideoCam(); });
+}
+
+void VisionController::readVideoCam()
+{
+  std::cout << "open de cam" << std::endl;
+  m_cap.open(CAMERA_ID);
+  while (true)
+  {
+    m_cap >> m_frame;
+    cv::waitKey(30);
+    imshow("live", m_frame);
+    imshow("object detector", m_drawing_frame);
+    imshow("detection", m_color_mask);
+  }
+  cv::waitKey(0);
+}
+
 
 void VisionController::splitString(std::string str)
 {
@@ -202,6 +227,15 @@ void VisionController::sendObjectCoordinates()
   m_coordinates_sended = true;
   if(m_client.call(found_object_message))
   {
+    if(found_object_message.response.finished)
+    {
+      std::cout << "kan bewegen" << std::endl;
+    }
+    else
+    {
+      std::cout << "failed" << std::endl;
+    }
+    
     m_user_input_correct = false;
     m_color_object->setObjectDetected(false);
     m_destination_object->setObjectDetected(false);
@@ -235,7 +269,7 @@ void VisionController::findObjectLoop(std::shared_ptr<ColorObject>& color_object
     cv::waitKey(30);
     cloneFrames();
     m_object_detector.filterFrame(m_filtered_frame);
-    m_object_detector.filterColor(color_object, m_filtered_frame);
+    m_object_detector.filterColor(color_object, m_filtered_frame,m_color_mask);
     m_object_detector.findShape(color_object, m_drawing_frame);
 
     if (color_object->getObjectDetected())
@@ -247,13 +281,8 @@ void VisionController::findObjectLoop(std::shared_ptr<ColorObject>& color_object
 
 void VisionController::visionControllerLoop()
 {
-  m_cap.open(CAMERA_ID);
-
   while (true)
   {
-    m_cap >> m_frame;
-    imshow("live", m_frame);
-    cv::waitKey(30);
     if (m_user_input_correct)
     {
       if (!m_color_object->getObjectDetected() && !m_destination_object->getObjectDetected())
@@ -274,19 +303,18 @@ void VisionController::visionControllerLoop()
         std::cout << "Voer een vorm en een kleur in met als format: [vorm][whitespace][kleur]" << std::endl;
         m_user_input_correct = false;
       }
-
-      imshow("object detector", m_drawing_frame);
     }
   }
-  cv::waitKey(0);
 }
 
 void VisionController::startApplication()
 {
   m_calibrator.startCalibration();
-  std::thread userInputThread = readInputThread();
+  std::thread user_input_thread = readInputThread();
+  std::thread video_cam_thread = videoCamThread();
   visionControllerLoop();
-  userInputThread.join();
+  user_input_thread.join();
+  video_cam_thread.join();
 }
 
 int main(int argc, char** argv)

@@ -12,13 +12,6 @@ const int ENTER_KEY_ASCII = 10;
 Calibration::Calibration() : m_iLowH(0), m_iHighH(0), m_iLowS(0), m_iHighS(0), m_iLowV(0), m_iHighV(0), m_iterator(0)
 {
   setDefaultColorScales();
-  cv::namedWindow("trackBarWindow", WINDOW_SIZE);
-  cv::createTrackbar("iLowH", "trackBarWindow", &m_iLowH, 180, calibrate, this);
-  cv::createTrackbar("iHighH", "trackBarWindow", &m_iHighH, 180, calibrate, this);
-  cv::createTrackbar("iLowS", "trackBarWindow", &m_iLowS, 255, calibrate, this);
-  cv::createTrackbar("iHighS", "trackBarWindow", &m_iHighS, 255, calibrate, this);
-  cv::createTrackbar("iLowV", "trackBarWindow", &m_iLowV, 255, calibrate, this);
-  cv::createTrackbar("iHighV", "trackBarWindow", &m_iHighV, 255, calibrate, this);
 }
 
 Calibration::~Calibration()
@@ -191,6 +184,14 @@ void Calibration::setDefaultColorScales()
 
 void Calibration::startCalibration()
 {
+  cv::namedWindow("trackBarWindow", WINDOW_SIZE);
+  cv::createTrackbar("iLowH", "trackBarWindow", &m_iLowH, 180, calibrate, this);
+  cv::createTrackbar("iHighH", "trackBarWindow", &m_iHighH, 180, calibrate, this);
+  cv::createTrackbar("iLowS", "trackBarWindow", &m_iLowS, 255, calibrate, this);
+  cv::createTrackbar("iHighS", "trackBarWindow", &m_iHighS, 255, calibrate, this);
+  cv::createTrackbar("iLowV", "trackBarWindow", &m_iLowV, 255, calibrate, this);
+  cv::createTrackbar("iHighV", "trackBarWindow", &m_iHighV, 255, calibrate, this);
+
   m_cap.open(CAMERA_ID);
   ColorScale colorScale = m_color_scales.at(m_iterator);
 
@@ -227,5 +228,4 @@ void Calibration::startCalibration()
   }
   cv::destroyAllWindows();
   m_cap.release();
-  //cv::waitKey(0);
 }

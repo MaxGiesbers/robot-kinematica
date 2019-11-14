@@ -196,21 +196,20 @@ void ObjectDetector::findShape(std::shared_ptr<ColorObject>& color_object, cv::M
   }
 }
 
-void ObjectDetector::filterColor(const std::shared_ptr<ColorObject>& color_object, cv::Mat& filtered_frame)
+void ObjectDetector::filterColor(const std::shared_ptr<ColorObject>& color_object, cv::Mat& filtered_frame, cv::Mat& color_mask)
 {
   cv::Mat frameHSV;
   // Changes contrast of color;
-  cv::Mat colorMask = BrightnessAndContrastAuto(filtered_frame, 5);
-  cvtColor(colorMask, frameHSV, cv::COLOR_BGR2HSV);
+  color_mask = BrightnessAndContrastAuto(filtered_frame, 5);
+  cvtColor(color_mask, frameHSV, cv::COLOR_BGR2HSV);
   inRange(frameHSV,
           cv::Scalar(color_object->getColorScale().iLowH, color_object->getColorScale().iLowS,
                      color_object->getColorScale().iLowV),
           cv::Scalar(color_object->getColorScale().iHighH, color_object->getColorScale().iHighS,
                      color_object->getColorScale().iHighV),
-          colorMask);
+          color_mask);
 
-  color_object->setColorMask(colorMask);
-  imshow("detection", colorMask);
+  color_object->setColorMask(color_mask);
 }
 
 cv::Mat ObjectDetector::BrightnessAndContrastAuto(const cv::Mat& frame, double clip_hist_percent = 0)

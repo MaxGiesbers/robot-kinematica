@@ -15,8 +15,6 @@ RobotController::RobotController(const std::string& name):
     m_service = m_node_handle.advertiseService("found_object", &RobotController::moveObjectToDestination, this);
 }
 
-
-
 bool RobotController::moveObjectToDestination(robot_kinematica::found_object::Request& req, robot_kinematica::found_object::Response& res)
 {
     m_current_angles[0][0] = 0.0;
@@ -31,35 +29,35 @@ bool RobotController::moveObjectToDestination(robot_kinematica::found_object::Re
     const Kinematics::Matrix<double, 3, 1> object_position_below(
     {{req.origin_y}, {req.origin_z - 0.05}, {req.origin_x - 0.015}});
 
-    //  const Kinematics::Matrix<double, 3, 1> destination_position(
-    // {{req.destination_y}, {req.destination_z}, {req.destination_x - 0.015}});
-
     const Kinematics::Matrix<double, 3, 1> destination_position(
     {{req.destination_y}, {0}, {req.destination_x - 0.015}});
 
     auto above_object_position = m_kinematics.inverse_kinematics(m_current_angles, object_position);
-
-
-    double gripper_angle = above_object_position.value()[0][0] + req.angle_difference;
-    std::cout << "gripper angle: " << gripper_angle << std::endl;
-    std::cout << "current angle: " << m_current_angles[0][0] << std::endl;
-
     auto above_object_grap_position = m_kinematics.inverse_kinematics(m_current_angles, object_position_below);
     auto above_destination_position = m_kinematics.inverse_kinematics(m_current_angles, destination_position);
 
-    moveGripper(0);
-    moveArm(above_object_position, gripper_angle);
-    moveArm(above_object_grap_position, gripper_angle);
-    moveGripper(29);
-    moveArm(above_destination_position, 0);
-    moveGripper(0);
+    if(above_object_position.has_value() && above_object_grap_position.has_value() && above_destination_position.has_value())
+    {
+        double gripper_angle = above_object_position.value()[0][0] + req.angle_difference;
+        std::cout << "gripper angle: " << gripper_angle << std::endl;
+        std::cout << "current angle: " << m_current_angles[0][0] << std::endl;
+        moveGripper(0);
+        moveArm(above_object_position, gripper_angle);
+        moveArm(above_object_grap_position, gripper_angle);
+        moveGripper(29);
+        moveArm(above_destination_position, 0);
+        moveGripper(0);
 
-    robot_kinematica::al5dPositionGoal goal;
-    goal.name = "PARK";
-    goal.time = 2000;
-    m_al5d_action_client.sendGoalAndWait(goal);
-    std::cout << "finished return true" << std::endl;
-    res.finished = true;
+        robot_kinematica::al5dPositionGoal goal;
+        goal.name = "PARK";
+        goal.time = 2000;
+        m_al5d_action_client.sendGoalAndWait(goal);
+        res.finished = true;
+    }
+    else
+    {
+        res.finished = false;
+    }
 
   return true;
 }
