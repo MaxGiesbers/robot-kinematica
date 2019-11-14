@@ -39,17 +39,13 @@ private:
   ros::Publisher m_publisher;
   ros::NodeHandle m_node_handle;
 
-
   ros::ServiceClient m_client;
-
 
   std::shared_ptr<ColorObject> m_color_object;
   std::shared_ptr<ColorObject> m_destination_object;
 
   Calibration m_calibrator;
   std::atomic<bool> m_user_input_correct;
-
-
 
   ColorScale getColorScale(std::string& color);
 

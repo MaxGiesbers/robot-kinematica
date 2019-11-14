@@ -75,7 +75,7 @@ bool ObjectDetector::checkSquareAndRectangle(std::shared_ptr<ColorObject>& color
       }
     }
   }
-  
+
   return found_object;
 }
 
@@ -196,7 +196,8 @@ void ObjectDetector::findShape(std::shared_ptr<ColorObject>& color_object, cv::M
   }
 }
 
-void ObjectDetector::filterColor(const std::shared_ptr<ColorObject>& color_object, cv::Mat& filtered_frame, cv::Mat& color_mask)
+void ObjectDetector::filterColor(const std::shared_ptr<ColorObject>& color_object, cv::Mat& filtered_frame,
+                                 cv::Mat& color_mask)
 {
   cv::Mat frameHSV;
   // Changes contrast of color;

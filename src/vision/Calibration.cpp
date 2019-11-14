@@ -27,11 +27,8 @@ void Calibration::setCalibratedColorValues()
   m_color_scales.at(m_iterator).iLowV = m_iLowV;
   m_color_scales.at(m_iterator).iHighV = m_iHighV;
 
-   
-  std::cout << "New Values: " << m_iLowH<< ", " << m_iHighH << ", " << m_iLowS << ", "
-    << m_iHighS << ", " << m_iLowV << ", " << m_iHighV << " for color "
-    << m_color_scales.at(m_iterator).color << std::endl;
-  
+  std::cout << "New Values: " << m_iLowH << ", " << m_iHighH << ", " << m_iLowS << ", " << m_iHighS << ", " << m_iLowV
+            << ", " << m_iHighV << " for color " << m_color_scales.at(m_iterator).color << std::endl;
 }
 
 void Calibration::setColorValues()
@@ -179,7 +176,7 @@ void Calibration::setDefaultColorScales()
   m_color_scales.push_back(ColorScale{ 65, 162, 124, 255, 131, 255, "blauw" });
   m_color_scales.push_back(ColorScale{ 14, 40, 41, 255, 229, 255, "geel" });
   m_color_scales.push_back(ColorScale{ 0, 179, 9, 100, 0, 51, "zwart" });
-  m_color_scales.push_back(ColorScale{ 0, 145, 0, 135, 199, 255 , "wit" });
+  m_color_scales.push_back(ColorScale{ 0, 145, 0, 135, 199, 255, "wit" });
 }
 
 void Calibration::startCalibration()
@@ -201,9 +198,9 @@ void Calibration::startCalibration()
   {
     m_cap >> m_capture_window;
     imshow("captureWindow", m_capture_window);
-    cv::moveWindow("captureWindow", 1500,20);
+    cv::moveWindow("captureWindow", 1500, 20);
     cv::imshow("trackBarWindow", 0);
-    cv::moveWindow("trackBarWindow", 800,20);
+    cv::moveWindow("trackBarWindow", 800, 20);
 
     cv::waitKey(30);
 
@@ -217,7 +214,6 @@ void Calibration::startCalibration()
     if (cv::waitKey() == ENTER_KEY_ASCII)
     {
       setCalibratedColorValues();
-     
 
       ++m_iterator;
       if (m_iterator < m_color_scales.size())

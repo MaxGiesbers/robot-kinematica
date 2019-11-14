@@ -24,13 +24,12 @@ void LowLevelDriver::writeMessage(const std::string& message)
   ROS_DEBUG_STREAM(message);
   std::cout << message << std::endl;
   boost::asio::write(serial, boost::asio::buffer(message.c_str(), message.size()));
-
 }
 
 void LowLevelDriver::initialPosition()
 {
-    writeMessage("#0P1489#1P1798#2P1743#3P935#4P1500#5P1000T2000\r");
-    ROS_INFO("STATE: INIT");
+  writeMessage("#0P1489#1P1798#2P1743#3P935#4P1500#5P1000T2000\r");
+  ROS_INFO("STATE: INIT");
 }
 
 void LowLevelDriver::emergencyStop()

@@ -18,14 +18,13 @@ const double BASE_GROUND_OFFSET = -0.02;
 const int NUMBER_OF_LOOPS = 100;
 const uint16_t QUEUE_SIZE = 1000;
 }  // namespace
-  
 
 VisionController::VisionController() : m_user_input_correct(false), m_coordinates_sended(false)
 {
   m_client = m_node_handle.serviceClient<robot_kinematica::found_object>("found_object");
-  m_drawing_frame = cv::Mat::zeros(cv::Size(1,49), CV_64FC1);
-  m_filtered_frame = cv::Mat::zeros(cv::Size(1,49), CV_64FC1);  
-  m_color_mask = cv::Mat::zeros(cv::Size(1,49), CV_64FC1);  
+  m_drawing_frame = cv::Mat::zeros(cv::Size(1, 49), CV_64FC1);
+  m_filtered_frame = cv::Mat::zeros(cv::Size(1, 49), CV_64FC1);
+  m_color_mask = cv::Mat::zeros(cv::Size(1, 49), CV_64FC1);
 }
 
 VisionController::~VisionController()
@@ -44,7 +43,6 @@ std::thread VisionController::videoCamThread()
 
 void VisionController::readVideoCam()
 {
-  std::cout << "open de cam" << std::endl;
   m_cap.open(CAMERA_ID);
   while (true)
   {
@@ -56,7 +54,6 @@ void VisionController::readVideoCam()
   }
   cv::waitKey(0);
 }
-
 
 void VisionController::splitString(std::string str)
 {
@@ -125,24 +122,23 @@ void VisionController::readCommandLineInput()
   }
 }
 
-
 double VisionController::getAngleDifference()
 {
   double angleDifference = 0;
-  
+
   if (m_color_object->m_approx[3].x < BASE_CARTESIAN_X)
   {
     double xDev1 = BASE_CARTESIAN_X - m_color_object->m_approx[3].x;
     double yDev1 = BASE_CARTESIAN_Y - m_color_object->m_approx[3].y;
 
     double hypotenuse1 = std::hypot(xDev1, yDev1);
-    double angle1 = std::asin(xDev1/hypotenuse1);
+    double angle1 = std::asin(xDev1 / hypotenuse1);
 
     double xDev2 = BASE_CARTESIAN_X - m_color_object->m_approx[0].x;
     double yDev2 = BASE_CARTESIAN_Y - m_color_object->m_approx[0].y;
 
     double hypotenuse2 = std::hypot(xDev2, yDev2);
-    double angle2 = std::asin(xDev2/hypotenuse2);
+    double angle2 = std::asin(xDev2 / hypotenuse2);
 
     angleDifference = ((angle2 - angle1) * 180 / M_PI) * -1;
   }
@@ -152,13 +148,13 @@ double VisionController::getAngleDifference()
     double yDev1 = BASE_CARTESIAN_Y - m_color_object->m_approx[0].y;
 
     double hypotenuse1 = std::hypot(xDev1, yDev1);
-    double angle1 = std::asin(xDev1/hypotenuse1);
+    double angle1 = std::asin(xDev1 / hypotenuse1);
 
     double xDev2 = m_color_object->m_approx[3].x - BASE_CARTESIAN_X;
     double yDev2 = BASE_CARTESIAN_Y - m_color_object->m_approx[3].y;
 
     double hypotenuse2 = std::hypot(xDev2, yDev2);
-    double angle2 = std::asin(xDev2/hypotenuse2);
+    double angle2 = std::asin(xDev2 / hypotenuse2);
 
     angleDifference = (angle2 - angle1) * 180 / M_PI;
   }
@@ -167,52 +163,53 @@ double VisionController::getAngleDifference()
 
 void VisionController::sendObjectCoordinates()
 {
-  //robot_kinematica::found_object found_object_message;
+  // robot_kinematica::found_object found_object_message;
   robot_kinematica::found_object found_object_message;
-
 
   double objectPolarX = 0;
   double objectPolarY = 0;
   double destinationPolarX = 0;
   double destinationPolarY = 0;
 
-  if (m_color_object->getCenterYPos() > BASE_CARTESIAN_Y) 
+  if (m_color_object->getCenterYPos() > BASE_CARTESIAN_Y)
   {
     std::cout << "Error, object is unreachable." << std::endl;
   }
-  else if (m_color_object->getCenterXPos() < BASE_CARTESIAN_X) 
+  else if (m_color_object->getCenterXPos() < BASE_CARTESIAN_X)
   {
     objectPolarX = convertPixelToCmXPosition((BASE_CARTESIAN_X - m_color_object->getCenterXPos()) * -1) / 100;
     objectPolarY = convertPixelToCmYPosition(BASE_CARTESIAN_Y - m_color_object->getCenterYPos()) / 100;
   }
-  else if (m_color_object->getCenterXPos()>= BASE_CARTESIAN_X) 
+  else if (m_color_object->getCenterXPos() >= BASE_CARTESIAN_X)
   {
-
     objectPolarX = convertPixelToCmXPosition(m_color_object->getCenterXPos() - BASE_CARTESIAN_X) / 100;
     objectPolarY = convertPixelToCmYPosition(BASE_CARTESIAN_Y - m_color_object->getCenterYPos()) / 100;
   }
 
-  if (m_destination_object->getCenterYPos() > BASE_CARTESIAN_Y) 
+  if (m_destination_object->getCenterYPos() > BASE_CARTESIAN_Y)
   {
     std::cout << "Error, object is unreachable." << std::endl;
   }
-  else if (m_destination_object->getCenterXPos() < BASE_CARTESIAN_X) 
-  { 
-    destinationPolarX = convertPixelToCmXPosition((BASE_CARTESIAN_X - m_destination_object->getCenterXPos()) * -1) / 100;
-    destinationPolarY = convertPixelToCmYPosition(BASE_CARTESIAN_Y - m_destination_object->getCenterYPos()) / 100; 
+  else if (m_destination_object->getCenterXPos() < BASE_CARTESIAN_X)
+  {
+    destinationPolarX =
+        convertPixelToCmXPosition((BASE_CARTESIAN_X - m_destination_object->getCenterXPos()) * -1) / 100;
+    destinationPolarY = convertPixelToCmYPosition(BASE_CARTESIAN_Y - m_destination_object->getCenterYPos()) / 100;
   }
-  else if (m_destination_object->getCenterXPos() >= BASE_CARTESIAN_X) 
-  {    
+  else if (m_destination_object->getCenterXPos() >= BASE_CARTESIAN_X)
+  {
     destinationPolarX = convertPixelToCmXPosition(m_destination_object->getCenterXPos() - BASE_CARTESIAN_X) / 100;
     destinationPolarY = convertPixelToCmYPosition(BASE_CARTESIAN_Y - m_destination_object->getCenterYPos()) / 100;
   }
 
   ROS_INFO_STREAM("\nFound object dimensions"
-                  << " x: " << "Object_x_dimension" << " y: " << "object_y_dimension" << "\nFound object origin location"
-                  << " x: " << objectPolarX << " y: " << objectPolarY
-                  << " \nDestination origin location"
+                  << " x: "
+                  << "Object_x_dimension"
+                  << " y: "
+                  << "object_y_dimension"
+                  << "\nFound object origin location"
+                  << " x: " << objectPolarX << " y: " << objectPolarY << " \nDestination origin location"
                   << " x: " << destinationPolarX << " y: " << destinationPolarY);
-
 
   found_object_message.request.origin_x = objectPolarX;
   found_object_message.request.origin_y = objectPolarY;
@@ -223,11 +220,11 @@ void VisionController::sendObjectCoordinates()
   found_object_message.request.destination_z = BASE_GROUND_OFFSET;
 
   found_object_message.request.angle_difference = getAngleDifference();
- 
+
   m_coordinates_sended = true;
-  if(m_client.call(found_object_message))
+  if (m_client.call(found_object_message))
   {
-    if(found_object_message.response.finished)
+    if (found_object_message.response.finished)
     {
       std::cout << "kan bewegen" << std::endl;
     }
@@ -235,7 +232,7 @@ void VisionController::sendObjectCoordinates()
     {
       std::cout << "failed" << std::endl;
     }
-    
+
     m_user_input_correct = false;
     m_color_object->setObjectDetected(false);
     m_destination_object->setObjectDetected(false);
@@ -269,11 +266,11 @@ void VisionController::findObjectLoop(std::shared_ptr<ColorObject>& color_object
     cv::waitKey(30);
     cloneFrames();
     m_object_detector.filterFrame(m_filtered_frame);
-    m_object_detector.filterColor(color_object, m_filtered_frame,m_color_mask);
+    m_object_detector.filterColor(color_object, m_filtered_frame, m_color_mask);
     m_object_detector.findShape(color_object, m_drawing_frame);
 
     if (color_object->getObjectDetected())
-    { 
+    {
       break;
     }
   }

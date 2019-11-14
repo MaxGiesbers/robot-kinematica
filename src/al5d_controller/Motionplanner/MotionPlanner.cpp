@@ -117,10 +117,6 @@ void emergencyCallback(const ros::TimerEvent& event)
 
 int main(int argc, char** argv)
 {
-
-
-
-
   ros::init(argc, argv, "al5d_motionplanner");
   MotionPlanner ac("robot_kinematica", true);
   ros::AsyncSpinner spinner(2);

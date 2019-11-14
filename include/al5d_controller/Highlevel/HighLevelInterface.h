@@ -17,7 +17,6 @@ public:
   ~HighLevelInterface(void);
   void executeCB(const robot_kinematica::al5dPositionGoalConstPtr& goal);
   void concatMessage(const robot_kinematica::al5dPositionGoalConstPtr& goal);
-  bool emergencyStop(robot_kinematica::eStop::Request& req, robot_kinematica::eStop::Response& res);
   void run(const robot_kinematica::al5dPositionGoalConstPtr& goal);
   void openGripper();
   void closeGripper();

@@ -15,7 +15,6 @@ public:
 
   void setCenterXPos(const double center_x_pos);
   void setCenterYPos(const double center_y_pos);
-  
 
   void setObjectDetected(bool object_detected);
 

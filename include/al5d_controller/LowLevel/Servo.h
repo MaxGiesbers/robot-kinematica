@@ -3,14 +3,14 @@
 
 #include <string>
 
-enum SERVO_ID: int
+enum SERVO_ID : int
 {
-    BASE = 0,
-    SHOULDER,
-    ELBOW,
-    WRIST,
-    WRIST_ROTATE,
-    GRIPPER
+  BASE = 0,
+  SHOULDER,
+  ELBOW,
+  WRIST,
+  WRIST_ROTATE,
+  GRIPPER
 };
 
 class Servo

@@ -39,12 +39,6 @@ void HighLevelInterface::run(const robot_kinematica::al5dPositionGoalConstPtr& g
   }
 }
 
-bool HighLevelInterface::emergencyStop(robot_kinematica::eStop::Request& req, robot_kinematica::eStop::Response& res)
-{
-  m_low_level_component.emergencyStop();
-  return true;
-}
-
 void HighLevelInterface::openGripper()
 {
   m_servo_list[SERVO_ID::GRIPPER].setIncomingDegrees(0);
@@ -73,7 +67,7 @@ void HighLevelInterface::park()
 
 void HighLevelInterface::moveAllServos()
 {
-  for (Servo& servo: m_servo_list)
+  for (Servo& servo : m_servo_list)
   {
     servo.setMoveServo(true);
   }
@@ -84,7 +78,7 @@ void HighLevelInterface::moveServos()
   std::stringstream ss;
   for (Servo& servo : m_servo_list)
   {
-    if(servo.canMoveServo())
+    if (servo.canMoveServo())
     {
       ss << "#" << servo.getServoId() << "P" << servo.degreesToPwm(servo.getIncomingDegrees());
       servo.setMoveServo(false);
@@ -95,12 +89,11 @@ void HighLevelInterface::moveServos()
   m_al5d_action_server.setSucceeded();
 }
 
-
 void HighLevelInterface::concatMessage(const robot_kinematica::al5dPositionGoalConstPtr& goal)
 {
   std::stringstream ss;
 
-  for(std::size_t i = 0; i <  (*goal).servos.size(); i ++ )
+  for (std::size_t i = 0; i < (*goal).servos.size(); i++)
   {
     Servo& servo = m_servo_list[(*goal).servos[i]];
     servo.setIncomingDegrees((*goal).degrees[i]);
@@ -116,7 +109,6 @@ void HighLevelInterface::concatMessage(const robot_kinematica::al5dPositionGoalC
   ROS_INFO_STREAM("STATE: SUCCEEDED: " << (*goal).name);
 }
 
-
 void HighLevelInterface::initServoList()
 {
   m_servo_list.push_back(Servo(SERVO_ID::BASE, -90, 90, 553, 2425));
@@ -127,18 +119,16 @@ void HighLevelInterface::initServoList()
   m_servo_list.push_back(Servo(SERVO_ID::GRIPPER, 0, 29, 1000, 2100));
 }
 
-
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
-    ros::init(argc, argv, "al5d_interface");    
-    if(argc != 2)
-    {
-        ROS_WARN_STREAM ("Missing USB port argument trye something like: /dev/ttyUSB0");
-        return 1;
-    }
-    HighLevelInterface highLevelInterface("robot_kinematica", argv[1]);
-    ros::spin();
+  ros::init(argc, argv, "al5d_interface");
+  if (argc != 2)
+  {
+    ROS_WARN_STREAM("Missing USB port argument trye something like: /dev/ttyUSB0");
+    return 1;
+  }
+  HighLevelInterface highLevelInterface("robot_kinematica", argv[1]);
+  ros::spin();
 
-    return 0;
+  return 0;
 }
-

@@ -5,24 +5,23 @@
 #include "al5d_controller/Kinematics.h"
 #include "robot_kinematica/found_object.h"
 
-
 class RobotController
 {
-    public:
-    RobotController(const std::string& name);
-    ~RobotController();
+public:
+  RobotController(const std::string& name);
+  ~RobotController();
 
-    private:
+private:
+  Kinematics::Kinematics m_kinematics;
+  Kinematics::Matrix<double, 4, 1> m_current_angles;
 
-    Kinematics::Kinematics m_kinematics;
-    Kinematics::Matrix<double, 4, 1> m_current_angles;
-
-    ros::NodeHandle m_node_handle;
-    bool m_objectCoordinatesReceived;
-    robot_kinematica::found_object m_found_object;
-    actionlib::SimpleActionClient<robot_kinematica::al5dPositionAction> m_al5d_action_client;
-    void moveArm(const std::optional<Kinematics::Matrix<double, 4, 1>>  position, const double gripper_angle);
-    void moveGripper(const double degrees);
-    bool moveObjectToDestination(robot_kinematica::found_object::Request& req, robot_kinematica::found_object::Response& res);
-    ros::ServiceServer m_service;
+  ros::NodeHandle m_node_handle;
+  bool m_objectCoordinatesReceived;
+  robot_kinematica::found_object m_found_object;
+  actionlib::SimpleActionClient<robot_kinematica::al5dPositionAction> m_al5d_action_client;
+  void moveArm(const std::optional<Kinematics::Matrix<double, 4, 1>> position, const double gripper_angle);
+  void moveGripper(const double degrees);
+  bool moveObjectToDestination(robot_kinematica::found_object::Request& req,
+                               robot_kinematica::found_object::Response& res);
+  ros::ServiceServer m_service;
 };
