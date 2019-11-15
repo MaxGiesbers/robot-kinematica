@@ -93,14 +93,16 @@ bool RobotController::moveObjectToDestination(robot_kinematica::found_object::Re
   m_current_angles[0][2] = 115.0;
   m_current_angles[0][3] = -55.0;
 
+
+
   const Kinematics::Matrix<double, 3, 1> object_position(
-      { { req.origin_y }, { req.origin_z }, { req.origin_x - 0.015 } });
+      { { req.origin_y }, { req.origin_z }, { req.origin_x} });
 
   const Kinematics::Matrix<double, 3, 1> object_position_below(
-      { { req.origin_y }, { req.origin_z - 0.05 }, { req.origin_x - 0.015 } });
+      { { req.origin_y }, { req.origin_z - 0.05 }, { req.origin_x } });
 
   const Kinematics::Matrix<double, 3, 1> destination_position(
-      { { req.destination_y }, { 0 }, { req.destination_x - 0.015 } });
+      { { req.destination_y }, { 0 }, { req.destination_x} });
 
   auto above_object_position = m_kinematics.inverse_kinematics(m_current_angles, object_position);
   auto above_object_grap_position = m_kinematics.inverse_kinematics(m_current_angles, object_position_below);

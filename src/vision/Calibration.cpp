@@ -173,10 +173,10 @@ void Calibration::setDefaultColorScales()
 {
   m_color_scales.push_back(ColorScale{ 53, 95, 41, 193, 40, 255, "groen" });
   m_color_scales.push_back(ColorScale{ 139, 179, 62, 255, 156, 255, "rood" });
-  m_color_scales.push_back(ColorScale{ 65, 162, 124, 255, 131, 255, "blauw" });
+  m_color_scales.push_back(ColorScale{ 68, 180, 249, 255, 122, 255  , "blauw" });
   m_color_scales.push_back(ColorScale{ 14, 40, 41, 255, 229, 255, "geel" });
   m_color_scales.push_back(ColorScale{ 0, 179, 9, 100, 0, 51, "zwart" });
-  m_color_scales.push_back(ColorScale{ 0, 145, 0, 135, 199, 255, "wit" });
+  m_color_scales.push_back(ColorScale{ 0, 97, 30, 151, 255, 255, "wit" });
 }
 
 void Calibration::startCalibration()

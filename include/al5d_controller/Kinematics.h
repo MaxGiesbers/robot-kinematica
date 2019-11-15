@@ -21,6 +21,6 @@ private:
                                         { -30.0, 90.0 },
                                         { 0.0, 135.0 },
                                         { -90.0, 90.0 },
-                                        { -90.0, 90.0 } };  // Bijwerken...dfjlfldffajfd
+                                        { -90.0, 90.0 } };
 };
 }  // namespace Kinematics

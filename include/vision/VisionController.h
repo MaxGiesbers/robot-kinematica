@@ -22,6 +22,8 @@ public:
   void cloneFrames();
   void findObjectLoop(std::shared_ptr<ColorObject>& color_object);
 
+  double getObjectCorrectedX(double object_center_x);
+
   std::thread readInputThread();
   std::thread videoCamThread();
   void readVideoCam();

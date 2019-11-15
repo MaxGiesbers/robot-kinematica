@@ -10,14 +10,35 @@ const uint8_t ROS_LOOP_RATE = 20;
 const int CAMERA_ID = 0;
 const double SCREEN_HEIGHT = 480;
 const double SCREEN_WIDTH = 640;
-const double SCREEN_WIDTH_CM = 47.7;
-const double SCREEN_HEIGHT_CM = 35.8;
-const double BASE_CARTESIAN_X = 343;
-const double BASE_CARTESIAN_Y = 449;
+const double SCREEN_WIDTH_CM = 46.8;
+const double SCREEN_HEIGHT_CM = 35.5;
+const double BASE_CARTESIAN_X = 336;
+const double BASE_CARTESIAN_Y = 467;
 const double BASE_GROUND_OFFSET = -0.02;
 const int NUMBER_OF_LOOPS = 100;
 const uint16_t QUEUE_SIZE = 1000;
 }  // namespace
+
+
+
+
+double VisionController::getObjectCorrectedX(double object_center_x)
+{	
+  double object_corrected_x = 0;
+
+	const double a = 0.540126931;
+	const double b = -0.0355280635;
+	const double c = 0.011841286;
+
+  object_corrected_x =  a * (std::pow(object_center_x, 2) + b * object_center_x + c);
+
+  if (object_center_x < 0 )
+  {
+    object_corrected_x *= -1;
+  }
+
+	return  object_corrected_x;
+}
 
 VisionController::VisionController() : m_user_input_correct(false), m_coordinates_sended(false)
 {
@@ -203,6 +224,8 @@ void VisionController::sendObjectCoordinates()
     destinationPolarY = convertPixelToCmYPosition(BASE_CARTESIAN_Y - m_destination_object->getCenterYPos()) / 100;
   }
 
+
+
   ROS_INFO_STREAM("\nFound object dimensions"
                   << " x: "
                   << "Object_x_dimension"
@@ -212,11 +235,16 @@ void VisionController::sendObjectCoordinates()
                   << " x: " << objectPolarX << " y: " << objectPolarY << " \nDestination origin location"
                   << " x: " << destinationPolarX << " y: " << destinationPolarY);
 
-  found_object_message.request.origin_x = objectPolarX;
+  double correction_x_position = getObjectCorrectedX(objectPolarX);
+  std::cout << correction_x_position << std::endl;
+  std::cout << " ---------------------------" << std::endl;
+  found_object_message.request.origin_x = correction_x_position + objectPolarX;
   found_object_message.request.origin_y = objectPolarY;
   found_object_message.request.origin_z = BASE_GROUND_OFFSET;
 
-  found_object_message.request.destination_x = destinationPolarX;
+  correction_x_position = getObjectCorrectedX(destinationPolarX);
+  std::cout << correction_x_position << std::endl;
+  found_object_message.request.destination_x = destinationPolarX + correction_x_position;
   found_object_message.request.destination_y = destinationPolarY;
   found_object_message.request.destination_z = BASE_GROUND_OFFSET;
 
@@ -225,6 +253,9 @@ void VisionController::sendObjectCoordinates()
   found_object_message.request.approx_1_x = m_color_object->m_approx[1].x;
   found_object_message.request.approx_1_y = m_color_object->m_approx[1].y;
   found_object_message.request.approx_3_x = m_color_object->m_approx[3].x;
+
+
+
 
   // found_object_message.request.angle_difference = getAngleDifference();
 
