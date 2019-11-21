@@ -84,7 +84,7 @@ void HighLevelInterface::moveServos()
       servo.setMoveServo(false);
     }
   }
-  ss << "T" << 1000 << "\r";
+  ss << "T" << 2000 << "\r";
   m_low_level_component.writeMessage(ss.str());
   m_al5d_action_server.setSucceeded();
 }
@@ -103,7 +103,7 @@ void HighLevelInterface::concatMessage(const robot_kinematica::al5dPositionGoalC
   ss << "T" << 2000 << "\r";
   m_low_level_component.writeMessage(ss.str());
 
-  ros::Duration(2).sleep();
+  ros::Duration(4).sleep();
 
   m_al5d_action_server.setSucceeded();
   ROS_INFO_STREAM("STATE: SUCCEEDED: " << (*goal).name);

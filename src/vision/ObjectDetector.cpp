@@ -11,7 +11,7 @@ ObjectDetector::~ObjectDetector()
 
 void ObjectDetector::filterFrame(cv::Mat& filtered_frame)
 {
-  cv::GaussianBlur(filtered_frame, filtered_frame, cv::Size(9, 9), 0, 0);
+  cv::GaussianBlur(filtered_frame, filtered_frame, cv::Size(3, 3), 0, 0);
   cv::erode(filtered_frame, filtered_frame, cv::Mat(), cv::Point(-1, -1), 2, 1, 1);
   cv::dilate(filtered_frame, filtered_frame, cv::Mat(), cv::Point(-1, -1), 2, 1, 1);
 }
@@ -59,9 +59,9 @@ bool ObjectDetector::checkSquareAndRectangle(std::shared_ptr<ColorObject>& color
 
 
   // camera father away is a smaller value.
-  const short deviationSquare = 4;
-  const short deviationRectangle = 10;
-
+  const short deviationSquare = 10;
+  const short deviationRectangle = 30;
+  std::cout << "komt wel hier in" << std::endl;
   if (sideUpper > deviationSquare && sideDown > deviationSquare && sideLeft > deviationSquare &&
       sideRight > deviationSquare)
   {
@@ -74,8 +74,7 @@ bool ObjectDetector::checkSquareAndRectangle(std::shared_ptr<ColorObject>& color
         color_object->m_approx = approx;
         found_object = true;
       }
-      else if (std::fabs(sideUpper - sideLeft) > deviationRectangle && color_object->getInputFigure().compare("rechthoe"
-                                                                                                              "k") == 0)
+      else if (std::fabs(sideUpper - sideLeft) > deviationRectangle && color_object->getInputFigure().compare("rechthoek") == 0)
       {
         color_object->setFigure("rechthoek");
         color_object->m_approx = approx;
@@ -155,10 +154,10 @@ void ObjectDetector::findShape(std::shared_ptr<ColorObject>& color_object, cv::M
     cv::approxPolyDP(cv::Mat(contours[i]), approx, cv::arcLength(cv::Mat(contours[i]), true) * 0.02, true);
     std::cout << approx.size() << std::endl;
 
-    if (std::fabs(cv::contourArea(contours[i])) < 100 || !cv::isContourConvex(approx))
-    {
-      continue;
-    }
+    // if (std::fabs(cv::contourArea(contours[i])) < 100 || !cv::isContourConvex(approx))
+    // {
+    //   continue;
+    // }
     if (approx.size() == 3 && color_object->getInputFigure().compare("driehoek") == 0)
     {
       color_object->setFigure("driehoek");

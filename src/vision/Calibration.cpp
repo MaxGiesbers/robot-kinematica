@@ -173,13 +173,13 @@ void Calibration::setDefaultColorScales()
 {
   m_color_scales.push_back(ColorScale{ 53, 95, 41, 193, 40, 255, "groen" });
   m_color_scales.push_back(ColorScale{ 139, 179, 62, 255, 156, 255, "rood" });
-  m_color_scales.push_back(ColorScale{ 68, 180, 249, 255, 122, 255  , "blauw" });
+  m_color_scales.push_back(ColorScale{ 76, 176, 139, 255, 69, 255, "blauw" });
   m_color_scales.push_back(ColorScale{ 14, 40, 41, 255, 229, 255, "geel" });
   m_color_scales.push_back(ColorScale{ 0, 179, 9, 100, 0, 51, "zwart" });
-  m_color_scales.push_back(ColorScale{ 0, 97, 30, 151, 255, 255, "wit" });
+  m_color_scales.push_back(ColorScale{ 0, 174, 0, 255, 152, 255, "wit" });
 }
 
-void Calibration::startCalibration()
+void Calibration::startCalibration(const cv::VideoCapture& cap)
 {
   cv::namedWindow("trackBarWindow", WINDOW_SIZE);
   cv::createTrackbar("iLowH", "trackBarWindow", &m_iLowH, 180, calibrate, this);
@@ -189,7 +189,7 @@ void Calibration::startCalibration()
   cv::createTrackbar("iLowV", "trackBarWindow", &m_iLowV, 255, calibrate, this);
   cv::createTrackbar("iHighV", "trackBarWindow", &m_iHighV, 255, calibrate, this);
 
-  m_cap.open(CAMERA_ID);
+  m_cap = cap;
   ColorScale colorScale = m_color_scales.at(m_iterator);
   ROS_INFO_STREAM("press space bar to capture and calibrate on color: " << colorScale.color);
 
@@ -221,5 +221,4 @@ void Calibration::startCalibration()
     }
   }
   cv::destroyAllWindows();
-  m_cap.release();
 }

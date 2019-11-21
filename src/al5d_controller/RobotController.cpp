@@ -44,11 +44,6 @@ double RobotController::getGripperAngle(robot_kinematica::found_object::Request&
 
   double angleDiff = correctForServoLimits(angle - baseAngle);  // Het verschil tussen wat de huidige rotatie is v.s.
     std::cout << "angle diff: " <<  angleDiff << std::endl; 
-    // std::cout << "base Angle: " << baseAngle << std::endl;   
-    // double difference = baseAngle - angleDiff ;
-    // std::cout << "differnce: "   << difference << std::endl;  
-    
-    // std::cout << -1 - -1 << std::endl;                                             // wat deze moet zijn + correctie
 
     if(req.origin_x < BASE_CARTESIAN_X){
         gripperAngle = correctForServoLimits(angleDiff * -1);  // De hoek die de gripper moet aannemen om parrallel te
@@ -102,23 +97,37 @@ bool RobotController::moveObjectToDestination(robot_kinematica::found_object::Re
       { { req.origin_y }, { req.origin_z - 0.05 }, { req.origin_x } });
 
   const Kinematics::Matrix<double, 3, 1> destination_position(
-      { { req.destination_y }, { 0 }, { req.destination_x} });
+      { { req.destination_y }, { 0.02 }, { req.destination_x} });
+
+  const Kinematics::Matrix<double, 3, 1> destination_position_below(
+      { { req.destination_y }, { 0 - 0.03 }, { req.destination_x} });
 
   auto above_object_position = m_kinematics.inverse_kinematics(m_current_angles, object_position);
   auto above_object_grap_position = m_kinematics.inverse_kinematics(m_current_angles, object_position_below);
   auto above_destination_position = m_kinematics.inverse_kinematics(m_current_angles, destination_position);
+  auto above_destination_drop_position = m_kinematics.inverse_kinematics(m_current_angles, destination_position_below);
 
   if (above_object_position.has_value() && above_object_grap_position.has_value() &&
       above_destination_position.has_value())
   {
-    double gripper_angle = getGripperAngle(req, above_object_position);
+
+    double gripper_angle = 0;
+
+
+    if(!req.approx_0_x == 0 && !req.approx_0_y == 0 && !req.approx_1_x == 0 && !req.approx_1_y == 0 && !req.approx_3_x == 0)
+    {
+      gripper_angle = getGripperAngle(req, above_object_position);
+    }
     std::cout << gripper_angle << std::endl;
     moveGripper(0);
     moveArm(above_object_position, gripper_angle);
     moveArm(above_object_grap_position, gripper_angle);
     moveGripper(29);
+    moveArm(above_object_position, gripper_angle);
     moveArm(above_destination_position, 0);
+    moveArm(above_destination_drop_position, 0);
     moveGripper(0);
+    moveArm(above_destination_position, 0);
 
     robot_kinematica::al5dPositionGoal goal;
     goal.name = "PARK";

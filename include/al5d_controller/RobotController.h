@@ -4,7 +4,6 @@
 #include <actionlib/client/simple_action_client.h>
 #include "al5d_controller/Kinematics.h"
 #include "robot_kinematica/found_object.h"
-#include <math.h>       
 
 class RobotController
 {

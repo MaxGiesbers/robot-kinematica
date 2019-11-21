@@ -13,14 +13,14 @@ public:
   void splitString(std::string message);
   void splitAndStoreLinesBasedOnRegex();
   void checkStringValues(const std::string& figure, const std::string& color);
-  void visionControllerLoop();
+  void applicationLoop();
   void setFilteredFrame(const cv::Mat& filtered_frame);
   void readCommandLineInput();
   void findColorAndShape(const std::string& input_color, const std::string& input_figure);
-  void startApplication();
   void sendObjectCoordinates();
   void cloneFrames();
   void findObjectLoop(std::shared_ptr<ColorObject>& color_object);
+  void setApproxValues(robot_kinematica::found_object& found_object_message);
 
   double getObjectCorrectedX(double object_center_x);
 

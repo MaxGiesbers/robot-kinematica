@@ -14,31 +14,10 @@ const double SCREEN_WIDTH_CM = 46.8;
 const double SCREEN_HEIGHT_CM = 35.5;
 const double BASE_CARTESIAN_X = 336;
 const double BASE_CARTESIAN_Y = 467;
-const double BASE_GROUND_OFFSET = -0.02;
+const double BASE_GROUND_OFFSET = 0.0;
 const int NUMBER_OF_LOOPS = 100;
 const uint16_t QUEUE_SIZE = 1000;
 }  // namespace
-
-
-
-
-double VisionController::getObjectCorrectedX(double object_center_x)
-{	
-  double object_corrected_x = 0;
-
-	const double a = 0.540126931;
-	const double b = -0.0355280635;
-	const double c = 0.011841286;
-
-  object_corrected_x =  a * (std::pow(object_center_x, 2) + b * object_center_x + c);
-
-  if (object_center_x < 0 )
-  {
-    object_corrected_x *= -1;
-  }
-
-	return  object_corrected_x;
-}
 
 VisionController::VisionController() : m_user_input_correct(false), m_coordinates_sended(false)
 {
@@ -57,6 +36,26 @@ std::thread VisionController::readInputThread()
   return std::thread([=] { readCommandLineInput(); });
 }
 
+void VisionController::readCommandLineInput()
+{
+  ROS_INFO_STREAM("Voer een vorm en een kleur in met als format: [vorm][whitespace][kleur]");
+
+  std::string input = "";
+  ros::Rate rate(ROS_LOOP_RATE);
+
+  while (ros::ok())
+  {
+    if (!m_user_input_correct)
+    {
+      input = "";
+      // clean cin input
+      std::cin >> std::ws;
+      std::getline(std::cin, input);
+      splitString(input);
+    }
+  }
+}
+
 std::thread VisionController::videoCamThread()
 {
   return std::thread([=] { readVideoCam(); });
@@ -64,8 +63,6 @@ std::thread VisionController::videoCamThread()
 
 void VisionController::readVideoCam()
 {
-  std::cout << "komt in cam" << std::endl;
-  m_cap.open(CAMERA_ID);
   while (true)
   {
     m_cap >> m_frame;
@@ -75,6 +72,24 @@ void VisionController::readVideoCam()
     imshow("detection", m_color_mask);
   }
   cv::waitKey(0);
+}
+
+double VisionController::getObjectCorrectedX(double object_center_x)
+{	
+  double object_corrected_x = 0;
+
+	const double a = 0.540126931;
+	const double b = -0.0355280635;
+	const double c = 0.011841286;
+
+  object_corrected_x =  a * (std::pow(object_center_x, 2) + b * object_center_x + c);
+
+  if (object_center_x < 0 )
+  {
+    object_corrected_x *= -1;
+  }
+
+	return  object_corrected_x;
 }
 
 void VisionController::splitString(std::string str)
@@ -124,26 +139,6 @@ ColorScale VisionController::getColorScale(std::string& color)
   return m_calibrator.getColorScale(color);
 }
 
-void VisionController::readCommandLineInput()
-{
-  ROS_INFO_STREAM("Voer een vorm en een kleur in met als format: [vorm][whitespace][kleur]");
-
-  std::string input = "";
-  ros::Rate rate(ROS_LOOP_RATE);
-
-  while (ros::ok())
-  {
-    if (!m_user_input_correct)
-    {
-      input = "";
-      // clean cin input
-      std::cin >> std::ws;
-      std::getline(std::cin, input);
-      splitString(input);
-    }
-  }
-}
-
 double VisionController::getAngleDifference()
 {
   double angleDifference = 0;
@@ -185,7 +180,6 @@ double VisionController::getAngleDifference()
 
 void VisionController::sendObjectCoordinates()
 {
-  // robot_kinematica::found_object found_object_message;
   robot_kinematica::found_object found_object_message;
 
   double objectPolarX = 0;
@@ -224,8 +218,6 @@ void VisionController::sendObjectCoordinates()
     destinationPolarY = convertPixelToCmYPosition(BASE_CARTESIAN_Y - m_destination_object->getCenterYPos()) / 100;
   }
 
-
-
   ROS_INFO_STREAM("\nFound object dimensions"
                   << " x: "
                   << "Object_x_dimension"
@@ -248,17 +240,11 @@ void VisionController::sendObjectCoordinates()
   found_object_message.request.destination_y = destinationPolarY;
   found_object_message.request.destination_z = BASE_GROUND_OFFSET;
 
-  found_object_message.request.approx_0_x = m_color_object->m_approx[0].x;
-  found_object_message.request.approx_0_y = m_color_object->m_approx[0].y;
-  found_object_message.request.approx_1_x = m_color_object->m_approx[1].x;
-  found_object_message.request.approx_1_y = m_color_object->m_approx[1].y;
-  found_object_message.request.approx_3_x = m_color_object->m_approx[3].x;
-
-
-
-
-  // found_object_message.request.angle_difference = getAngleDifference();
-
+  if((!m_color_object->getFigure().compare("cirkel") == 0) && (!m_color_object->getFigure().compare("driehoek") == 0))
+  {
+    setApproxValues(found_object_message);
+  }
+  
   m_coordinates_sended = true;
   if (m_client.call(found_object_message))
   {
@@ -278,6 +264,15 @@ void VisionController::sendObjectCoordinates()
     m_destination_object->setObjectDetected(false);
     m_coordinates_sended = false;
   }
+}
+
+void VisionController::setApproxValues(robot_kinematica::found_object& found_object_message)
+{
+  found_object_message.request.approx_0_x = m_color_object->m_approx[0].x;
+  found_object_message.request.approx_0_y = m_color_object->m_approx[0].y;
+  found_object_message.request.approx_1_x = m_color_object->m_approx[1].x;
+  found_object_message.request.approx_1_y = m_color_object->m_approx[1].y;
+  found_object_message.request.approx_3_x = m_color_object->m_approx[3].x;
 }
 
 double VisionController::convertPixelToCmYPosition(const double pixel_value)
@@ -316,8 +311,13 @@ void VisionController::findObjectLoop(std::shared_ptr<ColorObject>& color_object
   }
 }
 
-void VisionController::visionControllerLoop()
+void VisionController::applicationLoop()
 {
+  m_cap.open(CAMERA_ID);
+  m_calibrator.startCalibration(m_cap);
+  std::thread user_input_thread = readInputThread();
+  std::thread video_cam_thread = videoCamThread();
+
   while (true)
   {
     if (m_user_input_correct)
@@ -342,14 +342,6 @@ void VisionController::visionControllerLoop()
       }
     }
   }
-}
-
-void VisionController::startApplication()
-{
-  m_calibrator.startCalibration();
-  std::thread user_input_thread = readInputThread();
-  std::thread video_cam_thread = videoCamThread();
-  visionControllerLoop();
   user_input_thread.join();
   video_cam_thread.join();
 }
@@ -358,9 +350,16 @@ int main(int argc, char** argv)
 {
   ros::init(argc, argv, "VisionController");
   ros::Time::init();
-  VisionController controller;
-  controller.startApplication();
-  ros::spin();
+  try
+	{
+		VisionController controller;
+    controller.applicationLoop();
+    ros::spin();
+	}
+	catch (const std::exception& e)
+	{
+    std:: cout << e.what() << std::endl;
+	}
 
   return 0;
 }

@@ -8,7 +8,7 @@ class Calibration
 public:
   Calibration();
   ~Calibration();
-  void startCalibration();
+  void startCalibration(const cv::VideoCapture& cap);
   ColorScale getColorScale(std::string color) const;
 
 private:
