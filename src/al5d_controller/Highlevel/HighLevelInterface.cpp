@@ -103,7 +103,7 @@ void HighLevelInterface::concatMessage(const robot_kinematica::al5dPositionGoalC
   ss << "T" << 2000 << "\r";
   m_low_level_component.writeMessage(ss.str());
 
-  ros::Duration(4).sleep();
+  ros::Duration(3).sleep();
 
   m_al5d_action_server.setSucceeded();
   ROS_INFO_STREAM("STATE: SUCCEEDED: " << (*goal).name);

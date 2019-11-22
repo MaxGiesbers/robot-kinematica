@@ -2,12 +2,17 @@
 float64 origin_x
 float64 origin_y
 float64 origin_z  #eventueel weggooien
+float64 origin_cartesian_x
+float64 origin_cartesian_y
 
 float64 approx_0_x
 float64 approx_0_y
 float64 approx_1_x
 float64 approx_1_y
+float64 approx_2_x
+float64 approx_2_y
 float64 approx_3_x
+float64 approx_3_y
 
 
 # destination coordinates of the object

@@ -1,4 +1,4 @@
-#include <math.h>       
+#include <cmath>       
 #include <iostream>
 #include <optional>
 #include "matrix_class/Matrix.hpp"

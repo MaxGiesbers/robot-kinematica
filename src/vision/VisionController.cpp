@@ -233,6 +233,10 @@ void VisionController::sendObjectCoordinates()
   found_object_message.request.origin_x = correction_x_position + objectPolarX;
   found_object_message.request.origin_y = objectPolarY;
   found_object_message.request.origin_z = BASE_GROUND_OFFSET;
+  found_object_message.request.origin_cartesian_x =  m_color_object->getCenterXPos();
+  found_object_message.request.origin_cartesian_y =  m_color_object->getCenterYPos();
+
+
 
   correction_x_position = getObjectCorrectedX(destinationPolarX);
   std::cout << correction_x_position << std::endl;
@@ -272,7 +276,10 @@ void VisionController::setApproxValues(robot_kinematica::found_object& found_obj
   found_object_message.request.approx_0_y = m_color_object->m_approx[0].y;
   found_object_message.request.approx_1_x = m_color_object->m_approx[1].x;
   found_object_message.request.approx_1_y = m_color_object->m_approx[1].y;
+  found_object_message.request.approx_2_x = m_color_object->m_approx[2].x;
+  found_object_message.request.approx_2_y = m_color_object->m_approx[2].y;
   found_object_message.request.approx_3_x = m_color_object->m_approx[3].x;
+  found_object_message.request.approx_3_y = m_color_object->m_approx[3].y;
 }
 
 double VisionController::convertPixelToCmYPosition(const double pixel_value)

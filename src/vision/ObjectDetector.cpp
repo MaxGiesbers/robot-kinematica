@@ -46,16 +46,16 @@ bool ObjectDetector::checkSquareAndRectangle(std::shared_ptr<ColorObject>& color
 {
   bool found_object = false;
 
-  const double sideUpper = std::fabs(approx[3].x - approx[0].x);
-  const double sideDown = std::fabs(approx[2].x - approx[1].x);
-  const double sideLeft = std::fabs(approx[0].y - approx[1].y);
-  const double sideRight = std::fabs(approx[3].y - approx[2].y);
-  std::cout <<  sideUpper << std::endl;
-    std::cout <<  sideDown << std::endl;
+  // const double sideUpper = std::fabs(approx[3].x - approx[0].x);
+  // const double sideDown = std::fabs(approx[2].x - approx[1].x);
+  // const double sideLeft = std::fabs(approx[0].y - approx[1].y);
+  // const double sideRight = std::fabs(approx[3].y - approx[2].y);
+  const double sideUpper = std::hypot(approx[3].x - approx[0].x, approx[3].y - approx[0].y);
+  const double sideDown = std::hypot(approx[2].x - approx[1].x, approx[2].y - approx[1].y);
+  const double sideLeft = std::hypot(approx[0].x - approx[1].x, approx[1].y - approx[0].y);
+  const double sideRight = std::hypot(approx[3].x - approx[2].x, approx[2].y - approx[3].y);
 
-  std::cout <<  sideLeft << std::endl;
 
-  std::cout <<  sideRight << std::endl;
 
 
   // camera father away is a smaller value.
@@ -92,7 +92,10 @@ bool ObjectDetector::checkCircle(std::shared_ptr<ColorObject>& color_object,
   const double area = cv::contourArea(contours.at(element));
   cv::Rect r = cv::boundingRect(contours.at(element));
   const int radius = r.width / 2;
-  const double deviationCircle = 0.2;
+  const double deviationCircle = 0.1;
+  std::cout << "cirkel " << std::endl;
+  std::cout << r.width << std::endl;
+  std::cout << r.height << std::endl;
 
   if (std::abs(1 - ((double)r.width / r.height)) <= deviationCircle &&
       std::abs(1 - (area / (CV_PI * std::pow(radius, 2)))) <= deviationCircle &&
