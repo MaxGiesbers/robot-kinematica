@@ -27,7 +27,7 @@ void Calibration::setCalibratedColorValues()
   m_color_scales.at(m_iterator).iLowV = m_iLowV;
   m_color_scales.at(m_iterator).iHighV = m_iHighV;
 
-  std::cout << "New Values: " << m_iLowH << ", " << m_iHighH << ", " << m_iLowS << ", " << m_iHighS << ", " << m_iLowV
+  std::cout << "New color values: " << m_iLowH << ", " << m_iHighH << ", " << m_iLowS << ", " << m_iHighS << ", " << m_iLowV
             << ", " << m_iHighV << " for color " << m_color_scales.at(m_iterator).color << std::endl;
 }
 
@@ -58,8 +58,8 @@ cv::Mat Calibration::BrightnessAndContrastAuto(const cv::Mat& frame, double clip
   cv::Mat dst;
 
   int histSize = 256;
-  float alpha, beta;
-  double minGray = 0, maxGray = 0;
+  float alpha, beta = 0; 
+  double min_gray = 0, max_gray = 0;
 
   // to calculate grayscale histogram
   cv::Mat gray;
@@ -72,7 +72,7 @@ cv::Mat Calibration::BrightnessAndContrastAuto(const cv::Mat& frame, double clip
   if (clip_hist_percent == 0)
   {
     // keep full available range
-    cv::minMaxLoc(gray, &minGray, &maxGray);
+    cv::minMaxLoc(gray, &min_gray, &max_gray);
   }
   else
   {
@@ -97,21 +97,21 @@ cv::Mat Calibration::BrightnessAndContrastAuto(const cv::Mat& frame, double clip
     clip_hist_percent *= (max / 100.0);  // make percent as absolute
     clip_hist_percent /= 2.0;            // left and right wings
     // locate left cut
-    minGray = 0;
-    while (accumulator[(int)minGray] < clip_hist_percent)
-      minGray++;
+    min_gray = 0;
+    while (accumulator[(int)min_gray] < clip_hist_percent)
+      min_gray++;
 
     // locate right cut
-    maxGray = histSize - 1;
-    while (accumulator[(int)maxGray] >= (max - clip_hist_percent))
-      maxGray--;
+    max_gray = histSize - 1;
+    while (accumulator[(int)max_gray] >= (max - clip_hist_percent))
+      max_gray--;
   }
 
   // current range
-  float inputRange = (float)maxGray - (float)minGray;
+  float inputRange = (float)max_gray - (float)min_gray;
 
   alpha = (float)(histSize - 1) / inputRange;  // alpha expands current range to histsize range
-  beta = (float)-minGray * alpha;              // beta shifts current range so that minGray will go to 0
+  beta = (float)-min_gray * alpha;              // beta shifts current range so that min_gray will go to 0
 
   // Apply brightness and contrast normalization
   // convertTo operates with saurate_cast
@@ -205,10 +205,7 @@ void Calibration::startCalibration(const cv::VideoCapture& cap)
 
     m_cap >> m_treshold;
     setColorValues();
-    // std::cout << "The values: " << colorScale.iLowH << ", " << colorScale.iHighH << ", " << colorScale.iLowS << ", "
-    //           << colorScale.iHighS << ", " << colorScale.iLowV << ", " << colorScale.iHighV << " for color "
-    //           << colorScale.color << std::endl;
-
+  
     if (cv::waitKey() == ENTER_KEY_ASCII)
     {
       setCalibratedColorValues();

@@ -74,7 +74,7 @@ void VisionController::readVideoCam()
   cv::waitKey(0);
 }
 
-double VisionController::getObjectCorrectedX(double object_center_x)
+double VisionController::getObjectCorrectedXPosition(double object_center_x)
 {	
   double object_corrected_x = 0;
 
@@ -178,45 +178,34 @@ double VisionController::getAngleDifference()
   return angleDifference;
 }
 
+void VisionController::setObjectPolarCoordinates(double& object_polar_x, double& object_polar_y, std::shared_ptr<ColorObject> color_object)
+{
+
+  if (color_object->getCenterXPos() < BASE_CARTESIAN_X)
+  {
+    object_polar_x = convertPixelToCmXPosition((BASE_CARTESIAN_X - color_object->getCenterXPos()) * -1) / 100;
+    object_polar_y = convertPixelToCmYPosition(BASE_CARTESIAN_Y - color_object->getCenterYPos()) / 100;
+  }
+  else if (color_object->getCenterXPos() >= BASE_CARTESIAN_X)
+  {
+    object_polar_x = convertPixelToCmXPosition(color_object->getCenterXPos() - BASE_CARTESIAN_X) / 100;
+    object_polar_y = convertPixelToCmYPosition(BASE_CARTESIAN_Y - color_object->getCenterYPos()) / 100;
+  }
+}
+
 void VisionController::sendObjectCoordinates()
 {
   robot_kinematica::found_object found_object_message;
 
-  double objectPolarX = 0;
-  double objectPolarY = 0;
-  double destinationPolarX = 0;
-  double destinationPolarY = 0;
+  double object_polar_x = 0;
+  double object_polar_y = 0;
+  double destination_polar_x = 0;
+  double destination_polar_y = 0;
 
-  if (m_color_object->getCenterYPos() > BASE_CARTESIAN_Y)
-  {
-    std::cout << "Error, object is unreachable." << std::endl;
-  }
-  else if (m_color_object->getCenterXPos() < BASE_CARTESIAN_X)
-  {
-    objectPolarX = convertPixelToCmXPosition((BASE_CARTESIAN_X - m_color_object->getCenterXPos()) * -1) / 100;
-    objectPolarY = convertPixelToCmYPosition(BASE_CARTESIAN_Y - m_color_object->getCenterYPos()) / 100;
-  }
-  else if (m_color_object->getCenterXPos() >= BASE_CARTESIAN_X)
-  {
-    objectPolarX = convertPixelToCmXPosition(m_color_object->getCenterXPos() - BASE_CARTESIAN_X) / 100;
-    objectPolarY = convertPixelToCmYPosition(BASE_CARTESIAN_Y - m_color_object->getCenterYPos()) / 100;
-  }
+  setObjectPolarCoordinates(object_polar_x, object_polar_y, m_color_object);
+  setObjectPolarCoordinates(object_polar_x, object_polar_y, m_destination_object);
 
-  if (m_destination_object->getCenterYPos() > BASE_CARTESIAN_Y)
-  {
-    std::cout << "Error, object is unreachable." << std::endl;
-  }
-  else if (m_destination_object->getCenterXPos() < BASE_CARTESIAN_X)
-  {
-    destinationPolarX =
-        convertPixelToCmXPosition((BASE_CARTESIAN_X - m_destination_object->getCenterXPos()) * -1) / 100;
-    destinationPolarY = convertPixelToCmYPosition(BASE_CARTESIAN_Y - m_destination_object->getCenterYPos()) / 100;
-  }
-  else if (m_destination_object->getCenterXPos() >= BASE_CARTESIAN_X)
-  {
-    destinationPolarX = convertPixelToCmXPosition(m_destination_object->getCenterXPos() - BASE_CARTESIAN_X) / 100;
-    destinationPolarY = convertPixelToCmYPosition(BASE_CARTESIAN_Y - m_destination_object->getCenterYPos()) / 100;
-  }
+  double correction_x_position = getObjectCorrectedXPosition(object_polar_x);
 
   ROS_INFO_STREAM("\nFound object dimensions"
                   << " x: "
@@ -224,25 +213,17 @@ void VisionController::sendObjectCoordinates()
                   << " y: "
                   << "object_y_dimension"
                   << "\nFound object origin location"
-                  << " x: " << objectPolarX << " y: " << objectPolarY << " \nDestination origin location"
-                  << " x: " << destinationPolarX << " y: " << destinationPolarY);
+                  << " x: " << correction_x_position << " y: " << object_polar_y << " \nDestination origin location"
+                  << " x: " << destination_polar_x << " y: " << destination_polar_y);
 
-  double correction_x_position = getObjectCorrectedX(objectPolarX);
-  std::cout << correction_x_position << std::endl;
-  std::cout << " ---------------------------" << std::endl;
-  found_object_message.request.origin_x = correction_x_position + objectPolarX;
-  found_object_message.request.origin_y = objectPolarY;
-  found_object_message.request.origin_z = BASE_GROUND_OFFSET;
+  found_object_message.request.origin_x = correction_x_position + object_polar_x;
+  found_object_message.request.origin_y = object_polar_y;
   found_object_message.request.origin_cartesian_x =  m_color_object->getCenterXPos();
   found_object_message.request.origin_cartesian_y =  m_color_object->getCenterYPos();
 
-
-
-  correction_x_position = getObjectCorrectedX(destinationPolarX);
-  std::cout << correction_x_position << std::endl;
-  found_object_message.request.destination_x = destinationPolarX + correction_x_position;
-  found_object_message.request.destination_y = destinationPolarY;
-  found_object_message.request.destination_z = BASE_GROUND_OFFSET;
+  correction_x_position = getObjectCorrectedXPosition(destination_polar_x);
+  found_object_message.request.destination_x = destination_polar_x + correction_x_position;
+  found_object_message.request.destination_y = destination_polar_y;
 
   if((!m_color_object->getFigure().compare("cirkel") == 0) && (!m_color_object->getFigure().compare("driehoek") == 0))
   {
@@ -262,7 +243,7 @@ void VisionController::sendObjectCoordinates()
       ROS_INFO_STREAM("Robot movement failed");
       ROS_INFO_STREAM("Voer een vorm en een kleur in met als format: [vorm][whitespace][kleur]");
     }
-
+  
     m_user_input_correct = false;
     m_color_object->setObjectDetected(false);
     m_destination_object->setObjectDetected(false);
@@ -276,8 +257,6 @@ void VisionController::setApproxValues(robot_kinematica::found_object& found_obj
   found_object_message.request.approx_0_y = m_color_object->m_approx[0].y;
   found_object_message.request.approx_1_x = m_color_object->m_approx[1].x;
   found_object_message.request.approx_1_y = m_color_object->m_approx[1].y;
-  found_object_message.request.approx_2_x = m_color_object->m_approx[2].x;
-  found_object_message.request.approx_2_y = m_color_object->m_approx[2].y;
   found_object_message.request.approx_3_x = m_color_object->m_approx[3].x;
   found_object_message.request.approx_3_y = m_color_object->m_approx[3].y;
 }

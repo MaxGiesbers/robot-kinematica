@@ -22,7 +22,7 @@ public:
   void findObjectLoop(std::shared_ptr<ColorObject>& color_object);
   void setApproxValues(robot_kinematica::found_object& found_object_message);
 
-  double getObjectCorrectedX(double object_center_x);
+  double getObjectCorrectedXPosition(double object_center_x);
 
   std::thread readInputThread();
   std::thread videoCamThread();
@@ -30,6 +30,7 @@ public:
   double convertPixelToCmXPosition(const double pixel_value);
   double convertPixelToCmYPosition(const double pixel_value);
   double getAngleDifference();
+  void setObjectPolarCoordinates(double& object_polar_x, double& object_polar_y, std::shared_ptr<ColorObject> color_object);
 
 private:
   cv::VideoCapture m_cap;
@@ -45,7 +46,6 @@ private:
 
   std::shared_ptr<ColorObject> m_color_object;
   std::shared_ptr<ColorObject> m_destination_object;
-
   Calibration m_calibrator;
   std::atomic<bool> m_user_input_correct;
 

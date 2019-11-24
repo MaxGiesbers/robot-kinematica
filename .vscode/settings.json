@@ -60,6 +60,11 @@
         "random": "cpp",
         "set": "cpp",
         "string": "cpp",
-        "jinclude.h": "c"
+        "jinclude.h": "c",
+        "csignal": "cpp",
+        "codecvt": "cpp",
+        "future": "cpp",
+        "typeindex": "cpp",
+        "*.ipp": "cpp"
     }
 }

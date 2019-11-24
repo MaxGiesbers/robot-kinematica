@@ -14,7 +14,6 @@ public:
   virtual ~LowLevelDriver();
 
   void writeMessage(const std::string& message);
-  void emergencyStop();
 
 private:
   boost::asio::io_service io;

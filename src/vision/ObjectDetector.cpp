@@ -44,37 +44,28 @@ void ObjectDetector::setCenterPoint(const std::shared_ptr<ColorObject>& color_ob
 
 bool ObjectDetector::checkSquareAndRectangle(std::shared_ptr<ColorObject>& color_object, std::vector<cv::Point>& approx)
 {
+  const double SIDE_UPPER = std::hypot(approx[3].x - approx[0].x, approx[3].y - approx[0].y);
+  const double SIDE_DOWN = std::hypot(approx[2].x - approx[1].x, approx[2].y - approx[1].y);
+  const double SIDE_LEFT = std::hypot(approx[0].x - approx[1].x, approx[1].y - approx[0].y);
+  const double SIDE_RIGHT = std::hypot(approx[3].x - approx[2].x, approx[2].y - approx[3].y);
   bool found_object = false;
 
-  // const double sideUpper = std::fabs(approx[3].x - approx[0].x);
-  // const double sideDown = std::fabs(approx[2].x - approx[1].x);
-  // const double sideLeft = std::fabs(approx[0].y - approx[1].y);
-  // const double sideRight = std::fabs(approx[3].y - approx[2].y);
-  const double sideUpper = std::hypot(approx[3].x - approx[0].x, approx[3].y - approx[0].y);
-  const double sideDown = std::hypot(approx[2].x - approx[1].x, approx[2].y - approx[1].y);
-  const double sideLeft = std::hypot(approx[0].x - approx[1].x, approx[1].y - approx[0].y);
-  const double sideRight = std::hypot(approx[3].x - approx[2].x, approx[2].y - approx[3].y);
-
-
-
-
   // camera father away is a smaller value.
-  const short deviationSquare = 10;
-  const short deviationRectangle = 30;
-  std::cout << "komt wel hier in" << std::endl;
-  if (sideUpper > deviationSquare && sideDown > deviationSquare && sideLeft > deviationSquare &&
-      sideRight > deviationSquare)
+  const int8_t DEVIATION_SQUARE = 10;
+  const int8_t DEVIATION_RECTANGLE = 30;
+
+  if (SIDE_UPPER > DEVIATION_SQUARE && SIDE_DOWN > DEVIATION_SQUARE && SIDE_LEFT > DEVIATION_SQUARE &&
+      SIDE_RIGHT > DEVIATION_SQUARE)
   {
-    if (std::fabs(sideUpper - sideDown) <= deviationSquare && std::fabs(sideLeft - sideRight) <= deviationSquare)
+    if (std::fabs(SIDE_UPPER - SIDE_DOWN) <= DEVIATION_SQUARE && std::fabs(SIDE_LEFT - SIDE_RIGHT) <= DEVIATION_SQUARE)
     {
-      std::cout << " vind wel hoeken" << std::endl;
-      if (std::fabs(sideUpper - sideLeft) <= deviationSquare && color_object->getInputFigure().compare("vierkant") == 0)
+      if (std::fabs(SIDE_UPPER - SIDE_LEFT) <= DEVIATION_SQUARE && color_object->getInputFigure().compare("vierkant") == 0)
       {
         color_object->setFigure("vierkant");
         color_object->m_approx = approx;
         found_object = true;
       }
-      else if (std::fabs(sideUpper - sideLeft) > deviationRectangle && color_object->getInputFigure().compare("rechthoek") == 0)
+      else if (std::fabs(SIDE_UPPER - SIDE_LEFT) > DEVIATION_RECTANGLE && color_object->getInputFigure().compare("rechthoek") == 0)
       {
         color_object->setFigure("rechthoek");
         color_object->m_approx = approx;
@@ -89,50 +80,45 @@ bool ObjectDetector::checkSquareAndRectangle(std::shared_ptr<ColorObject>& color
 bool ObjectDetector::checkCircle(std::shared_ptr<ColorObject>& color_object,
                                  std::vector<std::vector<cv::Point>>& contours, int element)
 {
-  const double area = cv::contourArea(contours.at(element));
-  cv::Rect r = cv::boundingRect(contours.at(element));
-  const int radius = r.width / 2;
-  const double deviationCircle = 0.1;
-  std::cout << "cirkel " << std::endl;
-  std::cout << r.width << std::endl;
-  std::cout << r.height << std::endl;
+  const double AREA = cv::contourArea(contours.at(element));
+  const cv::Rect RECTANGLE = cv::boundingRect(contours.at(element));
+  const int RADIUS = RECTANGLE.width / 2;
+  const double DEVIATION_CIRCLE = 0.1;
+  bool found_circle = false;
 
-  if (std::abs(1 - ((double)r.width / r.height)) <= deviationCircle &&
-      std::abs(1 - (area / (CV_PI * std::pow(radius, 2)))) <= deviationCircle &&
+  if (std::abs(1 - ((double)RECTANGLE.width / RECTANGLE.height)) <= DEVIATION_CIRCLE &&
+      std::abs(1 - (AREA / (CV_PI * std::pow(RADIUS, 2)))) <= DEVIATION_CIRCLE &&
       color_object->getInputFigure().compare("cirkel") == 0)
   {
-    return true;
+    found_circle = true;
   }
-  return false;
-}
-
-void ObjectDetector::detectDestinationLocation()
-{
+  return found_circle;
 }
 
 bool ObjectDetector::semiCircle(std::shared_ptr<ColorObject>& color_object,
                                 std::vector<std::vector<cv::Point>>& contours, int element)
 {
-  double area = cv::contourArea(contours.at(element));
-  cv::Rect r = cv::boundingRect(contours.at(element));
-  const int radius = r.width / 2;
-  const int radius2 = r.height / 2;
-  const double deviationSemiCircleUpAndDown = 0.4;
-  const double deviationSemiCircleRightAndLeft = 0.5;
+  const double AREA = cv::contourArea(contours.at(element));
+  const cv::Rect RECTANGLE = cv::boundingRect(contours.at(element));
+  const int RADIUS_WIDTH = RECTANGLE.width / 2;
+  const int RADIUS_HEIGHT = RECTANGLE.height / 2;
+  const double DEVIATION_SEMI_CIRCLE_UP_AND_DOWN = 0.4;
+  const double DEVIATION_SEMI_CIRCLE_RIGHT_AND_LEFT = 0.5;
+  bool found_semi_circle = false;
 
-  if (std::abs(1 - ((double)r.width / (r.height * 2))) <= deviationSemiCircleUpAndDown &&
-      std::abs(1 - 2 * (area / (CV_PI * std::pow(radius, 2)))) <= deviationSemiCircleUpAndDown &&
+  if (std::abs(1 - ((double)RECTANGLE.width / (RECTANGLE.height * 2))) <= DEVIATION_SEMI_CIRCLE_UP_AND_DOWN &&
+      std::abs(1 - 2 * (AREA / (CV_PI * std::pow(RADIUS_WIDTH, 2)))) <= DEVIATION_SEMI_CIRCLE_UP_AND_DOWN &&
       color_object->getInputFigure().compare("halve cirkel") == 0)
   {
-    return true;
+    found_semi_circle = true;
   }
-  else if (std::abs(1 - ((double)r.height / (r.width * 2))) <= deviationSemiCircleRightAndLeft &&
-           std::abs(1 - 2 * (area / (CV_PI * std::pow(radius2, 2)))) <= deviationSemiCircleRightAndLeft &&
+  else if (std::abs(1 - ((double)RECTANGLE.height / (RECTANGLE.width * 2))) <= DEVIATION_SEMI_CIRCLE_RIGHT_AND_LEFT &&
+           std::abs(1 - 2 * (AREA / (CV_PI * std::pow(RADIUS_HEIGHT, 2)))) <= DEVIATION_SEMI_CIRCLE_RIGHT_AND_LEFT &&
            color_object->getInputFigure().compare("halve cirkel") == 0)
   {
-    return true;
+    found_semi_circle = true;
   }
-  return false;
+  return found_semi_circle;
 }
 
 void ObjectDetector::findShape(std::shared_ptr<ColorObject>& color_object, cv::Mat& drawing_frame)
@@ -145,7 +131,7 @@ void ObjectDetector::findShape(std::shared_ptr<ColorObject>& color_object, cv::M
   std::vector<std::vector<cv::Point>> contours;
 
   // contains the element number of the found contour.
-  std::vector<int> contourElements;
+  std::vector<int> contour_elements;
 
   cv::findContours(bw.clone(), contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
@@ -155,38 +141,37 @@ void ObjectDetector::findShape(std::shared_ptr<ColorObject>& color_object, cv::M
   for (unsigned int i = 0; i < contours.size(); i++)
   {
     cv::approxPolyDP(cv::Mat(contours[i]), approx, cv::arcLength(cv::Mat(contours[i]), true) * 0.02, true);
-    std::cout << approx.size() << std::endl;
 
-    // if (std::fabs(cv::contourArea(contours[i])) < 100 || !cv::isContourConvex(approx))
-    // {
-    //   continue;
-    // }
+    if (std::fabs(cv::contourArea(contours[i])) < 100 || !cv::isContourConvex(approx))
+    {
+      continue;
+    }
     if (approx.size() == 3 && color_object->getInputFigure().compare("driehoek") == 0)
     {
       color_object->setFigure("driehoek");
-      contourElements.push_back(i);
+      contour_elements.push_back(i);
     }
     else if (approx.size() == 4 && checkSquareAndRectangle(color_object, approx))
     {
-      contourElements.push_back(i);
+      contour_elements.push_back(i);
     }
     else if (approx.size() != 4 && approx.size() != 3)
     {
       if (checkCircle(color_object, contours, (int)i))
       {
-        contourElements.push_back(i);
+        contour_elements.push_back(i);
         color_object->setFigure("cirkel");
       }
       else if (semiCircle(color_object, contours, i))
       {
-        contourElements.push_back(i);
+        contour_elements.push_back(i);
         color_object->setFigure("halve cirkel");
       }
     }
   }
 
   // print found shapes
-  for (int i : contourElements)
+  for (int i : contour_elements)
   {
     double area = cv::contourArea(contours.at(i));
     color_object->setArea(area);
@@ -210,11 +195,11 @@ void ObjectDetector::findShape(std::shared_ptr<ColorObject>& color_object, cv::M
 void ObjectDetector::filterColor(const std::shared_ptr<ColorObject>& color_object, cv::Mat& filtered_frame,
                                  cv::Mat& color_mask)
 {
-  cv::Mat frameHSV;
+  cv::Mat frame_hsv;
   // Changes contrast of color;
   color_mask = BrightnessAndContrastAuto(filtered_frame, 5);
-  cvtColor(color_mask, frameHSV, cv::COLOR_BGR2HSV);
-  inRange(frameHSV,
+  cvtColor(color_mask, frame_hsv, cv::COLOR_BGR2HSV);
+  inRange(frame_hsv,
           cv::Scalar(color_object->getColorScale().iLowH, color_object->getColorScale().iLowS,
                      color_object->getColorScale().iLowV),
           cv::Scalar(color_object->getColorScale().iHighH, color_object->getColorScale().iHighS,
@@ -232,8 +217,8 @@ cv::Mat ObjectDetector::BrightnessAndContrastAuto(const cv::Mat& frame, double c
   cv::Mat dst;
 
   int histSize = 256;
-  float alpha, beta;
-  double minGray = 0, maxGray = 0;
+  float alpha, beta = 0; 
+  double min_gray = 0, max_gray = 0;
 
   // to calculate grayscale histogram
   cv::Mat gray;
@@ -246,7 +231,7 @@ cv::Mat ObjectDetector::BrightnessAndContrastAuto(const cv::Mat& frame, double c
   if (clip_hist_percent == 0)
   {
     // keep full available range
-    cv::minMaxLoc(gray, &minGray, &maxGray);
+    cv::minMaxLoc(gray, &min_gray, &max_gray);
   }
   else
   {
@@ -271,21 +256,21 @@ cv::Mat ObjectDetector::BrightnessAndContrastAuto(const cv::Mat& frame, double c
     clip_hist_percent *= (max / 100.0);  // make percent as absolute
     clip_hist_percent /= 2.0;            // left and right wings
     // locate left cut
-    minGray = 0;
-    while (accumulator[(int)minGray] < clip_hist_percent)
-      minGray++;
+    min_gray = 0;
+    while (accumulator[(int)min_gray] < clip_hist_percent)
+      min_gray++;
 
     // locate right cut
-    maxGray = histSize - 1;
-    while (accumulator[(int)maxGray] >= (max - clip_hist_percent))
-      maxGray--;
+    max_gray = histSize - 1;
+    while (accumulator[(int)max_gray] >= (max - clip_hist_percent))
+      max_gray--;
   }
 
   // current range
-  float inputRange = (float)maxGray - (float)minGray;
+  float inputRange = (float)max_gray - (float)min_gray;
 
   alpha = (float)(histSize - 1) / inputRange;  // alpha expands current range to histsize range
-  beta = (float)-minGray * alpha;              // beta shifts current range so that minGray will go to 0
+  beta = (float)-min_gray * alpha;              // beta shifts current range so that min_gray will go to 0
 
   // Apply brightness and contrast normalization
   // convertTo operates with saurate_cast

@@ -21,5 +21,4 @@ public:
   bool semiCircle(std::shared_ptr<ColorObject>& color_object, std::vector<std::vector<cv::Point>>& contours,
                   int element);
   void filterFrame(cv::Mat& filtered_frame);
-  void detectDestinationLocation();
 };

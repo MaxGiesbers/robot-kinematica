@@ -7,7 +7,6 @@ Servo::Servo(SERVO_ID servo_id, int16_t min_degrees, int16_t max_degrees, int16_
   , m_max_degrees(max_degrees)
   , m_min_pwm(min_pwm)
   , m_max_pwm(max_pwm)
-  , m_current_degrees(0)
   , m_move_servo(false)
   , m_incoming_degrees(0)
 {
@@ -42,10 +41,6 @@ void Servo::setMoveServo(bool move_servo)
   m_move_servo = move_servo;
 }
 
-void Servo::setCurrentDegrees(int16_t current_degrees)
-{
-  m_current_degrees = current_degrees;
-}
 
 int16_t Servo::degreesToPwm(int16_t target_degrees)
 {

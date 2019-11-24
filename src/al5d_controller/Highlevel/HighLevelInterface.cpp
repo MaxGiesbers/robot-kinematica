@@ -122,13 +122,22 @@ void HighLevelInterface::initServoList()
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "al5d_interface");
+
   if (argc != 2)
   {
     ROS_WARN_STREAM("Missing USB port argument trye something like: /dev/ttyUSB0");
     return 1;
   }
-  HighLevelInterface highLevelInterface("robot_kinematica", argv[1]);
-  ros::spin();
 
+  try
+	{
+    HighLevelInterface highLevelInterface("robot_kinematica", argv[1]);
+	}
+	catch (const std::exception& e)
+	{
+    std:: cout << e.what() << std::endl;
+	}
+  ros::spin();
+  
   return 0;
 }

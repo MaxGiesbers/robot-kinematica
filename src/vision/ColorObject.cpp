@@ -1,9 +1,5 @@
 #include "vision/ColorObject.h"
 
-ColorObject::~ColorObject()
-{
-}
-
 ColorObject::ColorObject(const std::string& input_figure, const std::string& color)
   : m_color_scale()
   , m_input_figure(input_figure)
@@ -12,6 +8,10 @@ ColorObject::ColorObject(const std::string& input_figure, const std::string& col
   , m_center_y_pos(0)
   , m_area(0)
   , m_object_detected(false)
+{
+}
+
+ColorObject::~ColorObject()
 {
 }
 
