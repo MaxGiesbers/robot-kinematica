@@ -16,10 +16,10 @@ RobotController::RobotController(const std::string& name)
   : m_objectCoordinatesReceived(false), m_al5d_action_client(m_node_handle, name)
 {
   m_service = m_node_handle.advertiseService("found_object", &RobotController::moveObjectToDestination, this);
-  while(!m_al5d_action_client.waitForServer(ros::Duration(5.0)))
+  while (!m_al5d_action_client.waitForServer(ros::Duration(5.0)))
   {
     ROS_INFO("Waiting for the al5d_controller to come up");
-  } 
+  }
 }
 
 RobotController::~RobotController()
@@ -86,10 +86,10 @@ bool RobotController::moveObjectToDestination(robot_kinematica::found_object::Re
 
   const Kinematics::Matrix<double, 3, 1> object_position({ { req.origin_y }, { 0 }, { req.origin_x } });
 
-  const Kinematics::Matrix<double, 3, 1> object_position_below({ { req.origin_y }, { PICK_UP_HEIGHT }, { req.origin_x } });
+  const Kinematics::Matrix<double, 3, 1> object_position_below(
+      { { req.origin_y }, { PICK_UP_HEIGHT }, { req.origin_x } });
 
-  const Kinematics::Matrix<double, 3, 1> destination_position(
-      { { req.destination_y }, { 0 }, { req.destination_x } });
+  const Kinematics::Matrix<double, 3, 1> destination_position({ { req.destination_y }, { 0 }, { req.destination_x } });
 
   const Kinematics::Matrix<double, 3, 1> destination_position_below(
       { { req.destination_y }, { DROPPING_HEIGHT }, { req.destination_x } });
@@ -112,7 +112,7 @@ bool RobotController::moveObjectToDestination(robot_kinematica::found_object::Re
 
     moveGripper(0);
     moveArm(above_object_position, gripper_angle, "moveAboveFoundObject");
-    moveArm(above_object_grap_position, gripper_angle,"MoveArmDownToObject");
+    moveArm(above_object_grap_position, gripper_angle, "MoveArmDownToObject");
     moveGripper(29);
     moveArm(above_object_position, gripper_angle, "moveAbove");
     moveArm(above_destination_position, 0, "moveAboveDestinationObject");

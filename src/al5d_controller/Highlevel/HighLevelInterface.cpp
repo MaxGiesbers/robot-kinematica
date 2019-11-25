@@ -133,7 +133,6 @@ int main(int argc, char** argv)
   {
     HighLevelInterface highLevelInterface("robot_kinematica", argv[1]);
     ros::spin();
-
   }
   catch (const std::exception& e)
   {

@@ -9,7 +9,8 @@ const int SPACEBAR_KEY_ASCII = 32;
 const int ENTER_KEY_ASCII = 10;
 }  // namespace
 
-Calibration::Calibration() : m_iLowH(0), m_iHighH(0), m_iLowS(0), m_iHighS(0), m_iLowV(0), m_iHighV(0), m_color_scale_iterator(0)
+Calibration::Calibration()
+  : m_iLowH(0), m_iHighH(0), m_iLowS(0), m_iHighS(0), m_iLowV(0), m_iHighV(0), m_color_scale_iterator(0)
 {
   setDefaultColorScales();
 }
@@ -28,7 +29,8 @@ void Calibration::setCalibratedColorValues()
   m_color_scales.at(m_color_scale_iterator).iHighV = m_iHighV;
 
   std::cout << "New color values: " << m_iLowH << ", " << m_iHighH << ", " << m_iLowS << ", " << m_iHighS << ", "
-            << m_iLowV << ", " << m_iHighV << " for color " << m_color_scales.at(m_color_scale_iterator).color << std::endl;
+            << m_iLowV << ", " << m_iHighV << " for color " << m_color_scales.at(m_color_scale_iterator).color
+            << std::endl;
 }
 
 void Calibration::setColorValues()
