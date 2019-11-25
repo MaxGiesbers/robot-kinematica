@@ -1,7 +1,6 @@
 #ifndef COLOROBJECT_H
 #define COLOROBJECT_H
 
-
 #include "ColorScale.h"
 #include <ros/ros.h>
 #include <vector>
