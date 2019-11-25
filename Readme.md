@@ -8,7 +8,7 @@ Place robot_kinematica package in:
 ```
 ~/catkin_ws/src/
 ```
-Navigate to catkin_s:
+Navigate to catkin_ws:
 ```
 cd ~/catkin_ws/
 ```
