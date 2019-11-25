@@ -72,7 +72,7 @@ public:
   void moveAllServos();
   
   /**
-   * @brief initialize all the servo's
+   * @brief initialize all the servo's  
    * 
    */
   void initServoList();

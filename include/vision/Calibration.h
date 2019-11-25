@@ -134,4 +134,4 @@ private:
   cv::Mat m_capture_window;
 };
 
-#endif  
+#endif  //CALIBRATION_H

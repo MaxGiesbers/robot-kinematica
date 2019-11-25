@@ -114,4 +114,4 @@ Matrix<T, m, n> operator/(const T scalar, const Matrix<T, m, n>& mat);
 
 #include "Matrix.ipp"
 
-#endif
+#endif //MATRIX_HPP

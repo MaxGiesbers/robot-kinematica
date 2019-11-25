@@ -1,7 +1,6 @@
 #ifndef OBJECTDETECTOR_H
 #define OBJECTDETECTOR_H
 
-#include <ros/ros.h>
 #include "ColorObject.h"
 
 class ObjectDetector
@@ -116,4 +115,4 @@ public:
   void filterFrame(cv::Mat& filtered_frame);
 };
 
-#endif 
+#endif //OBJECTDETECTOR_H

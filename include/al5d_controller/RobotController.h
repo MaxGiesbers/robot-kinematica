@@ -1,7 +1,6 @@
 #ifndef ROBOTCONTROLLER_H
 #define ROBOTCONTROLLER_H
 
-#include <ros/ros.h>
 #include <memory>
 #include "al5d_controller/Highlevel/HighLevelInterface.h"
 #include <actionlib/client/simple_action_client.h>

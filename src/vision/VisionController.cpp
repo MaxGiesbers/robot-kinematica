@@ -25,6 +25,10 @@ VisionController::VisionController() : m_user_input_correct(false), m_coordinate
   m_drawing_frame = cv::Mat::zeros(cv::Size(1, 49), CV_64FC1);
   m_filtered_frame = cv::Mat::zeros(cv::Size(1, 49), CV_64FC1);
   m_color_mask = cv::Mat::zeros(cv::Size(1, 49), CV_64FC1);
+
+  while(!m_client.waitForExistence(ros::Duration(5.0)))
+  {
+  } 
 }
 
 VisionController::~VisionController()

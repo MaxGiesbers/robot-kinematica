@@ -16,4 +16,4 @@ struct ColorScale
   int iHighV;
   std::string color;
 };
-#endif
+#endif //COLORSCALE_H

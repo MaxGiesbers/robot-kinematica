@@ -7,12 +7,23 @@ namespace
 const uint8_t MINIMAL_ARGUMENTS = 4;
 const uint16_t QUEUE_SIZE = 1000;
 const double BASE_CARTESIAN_X = 343;
+const uint16_t MOVEMENT_TIME = 2000;
+const double PICK_UP_HEIGHT = -0.07;
+const double DROPPING_HEIGHT = -0.05;
 }  // namespace
 
 RobotController::RobotController(const std::string& name)
   : m_objectCoordinatesReceived(false), m_al5d_action_client(m_node_handle, name)
 {
   m_service = m_node_handle.advertiseService("found_object", &RobotController::moveObjectToDestination, this);
+  while(!m_al5d_action_client.waitForServer(ros::Duration(5.0)))
+  {
+    ROS_INFO("Waiting for the al5d_controller to come up");
+  } 
+}
+
+RobotController::~RobotController()
+{
 }
 
 double RobotController::getGripperAngle(robot_kinematica::found_object::Request& req,
@@ -75,13 +86,13 @@ bool RobotController::moveObjectToDestination(robot_kinematica::found_object::Re
 
   const Kinematics::Matrix<double, 3, 1> object_position({ { req.origin_y }, { 0 }, { req.origin_x } });
 
-  const Kinematics::Matrix<double, 3, 1> object_position_below({ { req.origin_y }, { -0.07 }, { req.origin_x } });
+  const Kinematics::Matrix<double, 3, 1> object_position_below({ { req.origin_y }, { PICK_UP_HEIGHT }, { req.origin_x } });
 
   const Kinematics::Matrix<double, 3, 1> destination_position(
-      { { req.destination_y }, { 0.02 }, { req.destination_x } });
+      { { req.destination_y }, { 0 }, { req.destination_x } });
 
   const Kinematics::Matrix<double, 3, 1> destination_position_below(
-      { { req.destination_y }, { -0.03 }, { req.destination_x } });
+      { { req.destination_y }, { DROPPING_HEIGHT }, { req.destination_x } });
 
   auto above_object_position = m_kinematics.inverse_kinematics(m_current_angles, object_position);
   auto above_object_grap_position = m_kinematics.inverse_kinematics(m_current_angles, object_position_below);
@@ -103,15 +114,15 @@ bool RobotController::moveObjectToDestination(robot_kinematica::found_object::Re
     moveArm(above_object_position, gripper_angle, "moveAboveFoundObject");
     moveArm(above_object_grap_position, gripper_angle,"MoveArmDownToObject");
     moveGripper(29);
-    moveArm(above_object_position, gripper_angle, "moveAboveFoundObject");
+    moveArm(above_object_position, gripper_angle, "moveAbove");
     moveArm(above_destination_position, 0, "moveAboveDestinationObject");
     moveArm(above_destination_drop_position, 0, "moveToDestinationDropPosition");
     moveGripper(0);
-    moveArm(above_destination_position, 0, "moveAboveDestinationObject");
+    moveArm(above_destination_position, 0, "moveAbove");
 
     robot_kinematica::al5dPositionGoal goal;
     goal.name = "PARK";
-    goal.time = 2000;
+    goal.time = MOVEMENT_TIME;
     m_al5d_action_client.sendGoalAndWait(goal);
     res.finished = true;
   }
@@ -123,10 +134,6 @@ bool RobotController::moveObjectToDestination(robot_kinematica::found_object::Re
   return true;
 }
 
-RobotController::~RobotController()
-{
-}
-
 void sendCoordinates()
 {
   robot_kinematica::al5dPositionGoal goal;
@@ -136,7 +143,7 @@ void RobotController::moveGripper(const double degrees)
 {
   robot_kinematica::al5dPositionGoal goal;
   goal.name = "moveGripper";
-  goal.time = 2000;
+  goal.time = MOVEMENT_TIME;
   goal.degrees.push_back(degrees);
   goal.servos.push_back(GRIPPER);
   m_al5d_action_client.sendGoalAndWait(goal);
@@ -147,7 +154,7 @@ void RobotController::moveArm(const std::optional<Kinematics::Matrix<double, 4, 
   auto coordinates = position.value();
   robot_kinematica::al5dPositionGoal goal;
   goal.name = goal_name;
-  goal.time = 2000;
+  goal.time = MOVEMENT_TIME;
   goal.degrees.push_back(coordinates[0][0]);
   goal.degrees.push_back(coordinates[0][1]);
   goal.degrees.push_back(coordinates[0][2]);

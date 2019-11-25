@@ -1,7 +1,6 @@
 #ifndef VISIONCONTROLLER_H
 #define VISIONCONTROLLER_H
 
-#include <ros/ros.h>
 #include "ObjectDetector.h"
 #include <thread>
 #include "vision/Calibration.h"
@@ -244,4 +243,4 @@ private:
   bool m_coordinates_sended;
 };
 
-#endif 
+#endif //VISIONCONTROLLER_H
