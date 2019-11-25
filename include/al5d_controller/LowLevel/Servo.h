@@ -113,7 +113,7 @@ private:
   int16_t m_max_pwm;
   
   /**
-   * @brief 
+   * @brief bool that contains true or false if the servo has to move
    * 
    */
   bool m_move_servo;

@@ -13,8 +13,8 @@ public:
   /**
    * @brief Construct a new Color Object object
    * 
-   * @param input_figure 
-   * @param color 
+   * @param input_figure contains the name of the figure
+   * @param color contains the name of the color
    */
   explicit ColorObject(const std::string& input_figure, const std::string& color);
   
@@ -27,7 +27,7 @@ public:
   /**
    * @brief Set the Color Mask object
    * 
-   * @param color_mask 
+   * @param color_mask which contains the color mask
    */
   void setColorMask(const cv::Mat& color_mask);
   
@@ -40,21 +40,21 @@ public:
   /**
    * @brief Set the Area
    * 
-   * @param aArea 
+   * @param aArea contains the area in pixels
    */
   void setArea(const double aArea);
 
   /**
    * @brief Set the Center X Pos 
    * 
-   * @param center_x_pos 
+   * @param center_x_pos contains the x center location in pixels
    */
   void setCenterXPos(const double center_x_pos);
   
   /**
    * @brief Set the Center Y Pos
    * 
-   * @param center_y_pos 
+   * @param center_y_pos contains the y center location center in pixels
    */
   void setCenterYPos(const double center_y_pos);
 
@@ -70,21 +70,21 @@ public:
   /**
    * @brief Set the Color Scale
    * 
-   * @param color_scale 
+   * @param color_scale an struct with HSV values
    */
   void setColorScale(const ColorScale& color_scale);
   
   /**
    * @brief Set the shape of the object
    * 
-   * @param figure 
+   * @param figure name as string variable
    */
   void setFigure(const std::string& figure);
   
   /**
    * @brief Get the shape
    * 
-   * @return std::string 
+   * @return std::string figure 
    */
   std::string getFigure() const;
 
@@ -163,7 +163,7 @@ public:
 
 private:
   /**
-   * @brief 
+   * @brief struct that contains HSV value for the color
    * 
    */
   ColorScale m_color_scale;
@@ -182,7 +182,7 @@ private:
   std::string m_color;
   
   /**
-   * @brief 
+   * @brief the colorMask in HSV 
    * 
    */
   cv::Mat m_color_mask;
@@ -194,19 +194,19 @@ private:
   std::string m_figure;
   
   /**
-   * @brief The x coordinate of the center position
+   * @brief The x coordinate in pixles of the center position
    * 
    */
   double m_center_x_pos;
   
   /**
-   * @brief The y coordinate of the center position
+   * @brief The y coordinate in pixels of the center position
    * 
    */
   double m_center_y_pos;
   
   /**
-   * @brief The area of the detected object
+   * @brief The area in pixels of the detected object
    * 
    */
   double m_area;

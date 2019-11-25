@@ -31,23 +31,23 @@ public:
   /**
    * @brief Get the Color Scale object
    * 
-   * @param color 
-   * @return ColorScale 
+   * @param color in string format
+   * @return ColorScale struct with HSV value of the color
    */
   ColorScale getColorScale(std::string color) const;
 
 private:
   /**
-   * @brief 
+   * @brief enhances the contrast color of the mat object.
    * 
-   * @param frame 
-   * @param clip_hist_percent 
+   * @param frame the frame that has to be copied.
+   * @param clipHistPercent percentage of the filter
    * @return cv::Mat 
-   */
+   */ 
   cv::Mat BrightnessAndContrastAuto(const cv::Mat& frame, double clip_hist_percent);
   
   /**
-   * @brief 
+   * @brief updates the range for the trackbar
    * 
    */
   void updateSetRange();
@@ -71,10 +71,10 @@ private:
   void setCalibratedColorValues();
 
   /**
-   * @brief 
+   * @brief function used as callback by the trackbar sliders from openCV
    * 
    * @param v 
-   * @param ptr 
+   * @param ptr this instance of the object
    */
   static void calibrate(int v, void* ptr)
   {
@@ -98,13 +98,13 @@ private:
 
   
   /**
-   * @brief 
+   * @brief iterator that iterates through the color scale objects.
    * 
    */
-  std::size_t m_iterator;
+  std::size_t m_color_scale_iterator;
 
   /**
-   * @brief 
+   * @brief Matrix for the treshold image
    * 
    */
   cv::Mat m_treshold;
@@ -116,7 +116,7 @@ private:
   cv::Mat m_src;
   
   /**
-   * @brief 
+   * @brief vector that contains color scales
    * 
    */
   std::vector<ColorScale> m_color_scales;

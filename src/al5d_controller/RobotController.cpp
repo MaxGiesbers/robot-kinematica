@@ -48,13 +48,6 @@ double RobotController::getGripperAngle(robot_kinematica::found_object::Request&
     gripperAngle = correctForServoLimits(gripperAngle + 90);
   }
 
-  std::cout << "SideUpper: " << side_upper << std::endl;
-  std::cout << "SideLeft: " << side_left << std::endl;
-  std::cout << "F: " << f << std::endl;
-  std::cout << "diff: " << diff << std::endl;
-  std::cout << "BaseAngle: " << baseAngle << std::endl;
-  std::cout << "GripperAngle: " << gripperAngle << std::endl;
-
   return gripperAngle;
 }
 
@@ -82,7 +75,7 @@ bool RobotController::moveObjectToDestination(robot_kinematica::found_object::Re
 
   const Kinematics::Matrix<double, 3, 1> object_position({ { req.origin_y }, { 0 }, { req.origin_x } });
 
-  const Kinematics::Matrix<double, 3, 1> object_position_below({ { req.origin_y }, { -0.05 }, { req.origin_x } });
+  const Kinematics::Matrix<double, 3, 1> object_position_below({ { req.origin_y }, { -0.07 }, { req.origin_x } });
 
   const Kinematics::Matrix<double, 3, 1> destination_position(
       { { req.destination_y }, { 0.02 }, { req.destination_x } });
@@ -107,14 +100,14 @@ bool RobotController::moveObjectToDestination(robot_kinematica::found_object::Re
     }
 
     moveGripper(0);
-    moveArm(above_object_position, gripper_angle);
-    moveArm(above_object_grap_position, gripper_angle);
+    moveArm(above_object_position, gripper_angle, "moveAboveFoundObject");
+    moveArm(above_object_grap_position, gripper_angle,"MoveArmDownToObject");
     moveGripper(29);
-    moveArm(above_object_position, gripper_angle);
-    moveArm(above_destination_position, 0);
-    moveArm(above_destination_drop_position, 0);
+    moveArm(above_object_position, gripper_angle, "moveAboveFoundObject");
+    moveArm(above_destination_position, 0, "moveAboveDestinationObject");
+    moveArm(above_destination_drop_position, 0, "moveToDestinationDropPosition");
     moveGripper(0);
-    moveArm(above_destination_position, 0);
+    moveArm(above_destination_position, 0, "moveAboveDestinationObject");
 
     robot_kinematica::al5dPositionGoal goal;
     goal.name = "PARK";
@@ -149,11 +142,11 @@ void RobotController::moveGripper(const double degrees)
   m_al5d_action_client.sendGoalAndWait(goal);
 }
 void RobotController::moveArm(const std::optional<Kinematics::Matrix<double, 4, 1>> position,
-                              const double gripper_angle)
+                              const double gripper_angle, const std::string goal_name)
 {
   auto coordinates = position.value();
   robot_kinematica::al5dPositionGoal goal;
-  goal.name = "moveToObject";
+  goal.name = goal_name;
   goal.time = 2000;
   goal.degrees.push_back(coordinates[0][0]);
   goal.degrees.push_back(coordinates[0][1]);
@@ -175,12 +168,12 @@ int main(int argc, char** argv)
   try
   {
     RobotController robot_controller("robot_kinematica");
+    ros::spin();
   }
   catch (const std::exception& e)
   {
     std::cout << e.what() << std::endl;
   }
-  ros::spin();
 
   return 0;
 }

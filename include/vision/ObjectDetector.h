@@ -37,19 +37,19 @@ public:
   void setCenterPoint(const std::shared_ptr<ColorObject>& color_object, std::vector<cv::Point>& contour);
   
   /**
-   * @brief 
+   * @brief function to find the requested shape 
    * 
-   * @param color_object 
-   * @param drawing_frame 
+   * @param color_object contains all the information of the found object
+   * @param drawing_frame this frame will be drawed with contour lines of the found object
    */
   void findShape(std::shared_ptr<ColorObject>& color_object, cv::Mat& drawing_frame);
   
   /**
-   * @brief 
+   * @brief filters the color based on the color input of the user
    * 
    * @param color_object The detected shape
    * @param filtered_frame The window on which the filtered frame should be displayed
-   * @param color_mask 
+   * @param color_mask The mask that is used for filtering the color
    */
   void filterColor(const std::shared_ptr<ColorObject>& color_object, cv::Mat& filtered_frame, cv::Mat& color_mask);
   
@@ -58,7 +58,7 @@ public:
    * 
    * @param contour The contour data of the detected shape
    * @param color_object The detected shape
-   * @param contour_number 
+   * @param contour_number the number of the contour that has to be drawn
    * @param drawing_frame The window in which the contour should be drawn
    */
   void DrawImageContours(const std::vector<std::vector<cv::Point>>& contour,
@@ -66,12 +66,12 @@ public:
                          cv::Mat& drawing_frame);
   
   /**
-   * @brief 
+   * @brief enhances the contrast color of the mat object.
    * 
-   * @param frame 
-   * @param clip_hist_percent 
+   * @param frame the frame that has to be copied.
+   * @param clipHistPercent percentage of the filter
    * @return cv::Mat 
-   */
+   */ 
   cv::Mat BrightnessAndContrastAuto(const cv::Mat& frame, double clip_hist_percent);
   
   /**
@@ -79,8 +79,8 @@ public:
    * 
    * @param color_object The detected shape
    * @param approx Vecor containing the contour data
-   * @return true 
-   * @return false 
+   * @return true if the shape is the same as rectangle or square
+   * @return false if the shape is not the sames as a rectangle or square
    */
   bool checkSquareAndRectangle(std::shared_ptr<ColorObject>& color_object, std::vector<cv::Point>& approx);
   
@@ -89,9 +89,9 @@ public:
    * 
    * @param color_object The deteccted shape
    * @param contours Vector containing the contour data
-   * @param element 
-   * @return true 
-   * @return false 
+   * @param element int that contains the right index number of the right contour.
+   * @return true if the shape is the same as a circle
+   * @return false if the shape is not the same as a circle
    */
   bool checkCircle(std::shared_ptr<ColorObject>& color_object, std::vector<std::vector<cv::Point>>& contours,
                    int element);
@@ -101,15 +101,15 @@ public:
    * 
    * @param color_object The detected shape 
    * @param contours Vector containing the contour data
-   * @param element 
-   * @return true 
-   * @return false 
+   * @param element int that contains the right index number of the right contour.
+   * @return true when the shape is the same as a semi circle
+   * @return false when the shape is not the same a semi circle
    */
   bool semiCircle(std::shared_ptr<ColorObject>& color_object, std::vector<std::vector<cv::Point>>& contours,
                   int element);
   
   /**
-   * @brief 
+   * @brief filters the matrix frame based on the color
    * 
    * @param filtered_frame The matrix containing the filtered frame
    */

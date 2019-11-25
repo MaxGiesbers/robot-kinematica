@@ -15,8 +15,8 @@ public:
   /**
    * @brief Construct a new High Level Interface object
    * 
-   * @param name 
-   * @param port 
+   * @param name the name of the node
+   * @param port the name of the usb port that is connected to the arm
    */
   HighLevelInterface(const std::string& name, const std::string port);
   
@@ -27,23 +27,23 @@ public:
   ~HighLevelInterface(void);
   
   /**
-   * @brief 
+   * @brief Callback that is called when an message is received from the robotcontroller
    * 
-   * @param goal 
+   * @param goal contains the coordinates for the position of the movement
    */
   void executeCB(const robot_kinematica::al5dPositionGoalConstPtr& goal);
   
   /**
-   * @brief 
+   * @brief concatenates the received message and prepares it for sending to the arm
    * 
-   * @param goal 
+   * @param goal contains the coordinates for the position of the movement
    */
   void concatMessage(const robot_kinematica::al5dPositionGoalConstPtr& goal);
   
   /**
-   * @brief 
+   * @brief starts the movement when an message has received
    * 
-   * @param goal 
+   * @param goal contains the coordinates for the position of the movement
    */
   void run(const robot_kinematica::al5dPositionGoalConstPtr& goal);
   
@@ -66,50 +66,50 @@ public:
   void park();
   
   /**
-   * @brief 
+   * @brief Moves all the servo of the al5d controller
    * 
    */
   void moveAllServos();
   
   /**
-   * @brief 
+   * @brief initialize all the servo's
    * 
    */
   void initServoList();
   
   /**
-   * @brief 
+   * @brief Moves only the servo's that has been set
    * 
    */
   void moveServos();
 
 private:
   /**
-   * @brief 
+   * @brief is an object which represents the ROS node
    * 
    */
   ros::NodeHandle m_node_handle;
 
   /**
-   * @brief 
+   * @brief actionlib server object for receiving and sending information
    * 
    */
   actionlib::SimpleActionServer<robot_kinematica::al5dPositionAction> m_al5d_action_server;
 
   /**
-   * @brief 
+   * @brief name of the node
    * 
    */
   std::string m_name;
 
   /**
-   * @brief 
+   * @brief contains the lowlevel logica of the al5d arm
    * 
    */
   LowLevelDriver m_low_level_component;
 
   /**
-   * @brief 
+   * @brief list of servo's of the al5d arm
    * 
    */
   std::vector<Servo> m_servo_list;

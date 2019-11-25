@@ -9,7 +9,7 @@ const int SPACEBAR_KEY_ASCII = 32;
 const int ENTER_KEY_ASCII = 10;
 }  // namespace
 
-Calibration::Calibration() : m_iLowH(0), m_iHighH(0), m_iLowS(0), m_iHighS(0), m_iLowV(0), m_iHighV(0), m_iterator(0)
+Calibration::Calibration() : m_iLowH(0), m_iHighH(0), m_iLowS(0), m_iHighS(0), m_iLowV(0), m_iHighV(0), m_color_scale_iterator(0)
 {
   setDefaultColorScales();
 }
@@ -20,20 +20,20 @@ Calibration::~Calibration()
 
 void Calibration::setCalibratedColorValues()
 {
-  m_color_scales.at(m_iterator).iLowH = m_iLowH;
-  m_color_scales.at(m_iterator).iHighH = m_iHighH;
-  m_color_scales.at(m_iterator).iLowS = m_iLowS;
-  m_color_scales.at(m_iterator).iHighS = m_iHighS;
-  m_color_scales.at(m_iterator).iLowV = m_iLowV;
-  m_color_scales.at(m_iterator).iHighV = m_iHighV;
+  m_color_scales.at(m_color_scale_iterator).iLowH = m_iLowH;
+  m_color_scales.at(m_color_scale_iterator).iHighH = m_iHighH;
+  m_color_scales.at(m_color_scale_iterator).iLowS = m_iLowS;
+  m_color_scales.at(m_color_scale_iterator).iHighS = m_iHighS;
+  m_color_scales.at(m_color_scale_iterator).iLowV = m_iLowV;
+  m_color_scales.at(m_color_scale_iterator).iHighV = m_iHighV;
 
   std::cout << "New color values: " << m_iLowH << ", " << m_iHighH << ", " << m_iLowS << ", " << m_iHighS << ", "
-            << m_iLowV << ", " << m_iHighV << " for color " << m_color_scales.at(m_iterator).color << std::endl;
+            << m_iLowV << ", " << m_iHighV << " for color " << m_color_scales.at(m_color_scale_iterator).color << std::endl;
 }
 
 void Calibration::setColorValues()
 {
-  ColorScale color_scale = m_color_scales.at(m_iterator);
+  ColorScale color_scale = m_color_scales.at(m_color_scale_iterator);
 
   m_iLowH = color_scale.iLowH;
   m_iHighH = color_scale.iHighH;
@@ -190,10 +190,10 @@ void Calibration::startCalibration(const cv::VideoCapture& cap)
   cv::createTrackbar("iHighV", "trackBarWindow", &m_iHighV, 255, calibrate, this);
 
   m_cap = cap;
-  ColorScale colorScale = m_color_scales.at(m_iterator);
+  ColorScale colorScale = m_color_scales.at(m_color_scale_iterator);
   ROS_INFO_STREAM("press space bar to capture and calibrate on color: " << colorScale.color);
 
-  while (m_iterator < m_color_scales.size())
+  while (m_color_scale_iterator < m_color_scales.size())
   {
     m_cap >> m_capture_window;
     imshow("captureWindow", m_capture_window);
@@ -210,10 +210,10 @@ void Calibration::startCalibration(const cv::VideoCapture& cap)
     {
       setCalibratedColorValues();
 
-      ++m_iterator;
-      if (m_iterator < m_color_scales.size())
+      ++m_color_scale_iterator;
+      if (m_color_scale_iterator < m_color_scales.size())
       {
-        colorScale = m_color_scales.at(m_iterator);
+        colorScale = m_color_scales.at(m_color_scale_iterator);
       }
     }
   }

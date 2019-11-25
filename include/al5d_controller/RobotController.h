@@ -14,7 +14,7 @@ public:
   /**
    * @brief Construct a new Robot Controller object
    * 
-   * @param name 
+   * @param name of the node
    */
   RobotController(const std::string& name);
   
@@ -56,25 +56,25 @@ private:
   double correctForServoLimits(double angle);
   
   /**
-   * @brief 
+   * @brief is an object which represents the ROS node
    * 
    */
   ros::NodeHandle m_node_handle;
   
   /**
-   * @brief 
+   * @brief boolean wether or not the message has been send
    * 
    */
   bool m_objectCoordinatesReceived;
   
   /**
-   * @brief 
+   * @brief srv message objedt that contains data of the found object
    * 
    */
   robot_kinematica::found_object m_found_object;
   
   /**
-   * @brief 
+   * @brief simple action client object for sending srv messages
    * 
    */
   actionlib::SimpleActionClient<robot_kinematica::al5dPositionAction> m_al5d_action_client;
@@ -85,7 +85,7 @@ private:
    * @param position The angles the servos should move to
    * @param gripper_angle The angle the gripper must move to to grab the found object
    */
-  void moveArm(const std::optional<Kinematics::Matrix<double, 4, 1>> position, const double gripper_angle);
+  void moveArm(const std::optional<Kinematics::Matrix<double, 4, 1>> position, const double gripper_angle, const std::string goal_name);
   
   /**
    * @brief Function for moving the gripper
@@ -97,16 +97,16 @@ private:
   /**
    * @brief Function for moving the al5d to its destination
    * 
-   * @param req 
-   * @param res 
-   * @return true 
-   * @return false 
+   * @param req request message with information of the object
+   * @param res response message which contains if the arm is moved to the position or not
+   * @return true when the message is received
+   * @return false when the message is not receive
    */
   bool moveObjectToDestination(robot_kinematica::found_object::Request& req,
                                robot_kinematica::found_object::Response& res);
   
   /**
-   * @brief 
+   * @brief the advertise service object
    * 
    */
   ros::ServiceServer m_service;

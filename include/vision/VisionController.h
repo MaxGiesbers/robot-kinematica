@@ -21,21 +21,14 @@ public:
    * 
    */
   ~VisionController();
-
   
   /**
-   * @brief 
+   * @brief splits user input based on regex
    * 
    * @param message 
    */
   void splitString(std::string message);
-  
-  /**
-   * @brief 
-   * 
-   */
-  void splitAndStoreLinesBasedOnRegex();
-  
+ 
   /**
    * @brief Function to check the values of  
    * 
@@ -45,7 +38,7 @@ public:
   void checkStringValues(const std::string& figure, const std::string& color);
   
   /**
-   * @brief 
+   * @brief the main loop of the application
    * 
    */
   void applicationLoop();
@@ -72,19 +65,19 @@ public:
   void findColorAndShape(const std::string& input_color, const std::string& input_figure);
   
   /**
-   * @brief 
+   * @brief sends the object values to the robotcontroller
    * 
    */
   void sendObjectCoordinates();
   
   /**
-   * @brief 
+   * @brief clones the live frame to the other mat objects
    * 
    */
   void cloneFrames();
   
   /**
-   * @brief 
+   * @brief loop for find the object
    * 
    * @param color_object 
    */
@@ -108,21 +101,21 @@ public:
 
   
   /**
-   * @brief 
+   * @brief for reading the user input on a other thread than the main thread
    * 
    * @return std::thread 
    */
   std::thread readInputThread();
   
   /**
-   * @brief 
+   * @brief thread for reading the camera on a other thread than the main thread
    * 
    * @return std::thread 
    */
   std::thread videoCamThread();
   
   /**
-   * @brief 
+   * @brief reads the video camera
    * 
    */
   void readVideoCam();
@@ -131,7 +124,7 @@ public:
    * @brief Function for converting pixels to centimeters (x-coordinate)
    * 
    * @param pixel_value 
-   * @return double 
+   * @return double x position in cm
    */
   double convertPixelToCmXPosition(const double pixel_value);
   
@@ -139,14 +132,14 @@ public:
    * @brief Function for converting pixels to centimeters (y-coordinate)
    * 
    * @param pixel_value 
-   * @return double 
+   * @return double y position in cm
    */
   double convertPixelToCmYPosition(const double pixel_value);
   
   /**
    * @brief Get the Angle Difference
    * 
-   * @return double 
+   * @return double with the angle difference
    */
   double getAngleDifference();
   
@@ -161,64 +154,57 @@ public:
 
 private:
   /**
-   * @brief 
+   * @brief the opencv videocapture object
    * 
    */
   cv::VideoCapture m_cap;
   
   /**
-   * @brief 
+   * @brief the live frame of the camera
    * 
    */
   cv::Mat m_frame;
   
   /**
-   * @brief 
+   * @brief contains the filtered frame 
    * 
    */
   cv::Mat m_filtered_frame;
   
   /**
-   * @brief 
+   * @brief contains the frame that will be drawed
    * 
    */
   cv::Mat m_drawing_frame;
   
   /**
-   * @brief 
+   * @brief contains the mask of the color
    * 
    */
   cv::Mat m_color_mask;
 
-  
   /**
-   * @brief 
-   * 
-   */
-  ros::Publisher m_publisher;
-  
-  /**
-   * @brief 
+   * @brief is an object which represents the ROS node
    * 
    */
   ros::NodeHandle m_node_handle;
 
   
   /**
-   * @brief 
+   * @brief client service for sending data
    * 
    */
   ros::ServiceClient m_client;
 
   
   /**
-   * @brief 
+   * @brief contains information of the object that has to be picked up
    * 
    */
   std::shared_ptr<ColorObject> m_color_object;
   
   /**
-   * @brief 
+   * @brief contains information of the destination location of the arm
    * 
    */
   std::shared_ptr<ColorObject> m_destination_object;
@@ -230,7 +216,7 @@ private:
   Calibration m_calibrator;
   
   /**
-   * @brief 
+   * @brief checks if the user input is correct
    * 
    */
   std::atomic<bool> m_user_input_correct;
@@ -252,7 +238,7 @@ private:
   ObjectDetector m_object_detector;
   
   /**
-   * @brief 
+   * @brief wether or not the message is sended
    * 
    */
   bool m_coordinates_sended;

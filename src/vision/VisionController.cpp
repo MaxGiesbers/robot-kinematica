@@ -203,7 +203,7 @@ void VisionController::sendObjectCoordinates()
   double destination_polar_y = 0;
 
   setObjectPolarCoordinates(object_polar_x, object_polar_y, m_color_object);
-  setObjectPolarCoordinates(object_polar_x, object_polar_y, m_destination_object);
+  setObjectPolarCoordinates(destination_polar_x, destination_polar_y, m_destination_object);
 
   double correction_x_position = getObjectCorrectedXPosition(object_polar_x);
 

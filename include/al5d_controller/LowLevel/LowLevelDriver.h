@@ -24,27 +24,27 @@ public:
   virtual ~LowLevelDriver();
 
   /**
-   * @brief 
+   * @brief Writes a pwm command to the al5d_arm
    * 
-   * @param message 
+   * @param message pwm command in al5d format
    */
   void writeMessage(const std::string& message);
 
 private:
   /**
-   * @brief 
+   * @brief for reading and writing to the al5d_arm
    * 
    */
   boost::asio::io_service io;
 
   /**
-   * @brief 
+   * @brief serial port object for writing and reading to the al5d_arm
    * 
    */
   boost::asio::serial_port serial;
 
   /**
-   * @brief Function for moving the al5d to its initial position
+   * @brief Function for moving the al5d to its initial position (park)
    * 
    */
   void initialPosition();
