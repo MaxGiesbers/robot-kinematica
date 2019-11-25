@@ -42,6 +42,13 @@ private:
    * @param req Message containing various required specifications of the found object 
    * @param position The angles the servos should be set to to grab the found object
    * @return double The amount of degrees the gripper (wristRotate) should be set to
+   * 
+   * @internal a signifies half of the x-difference in pixels between the top left and top right corner of the found object
+   * @internal b signifies the x-location of the midpoint between the top left and top right corner of the found object
+   * @internal c signifies half of the y-difference in pixels between the top left and bottom left corner of the found object
+   * @internal d signifies the y-location of the midpoint between the top left and bottom right corner of the found object
+   * @internal e signifies the imaginary hypotenuse between point b, point d and the center of the found object
+   * @internal f signifies the rotation of the object compared to an imaginary line perpendicular to the x-axis
    */
   double getGripperAngle(robot_kinematica::found_object::Request& req,
                          const std::optional<Kinematics::Matrix<double, 4, 1>> position);
