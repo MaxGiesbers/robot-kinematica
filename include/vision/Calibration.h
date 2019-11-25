@@ -1,3 +1,6 @@
+#ifndef CALIBRATION_H
+#define CALIBRATION_H
+
 #include <ros/ros.h>
 #include "vision/ColorScale.h"
 #include "opencv2/core.hpp"
@@ -36,3 +39,5 @@ private:
   cv::VideoCapture m_cap;
   cv::Mat m_capture_window;
 };
+
+#endif  

@@ -1,3 +1,6 @@
+#ifndef KINEMATICS_H
+#define KINEMATICS_H
+
 #include <cmath>       
 #include <iostream>
 #include <optional>
@@ -24,3 +27,5 @@ private:
                                         { -90.0, 90.0 } };
 };
 }  // namespace Kinematics
+
+#endif  // KINEMATICS_H

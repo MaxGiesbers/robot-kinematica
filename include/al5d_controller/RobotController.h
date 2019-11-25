@@ -1,3 +1,6 @@
+#ifndef ROBOTCONTROLLER_H
+#define ROBOTCONTROLLER_H
+
 #include <ros/ros.h>
 #include <memory>
 #include "al5d_controller/Highlevel/HighLevelInterface.h"
@@ -27,3 +30,5 @@ private:
                                robot_kinematica::found_object::Response& res);
   ros::ServiceServer m_service;
 };
+
+#endif  // ROBOTCONTROLLER_H

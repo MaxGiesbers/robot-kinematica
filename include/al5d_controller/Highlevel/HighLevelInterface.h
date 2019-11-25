@@ -1,4 +1,4 @@
-#ifndef HIGHLEVELINTERFACE_H_
+#ifndef HIGHLEVELINTERFACE_H
 #define HIGHLEVELINTERFACE_H
 
 #include "robot_kinematica/al5dPositionAction.h"

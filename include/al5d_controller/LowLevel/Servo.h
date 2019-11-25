@@ -1,5 +1,5 @@
 #ifndef SERVO_H_
-#define SERVO_H_
+#define SERVO_H
 
 #include <string>
 

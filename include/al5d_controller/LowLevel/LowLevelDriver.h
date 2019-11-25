@@ -1,5 +1,5 @@
-#ifndef LOWLEVELDRIVER_H_
-#define LOWLEVELDRIVER_H_
+#ifndef LOWLEVELDRIVER_H
+#define LOWLEVELDRIVER_H
 
 #include <ros/ros.h>
 #include "Servo.h"

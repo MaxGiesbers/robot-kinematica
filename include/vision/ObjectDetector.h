@@ -1,3 +1,6 @@
+#ifndef OBJECTDETECTOR_H
+#define OBJECTDETECTOR_H
+
 #include <ros/ros.h>
 #include "ColorObject.h"
 
@@ -22,3 +25,5 @@ public:
                   int element);
   void filterFrame(cv::Mat& filtered_frame);
 };
+
+#endif 

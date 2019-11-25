@@ -1,3 +1,6 @@
+#ifndef VISIONCONTROLLER_H
+#define VISIONCONTROLLER_H
+
 #include <ros/ros.h>
 #include "ObjectDetector.h"
 #include <thread>
@@ -54,3 +57,5 @@ private:
   ObjectDetector m_object_detector;
   bool m_coordinates_sended;
 };
+
+#endif 

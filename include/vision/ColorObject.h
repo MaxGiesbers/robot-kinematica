@@ -1,3 +1,7 @@
+#ifndef COLOROBJECT_H
+#define COLOROBJECT_H
+
+
 #include "ColorScale.h"
 #include <ros/ros.h>
 #include <vector>
@@ -48,3 +52,5 @@ private:
 
   bool m_object_detected;
 };
+
+#endif 
