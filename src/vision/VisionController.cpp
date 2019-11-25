@@ -75,21 +75,21 @@ void VisionController::readVideoCam()
 }
 
 double VisionController::getObjectCorrectedXPosition(double object_center_x)
-{	
+{
   double object_corrected_x = 0;
 
-	const double a = 0.540126931;
-	const double b = -0.0355280635;
-	const double c = 0.011841286;
+  const double a = 0.540126931;
+  const double b = -0.0355280635;
+  const double c = 0.011841286;
 
-  object_corrected_x =  a * (std::pow(object_center_x, 2) + b * object_center_x + c);
+  object_corrected_x = a * (std::pow(object_center_x, 2) + b * object_center_x + c);
 
-  if (object_center_x < 0 )
+  if (object_center_x < 0)
   {
     object_corrected_x *= -1;
   }
 
-	return  object_corrected_x;
+  return object_corrected_x;
 }
 
 void VisionController::splitString(std::string str)
@@ -178,9 +178,9 @@ double VisionController::getAngleDifference()
   return angleDifference;
 }
 
-void VisionController::setObjectPolarCoordinates(double& object_polar_x, double& object_polar_y, std::shared_ptr<ColorObject> color_object)
+void VisionController::setObjectPolarCoordinates(double& object_polar_x, double& object_polar_y,
+                                                 std::shared_ptr<ColorObject> color_object)
 {
-
   if (color_object->getCenterXPos() < BASE_CARTESIAN_X)
   {
     object_polar_x = convertPixelToCmXPosition((BASE_CARTESIAN_X - color_object->getCenterXPos()) * -1) / 100;
@@ -218,18 +218,18 @@ void VisionController::sendObjectCoordinates()
 
   found_object_message.request.origin_x = correction_x_position + object_polar_x;
   found_object_message.request.origin_y = object_polar_y;
-  found_object_message.request.origin_cartesian_x =  m_color_object->getCenterXPos();
-  found_object_message.request.origin_cartesian_y =  m_color_object->getCenterYPos();
+  found_object_message.request.origin_cartesian_x = m_color_object->getCenterXPos();
+  found_object_message.request.origin_cartesian_y = m_color_object->getCenterYPos();
 
   correction_x_position = getObjectCorrectedXPosition(destination_polar_x);
   found_object_message.request.destination_x = destination_polar_x + correction_x_position;
   found_object_message.request.destination_y = destination_polar_y;
 
-  if((!m_color_object->getFigure().compare("cirkel") == 0) && (!m_color_object->getFigure().compare("driehoek") == 0))
+  if ((!m_color_object->getFigure().compare("cirkel") == 0) && (!m_color_object->getFigure().compare("driehoek") == 0))
   {
     setApproxValues(found_object_message);
   }
-  
+
   m_coordinates_sended = true;
   if (m_client.call(found_object_message))
   {
@@ -243,7 +243,7 @@ void VisionController::sendObjectCoordinates()
       ROS_INFO_STREAM("Robot movement failed");
       ROS_INFO_STREAM("Voer een vorm en een kleur in met als format: [vorm][whitespace][kleur]");
     }
-  
+
     m_user_input_correct = false;
     m_color_object->setObjectDetected(false);
     m_destination_object->setObjectDetected(false);
@@ -337,15 +337,15 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "VisionController");
   ros::Time::init();
   try
-	{
-		VisionController controller;
+  {
+    VisionController controller;
     controller.applicationLoop();
     ros::spin();
-	}
-	catch (const std::exception& e)
-	{
-    std:: cout << e.what() << std::endl;
-	}
+  }
+  catch (const std::exception& e)
+  {
+    std::cout << e.what() << std::endl;
+  }
 
   return 0;
 }

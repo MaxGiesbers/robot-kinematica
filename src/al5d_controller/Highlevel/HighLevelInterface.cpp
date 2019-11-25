@@ -130,14 +130,14 @@ int main(int argc, char** argv)
   }
 
   try
-	{
+  {
     HighLevelInterface highLevelInterface("robot_kinematica", argv[1]);
-	}
-	catch (const std::exception& e)
-	{
-    std:: cout << e.what() << std::endl;
-	}
+  }
+  catch (const std::exception& e)
+  {
+    std::cout << e.what() << std::endl;
+  }
   ros::spin();
-  
+
   return 0;
 }

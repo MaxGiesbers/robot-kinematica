@@ -59,13 +59,15 @@ bool ObjectDetector::checkSquareAndRectangle(std::shared_ptr<ColorObject>& color
   {
     if (std::fabs(SIDE_UPPER - SIDE_DOWN) <= DEVIATION_SQUARE && std::fabs(SIDE_LEFT - SIDE_RIGHT) <= DEVIATION_SQUARE)
     {
-      if (std::fabs(SIDE_UPPER - SIDE_LEFT) <= DEVIATION_SQUARE && color_object->getInputFigure().compare("vierkant") == 0)
+      if (std::fabs(SIDE_UPPER - SIDE_LEFT) <= DEVIATION_SQUARE &&
+          color_object->getInputFigure().compare("vierkant") == 0)
       {
         color_object->setFigure("vierkant");
         color_object->m_approx = approx;
         found_object = true;
       }
-      else if (std::fabs(SIDE_UPPER - SIDE_LEFT) > DEVIATION_RECTANGLE && color_object->getInputFigure().compare("rechthoek") == 0)
+      else if (std::fabs(SIDE_UPPER - SIDE_LEFT) > DEVIATION_RECTANGLE &&
+               color_object->getInputFigure().compare("rechthoek") == 0)
       {
         color_object->setFigure("rechthoek");
         color_object->m_approx = approx;
@@ -217,7 +219,7 @@ cv::Mat ObjectDetector::BrightnessAndContrastAuto(const cv::Mat& frame, double c
   cv::Mat dst;
 
   int histSize = 256;
-  float alpha, beta = 0; 
+  float alpha, beta = 0;
   double min_gray = 0, max_gray = 0;
 
   // to calculate grayscale histogram
@@ -270,7 +272,7 @@ cv::Mat ObjectDetector::BrightnessAndContrastAuto(const cv::Mat& frame, double c
   float inputRange = (float)max_gray - (float)min_gray;
 
   alpha = (float)(histSize - 1) / inputRange;  // alpha expands current range to histsize range
-  beta = (float)-min_gray * alpha;              // beta shifts current range so that min_gray will go to 0
+  beta = (float)-min_gray * alpha;             // beta shifts current range so that min_gray will go to 0
 
   // Apply brightness and contrast normalization
   // convertTo operates with saurate_cast

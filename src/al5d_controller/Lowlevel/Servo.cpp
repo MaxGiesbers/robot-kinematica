@@ -41,7 +41,6 @@ void Servo::setMoveServo(bool move_servo)
   m_move_servo = move_servo;
 }
 
-
 int16_t Servo::degreesToPwm(int16_t target_degrees)
 {
   if (target_degrees >= m_min_degrees && target_degrees <= m_max_degrees)

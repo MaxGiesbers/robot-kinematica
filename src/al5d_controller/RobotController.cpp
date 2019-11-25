@@ -17,46 +17,45 @@ RobotController::RobotController(const std::string& name)
 
 double RobotController::getGripperAngle(robot_kinematica::found_object::Request& req,
                                         const std::optional<Kinematics::Matrix<double, 4, 1>> position)
-{  
-    const double a = (req.approx_3_x - req.approx_0_x) / 2;
-    const double b = req.approx_0_x + a;
-    const double c = (req.approx_3_y - req.approx_0_y) / 2;
-    const double d = req.approx_0_y + c;
-    double e = 0;
-    double f = 0;
-  
-    double baseAngle = position.value()[0][0];
-    const double side_upper = std::hypot(req.approx_3_x - req.approx_0_x, req.approx_3_y - req.approx_0_y);
-    const double side_left = std::hypot(req.approx_0_x  - req.approx_1_x , req.approx_1_y - req.approx_0_y);
+{
+  const double a = (req.approx_3_x - req.approx_0_x) / 2;
+  const double b = req.approx_0_x + a;
+  const double c = (req.approx_3_y - req.approx_0_y) / 2;
+  const double d = req.approx_0_y + c;
+  double e = 0;
+  double f = 0;
 
-    
-    if (b < req.origin_cartesian_x) 
-    {
-        e = std::hypot(req.origin_cartesian_x - b, req.origin_cartesian_y - d);
-        f = std::asin((req.origin_cartesian_x - b) / e) * 180 / M_PI * -1;
-    }
-    else
-    {
-        e = std::hypot(b - req.origin_cartesian_x, req.origin_cartesian_y - d);
-        f = std::asin((b - req.origin_cartesian_x) / e) * 180 / M_PI;
-    }
+  double baseAngle = position.value()[0][0];
+  const double side_upper = std::hypot(req.approx_3_x - req.approx_0_x, req.approx_3_y - req.approx_0_y);
+  const double side_left = std::hypot(req.approx_0_x - req.approx_1_x, req.approx_1_y - req.approx_0_y);
 
-    double diff = correctForServoLimits(baseAngle - f);
-    double gripperAngle = 0 + diff;
+  if (b < req.origin_cartesian_x)
+  {
+    e = std::hypot(req.origin_cartesian_x - b, req.origin_cartesian_y - d);
+    f = std::asin((req.origin_cartesian_x - b) / e) * 180 / M_PI * -1;
+  }
+  else
+  {
+    e = std::hypot(b - req.origin_cartesian_x, req.origin_cartesian_y - d);
+    f = std::asin((b - req.origin_cartesian_x) / e) * 180 / M_PI;
+  }
 
-    if (side_upper > side_left)
-    {
-      gripperAngle = correctForServoLimits(gripperAngle + 90);
-    }
+  double diff = correctForServoLimits(baseAngle - f);
+  double gripperAngle = 0 + diff;
 
-    std::cout << "SideUpper: " << side_upper << std::endl;
-    std::cout << "SideLeft: " << side_left << std::endl;
-    std::cout << "F: " << f << std::endl;
-    std::cout << "diff: " << diff << std::endl;
-    std::cout << "BaseAngle: " << baseAngle << std::endl;
-    std::cout << "GripperAngle: " << gripperAngle << std::endl;
+  if (side_upper > side_left)
+  {
+    gripperAngle = correctForServoLimits(gripperAngle + 90);
+  }
 
-    return gripperAngle;
+  std::cout << "SideUpper: " << side_upper << std::endl;
+  std::cout << "SideLeft: " << side_left << std::endl;
+  std::cout << "F: " << f << std::endl;
+  std::cout << "diff: " << diff << std::endl;
+  std::cout << "BaseAngle: " << baseAngle << std::endl;
+  std::cout << "GripperAngle: " << gripperAngle << std::endl;
+
+  return gripperAngle;
 }
 
 double RobotController::correctForServoLimits(double angle)
@@ -81,17 +80,15 @@ bool RobotController::moveObjectToDestination(robot_kinematica::found_object::Re
   m_current_angles[0][2] = 115.0;
   m_current_angles[0][3] = -55.0;
 
-  const Kinematics::Matrix<double, 3, 1> object_position(
-      { { req.origin_y }, { 0 }, { req.origin_x} });
+  const Kinematics::Matrix<double, 3, 1> object_position({ { req.origin_y }, { 0 }, { req.origin_x } });
 
-  const Kinematics::Matrix<double, 3, 1> object_position_below(
-      { { req.origin_y }, {-0.05 }, { req.origin_x } });
+  const Kinematics::Matrix<double, 3, 1> object_position_below({ { req.origin_y }, { -0.05 }, { req.origin_x } });
 
   const Kinematics::Matrix<double, 3, 1> destination_position(
-      { { req.destination_y }, { 0.02 }, { req.destination_x} });
+      { { req.destination_y }, { 0.02 }, { req.destination_x } });
 
   const Kinematics::Matrix<double, 3, 1> destination_position_below(
-      { { req.destination_y }, {-0.03 }, { req.destination_x} });
+      { { req.destination_y }, { -0.03 }, { req.destination_x } });
 
   auto above_object_position = m_kinematics.inverse_kinematics(m_current_angles, object_position);
   auto above_object_grap_position = m_kinematics.inverse_kinematics(m_current_angles, object_position_below);
@@ -101,14 +98,14 @@ bool RobotController::moveObjectToDestination(robot_kinematica::found_object::Re
   if (above_object_position.has_value() && above_object_grap_position.has_value() &&
       above_destination_position.has_value())
   {
-
     double gripper_angle = 0;
 
-    if(!req.approx_0_x == 0 && !req.approx_0_y == 0 && !req.approx_1_x == 0 && !req.approx_1_y == 0 && !req.approx_3_x == 0)
+    if (!req.approx_0_x == 0 && !req.approx_0_y == 0 && !req.approx_1_x == 0 && !req.approx_1_y == 0 &&
+        !req.approx_3_x == 0)
     {
       gripper_angle = getGripperAngle(req, above_object_position);
     }
-  
+
     moveGripper(0);
     moveArm(above_object_position, gripper_angle);
     moveArm(above_object_grap_position, gripper_angle);
@@ -176,14 +173,14 @@ int main(int argc, char** argv)
 {
   ros::init(argc, argv, "RobotController");
   try
-	{
+  {
     RobotController robot_controller("robot_kinematica");
-	}
-	catch (const std::exception& e)
-	{
-    std:: cout << e.what() << std::endl;
-	}
+  }
+  catch (const std::exception& e)
+  {
+    std::cout << e.what() << std::endl;
+  }
   ros::spin();
-  
+
   return 0;
 }

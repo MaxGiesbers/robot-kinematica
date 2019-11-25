@@ -27,8 +27,8 @@ void Calibration::setCalibratedColorValues()
   m_color_scales.at(m_iterator).iLowV = m_iLowV;
   m_color_scales.at(m_iterator).iHighV = m_iHighV;
 
-  std::cout << "New color values: " << m_iLowH << ", " << m_iHighH << ", " << m_iLowS << ", " << m_iHighS << ", " << m_iLowV
-            << ", " << m_iHighV << " for color " << m_color_scales.at(m_iterator).color << std::endl;
+  std::cout << "New color values: " << m_iLowH << ", " << m_iHighH << ", " << m_iLowS << ", " << m_iHighS << ", "
+            << m_iLowV << ", " << m_iHighV << " for color " << m_color_scales.at(m_iterator).color << std::endl;
 }
 
 void Calibration::setColorValues()
@@ -58,7 +58,7 @@ cv::Mat Calibration::BrightnessAndContrastAuto(const cv::Mat& frame, double clip
   cv::Mat dst;
 
   int histSize = 256;
-  float alpha, beta = 0; 
+  float alpha, beta = 0;
   double min_gray = 0, max_gray = 0;
 
   // to calculate grayscale histogram
@@ -111,7 +111,7 @@ cv::Mat Calibration::BrightnessAndContrastAuto(const cv::Mat& frame, double clip
   float inputRange = (float)max_gray - (float)min_gray;
 
   alpha = (float)(histSize - 1) / inputRange;  // alpha expands current range to histsize range
-  beta = (float)-min_gray * alpha;              // beta shifts current range so that min_gray will go to 0
+  beta = (float)-min_gray * alpha;             // beta shifts current range so that min_gray will go to 0
 
   // Apply brightness and contrast normalization
   // convertTo operates with saurate_cast
@@ -205,7 +205,7 @@ void Calibration::startCalibration(const cv::VideoCapture& cap)
 
     m_cap >> m_treshold;
     setColorValues();
-  
+
     if (cv::waitKey() == ENTER_KEY_ASCII)
     {
       setCalibratedColorValues();
