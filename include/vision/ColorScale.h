@@ -1,6 +1,11 @@
 #ifndef COLORSCALE_H
 #define COLORSCALE_H
 #include <string>
+
+/**
+ * @brief A struct that contains the names of the HSV values
+ * 
+ */
 struct ColorScale
 {
   int iLowH;
