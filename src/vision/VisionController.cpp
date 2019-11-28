@@ -7,7 +7,7 @@ namespace
 const std::vector<std::string> COLORS = { "groen", "blauw", "rood", "wit", "zwart", "geel" };
 const std::vector<std::string> FIGURES = { "vierkant", "rechthoek", "cirkel", "halve cirkel", "driehoek" };
 const uint8_t ROS_LOOP_RATE = 20;
-const int CAMERA_ID = 0;
+const int CAMERA_ID = 1;
 const double SCREEN_HEIGHT = 480;
 const double SCREEN_WIDTH = 640;
 const double SCREEN_WIDTH_CM = 46.8;
@@ -190,7 +190,7 @@ void VisionController::setObjectPolarCoordinates(double& object_polar_x, double&
     object_polar_x = convertPixelToCmXPosition((BASE_CARTESIAN_X - color_object->getCenterXPos()) * -1) / 100;
     object_polar_y = convertPixelToCmYPosition(BASE_CARTESIAN_Y - color_object->getCenterYPos()) / 100;
   }
-  else if (color_object->getCenterXPos() >= BASE_CARTESIAN_X)
+  else if (color_object->getCenterXPos() > BASE_CARTESIAN_X)
   {
     object_polar_x = convertPixelToCmXPosition(color_object->getCenterXPos() - BASE_CARTESIAN_X) / 100;
     object_polar_y = convertPixelToCmYPosition(BASE_CARTESIAN_Y - color_object->getCenterYPos()) / 100;

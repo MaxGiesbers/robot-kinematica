@@ -8,7 +8,7 @@ const uint8_t MINIMAL_ARGUMENTS = 4;
 const uint16_t QUEUE_SIZE = 1000;
 const double BASE_CARTESIAN_X = 343;
 const uint16_t MOVEMENT_TIME = 2000;
-const double PICK_UP_HEIGHT = -0.07;
+const double PICK_UP_HEIGHT = -0.065;
 const double DROPPING_HEIGHT = -0.05;
 }  // namespace
 
@@ -132,11 +132,6 @@ bool RobotController::moveObjectToDestination(robot_kinematica::found_object::Re
   }
 
   return true;
-}
-
-void sendCoordinates()
-{
-  robot_kinematica::al5dPositionGoal goal;
 }
 
 void RobotController::moveGripper(const double degrees)

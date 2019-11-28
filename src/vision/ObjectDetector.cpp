@@ -90,7 +90,7 @@ bool ObjectDetector::checkCircle(std::shared_ptr<ColorObject>& color_object,
 
   if (std::abs(1 - ((double)RECTANGLE.width / RECTANGLE.height)) <= DEVIATION_CIRCLE &&
       std::abs(1 - (AREA / (CV_PI * std::pow(RADIUS, 2)))) <= DEVIATION_CIRCLE &&
-      color_object->getInputFigure().compare("cirkel") == 0 && RADIUS >= 0.01)
+      color_object->getInputFigure().compare("cirkel") == 0 && RADIUS >= 15)
   {
     found_circle = true;
   }
