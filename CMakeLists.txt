@@ -50,31 +50,29 @@ catkin_package(
 
 include_directories(${catkin_INCLUDE_DIRS})
 
-
-
 add_compile_options(-std=c++17 -Wall -Wextra)
 
-add_executable(vision 
-         src/vision/VisionController.cpp
-         src/vision/ColorObject.cpp
-         src/vision/Calibration.cpp
-	       src/vision/ObjectDetector.cpp)
-add_dependencies(vision robot_kinematica_generate_messages_cpp)
-target_link_libraries(vision ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
+add_executable(VisionController 
+         src/VisionController/VisionController.cpp
+         src/VisionController/ColorObject.cpp
+         src/VisionController/Calibration.cpp
+	       src/VisionController/ObjectDetector.cpp)
+add_dependencies(VisionController robot_kinematica_generate_messages_cpp)
+target_link_libraries(VisionController ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
 
 
 add_library(al5d_driver 
-    src/al5d_controller/Lowlevel/Servo.cpp 
-    src/al5d_controller/Lowlevel/LowLevelDriver.cpp)
+    src/Al5dController/Lowlevel/Servo.cpp 
+    src/Al5dController/Lowlevel/LowLevelDriver.cpp)
 target_link_libraries(al5d_driver ${catkin_LIBRARIES})
 
-add_executable(al5d_interface 
-          src/al5d_controller/Highlevel/HighLevelInterface.cpp)
-target_link_libraries(al5d_interface al5d_driver ${catkin_LIBRARIES})
-add_dependencies(al5d_interface al5d_driver robot_kinematica_generate_messages_cpp)
+add_executable(Al5dController 
+          src/Al5dController/Highlevel/HighLevelInterface.cpp)
+target_link_libraries(Al5dController al5d_driver ${catkin_LIBRARIES})
+add_dependencies(Al5dController al5d_driver robot_kinematica_generate_messages_cpp)
 
-add_executable(robot_controller 
-          src/al5d_controller/RobotController.cpp
-          src/al5d_controller/Kinematics.cpp)
-target_link_libraries(robot_controller ${catkin_LIBRARIES})
-add_dependencies(robot_controller robot_kinematica_generate_messages_cpp)
+add_executable(RobotController 
+          src/RobotController/RobotController.cpp
+          src/RobotController/Kinematics.cpp)
+target_link_libraries(RobotController ${catkin_LIBRARIES})
+add_dependencies(RobotController robot_kinematica_generate_messages_cpp)

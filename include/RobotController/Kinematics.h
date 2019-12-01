@@ -4,7 +4,7 @@
 #include <cmath>       
 #include <iostream>
 #include <optional>
-#include "matrix_class/Matrix.hpp"
+#include "MatrixClass/Matrix.hpp"
 namespace Kinematics
 {
 class Kinematics

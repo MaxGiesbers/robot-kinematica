@@ -1,4 +1,4 @@
-#include "vision/VisionController.h"
+#include "VisionController/VisionController.h"
 #include <thread>
 #include <regex>
 
@@ -10,10 +10,10 @@ const uint8_t ROS_LOOP_RATE = 20;
 const int CAMERA_ID = 1;
 const double SCREEN_HEIGHT = 480;
 const double SCREEN_WIDTH = 640;
-const double SCREEN_WIDTH_CM = 46.8;
-const double SCREEN_HEIGHT_CM = 35.5;
-const double BASE_CARTESIAN_X = 336;
-const double BASE_CARTESIAN_Y = 467;
+const double SCREEN_WIDTH_CM = 45.8;
+const double SCREEN_HEIGHT_CM = 35.4;
+const double BASE_CARTESIAN_X = 341;
+const double BASE_CARTESIAN_Y = 434;
 const double BASE_GROUND_OFFSET = 0.0;
 const int NUMBER_OF_LOOPS = 100;
 const uint16_t QUEUE_SIZE = 1000;

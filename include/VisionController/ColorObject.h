@@ -219,4 +219,4 @@ private:
   bool m_object_detected;
 };
 
-#endif 
+#endif //COLOROBJECT_H

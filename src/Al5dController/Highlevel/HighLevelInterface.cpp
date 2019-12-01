@@ -1,6 +1,12 @@
-#include "al5d_controller/Highlevel/HighLevelInterface.h"
+#include "Al5dController/Highlevel/HighLevelInterface.h"
 #include <fstream>
 
+namespace
+{
+  const int16_t MOVEMENT_SPEED = 2000;
+  const int16_t GRIPPER_CLOSED = 29;
+  const int16_t SLEEP_TIME = 3;
+}
 HighLevelInterface::HighLevelInterface(const std::string& name, const std::string port)
   : m_al5d_action_server(m_node_handle, name, boost::bind(&HighLevelInterface::executeCB, this, _1), false)
   , m_name(name)
@@ -48,7 +54,7 @@ void HighLevelInterface::openGripper()
 
 void HighLevelInterface::closeGripper()
 {
-  m_servo_list[SERVO_ID::GRIPPER].setIncomingDegrees(29);
+  m_servo_list[SERVO_ID::GRIPPER].setIncomingDegrees(GRIPPER_CLOSED);
   m_servo_list[SERVO_ID::GRIPPER].setMoveServo(true);
   moveServos();
 }
@@ -84,7 +90,7 @@ void HighLevelInterface::moveServos()
       servo.setMoveServo(false);
     }
   }
-  ss << "T" << 2000 << "\r";
+  ss << "T" << MOVEMENT_SPEED << "\r";
   m_low_level_component.writeMessage(ss.str());
   m_al5d_action_server.setSucceeded();
 }
@@ -100,10 +106,10 @@ void HighLevelInterface::concatMessage(const robot_kinematica::al5dPositionGoalC
     ss << "#" << servo.getServoId() << "P" << servo.degreesToPwm(servo.getIncomingDegrees());
   }
 
-  ss << "T" << 2000 << "\r";
+  ss << "T" << MOVEMENT_SPEED << "\r";
   m_low_level_component.writeMessage(ss.str());
 
-  ros::Duration(3).sleep();
+  ros::Duration(SLEEP_TIME).sleep();
 
   m_al5d_action_server.setSucceeded();
   ROS_INFO_STREAM("STATE: SUCCEEDED: " << (*goal).name);

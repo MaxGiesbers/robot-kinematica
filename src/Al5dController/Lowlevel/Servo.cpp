@@ -1,5 +1,5 @@
 #include "ros/ros.h"
-#include "al5d_controller/LowLevel/Servo.h"
+#include "Al5dController/LowLevel/Servo.h"
 
 Servo::Servo(SERVO_ID servo_id, int16_t min_degrees, int16_t max_degrees, int16_t min_pwm, int16_t max_pwm)
   : m_servo_id(servo_id)

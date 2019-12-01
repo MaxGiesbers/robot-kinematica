@@ -1,4 +1,4 @@
-#include "vision/ColorObject.h"
+#include <VisionController/ColorObject.h>
 
 ColorObject::ColorObject(const std::string& input_figure, const std::string& color)
   : m_color_scale()

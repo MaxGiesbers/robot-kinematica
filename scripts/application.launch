@@ -1,6 +1,6 @@
 <launch>
-    <node name="vision" pkg="robot_kinematica" type="vision"  output="screen"/>
-    <node name="robot_controler" pkg="robot_kinematica" type="robot_controller" output="screen" />
-    <node name="al5d_controller" pkg="robot_kinematica" type="al5d_interface" output="screen" args="/dev/ttyUSB0"/>
+    <node name="VisionController" pkg="robot_kinematica" type="VisionController"  output="screen"/>
+    <node name="RobotController" pkg="robot_kinematica" type="RobotController" output="screen" />
+    <node name="Al5dController" pkg="robot_kinematica" type="Al5dController" output="screen" args="/dev/ttyUSB0"/>
 </launch>
 

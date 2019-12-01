@@ -2,7 +2,7 @@
 #define CALIBRATION_H
 
 #include <ros/ros.h>
-#include "vision/ColorScale.h"
+#include "VisionController/ColorScale.h"
 #include "opencv2/core.hpp"
 #include <opencv2/opencv.hpp>
 

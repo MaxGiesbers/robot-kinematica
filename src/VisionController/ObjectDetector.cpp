@@ -1,4 +1,4 @@
-#include "vision/ObjectDetector.h"
+#include "VisionController/ObjectDetector.h"
 #include <cmath>
 
 ObjectDetector::ObjectDetector()

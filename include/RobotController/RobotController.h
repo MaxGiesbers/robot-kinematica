@@ -2,9 +2,9 @@
 #define ROBOTCONTROLLER_H
 
 #include <memory>
-#include "al5d_controller/Highlevel/HighLevelInterface.h"
+#include "Al5dController/Highlevel/HighLevelInterface.h"
 #include <actionlib/client/simple_action_client.h>
-#include "al5d_controller/Kinematics.h"
+#include "RobotController/Kinematics.h"
 #include "robot_kinematica/found_object.h"
 
 class RobotController

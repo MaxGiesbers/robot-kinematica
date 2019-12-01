@@ -1,4 +1,4 @@
-#include "al5d_controller/Kinematics.h"
+#include "RobotController/Kinematics.h"
 
 namespace Kinematics
 {
@@ -32,6 +32,18 @@ std::optional<Matrix<double, 3, 1>> Kinematics::forward_kinematics(Matrix<double
       std::sin(a[0][0]);
 
   return fk_solution;
+}
+
+bool Kinematics::check_angles(const Matrix<double, 4, 1>& angles) const
+{
+  for (std::size_t i = 0; i < angles.get_m(); ++i)
+  {
+    if (angles[i][0] < servo_limits[i][0] || angles[i][0] > servo_limits[i][1])
+    {
+      return false;
+    }
+  }
+  return true;
 }
 
 std::optional<Matrix<double, 4, 1>> Kinematics::inverse_kinematics(Matrix<double, 4, 1>& current_angles,
@@ -142,17 +154,5 @@ Matrix<double, 3, 3> Kinematics::compute_jacobian(const Matrix<double, 4, 1>& an
   jacobian_solution[2][2] = l2 * std::cos(a[1][0] + a[2][0]) * std::sin(a[0][0]);
 
   return jacobian_solution;
-}
-
-bool Kinematics::check_angles(const Matrix<double, 4, 1>& angles) const
-{
-  for (std::size_t i = 0; i < angles.get_m(); ++i)
-  {
-    if (angles[i][0] < servo_limits[i][0] || angles[i][0] > servo_limits[i][1])
-    {
-      return false;
-    }
-  }
-  return true;
 }
 }  // namespace Kinematics
