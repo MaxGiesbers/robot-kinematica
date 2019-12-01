@@ -4,7 +4,7 @@
 
 /**
  * @brief A struct that contains the names of the HSV values
- * 
+ *
  */
 struct ColorScale
 {
@@ -16,4 +16,4 @@ struct ColorScale
   int iHighV;
   std::string color;
 };
-#endif //COLORSCALE_H
+#endif  // COLORSCALE_H

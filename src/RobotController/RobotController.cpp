@@ -113,7 +113,7 @@ bool RobotController::moveObjectToDestination(robot_kinematica::found_object::Re
     moveGripper(0);
     moveArm(above_object_position, gripper_angle, "moveAboveFoundObject");
     moveArm(above_object_grap_position, gripper_angle, "MoveArmDownToObject");
-    moveGripper(29); //gripper closed
+    moveGripper(29);  // gripper closed
     moveArm(above_object_position, gripper_angle, "moveAbove");
     moveArm(above_destination_position, 0, "moveAboveDestinationObject");
     moveArm(above_destination_drop_position, 0, "moveToDestinationDropPosition");

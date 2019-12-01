@@ -3,10 +3,10 @@
 
 namespace
 {
-  const int16_t MOVEMENT_SPEED = 2000;
-  const int16_t GRIPPER_CLOSED = 29;
-  const int16_t SLEEP_TIME = 3;
-}
+const int16_t MOVEMENT_SPEED = 2000;
+const int16_t GRIPPER_CLOSED = 29;
+const int16_t SLEEP_TIME = 3;
+}  // namespace
 HighLevelInterface::HighLevelInterface(const std::string& name, const std::string port)
   : m_al5d_action_server(m_node_handle, name, boost::bind(&HighLevelInterface::executeCB, this, _1), false)
   , m_name(name)
